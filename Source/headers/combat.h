@@ -5,7 +5,7 @@
  *         Programmed by Mark Richardson and David Brown       *
  *															   *
  *			 Mark Richardson	-	sinbaud@hotmail.com	       *
- *		       David Brown	    -	dbrown@centliq.com	       *
+ *		       David Brown	    -	dcbrown73@yahoo.com	       *
  ***************************************************************/
 #if !defined _COMBAT_H_INCLUDED_
 #define _COMBAT_H_INCLUDED_

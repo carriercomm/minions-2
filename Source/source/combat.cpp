@@ -5,7 +5,7 @@
  *         Programmed by Mark Richardson and David Brown       *
  *															   *
  *			 Mark Richardson	-	sinbaud@hotmail.com	       *
- *		       David Brown	    -	dbrown@centliq.com	       *
+ *		       David Brown	    -	dcbrown73@yahoo.com	       *
  ***************************************************************/
 #include <stdlib.h>
 #include "combat.h"
