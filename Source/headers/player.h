@@ -15,7 +15,7 @@
 #define MAX_LEVEL_ALLOWED				150
 #define MAX_DESCRIPTION_LENGTH			400
 #define MAX_HOST_NAME					80
-#define PLAYER_SAVE_PATH				"C:\\minions\\players\\"
+#define PLAYER_SAVE_PATH				"players\\"
 
 class Room;  //forward declaration
 class Item;  //forward declaration

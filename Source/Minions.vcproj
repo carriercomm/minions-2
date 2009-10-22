@@ -17,7 +17,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="C:\Minions"
+			OutputDirectory="C:\Builds\Minions"
 			IntermediateDirectory="Debug"
 			ConfigurationType="1"
 			>
@@ -39,13 +39,13 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="C:\Minions\Source\headers"
+				AdditionalIncludeDirectories="C:\Sonzo\Minions\Source\headers"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
-				ProgramDataBaseFileName="C:\Minions\vc90.pdb"
+				ProgramDataBaseFileName="C:\Builds\Minions\vc90.pdb"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="4"
@@ -62,7 +62,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="WS2_32.lib"
-				OutputFile="C:\Minions\$(ProjectName).exe"
+				OutputFile="C:\Builds\Minions\$(ProjectName).exe"
 				Version="1.0"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"

@@ -19,9 +19,9 @@
 #define SERVER_PORT				23
 #define HIGH_WATER_MARK			(MAX_OUTPUT_BUFFER * .75)
 #define LOGOFF_MESSAGE			"\n\rLeaving Minions...Goodbye!\n\r"
-#define TITLE_SCREEN_PATH		"C:\\minions\\ansiscr.txt"
-#define HELP_SCREEN_PATH		"C:\\minions\\helpscreen.txt"
-#define SERVER_LOG_PATH			"C:\\minions\\logs\\serverlog.txt"
+#define TITLE_SCREEN_PATH		"ansiscr.txt"
+#define HELP_SCREEN_PATH		"helpscreen.txt"
+#define SERVER_LOG_PATH			"logs\\serverlog.txt"
 #define SERVER_VERSION			"v.01 alpha"
 #define SERVER_SHUTDOWN_MSG		"\x1B[1;4;5;31m\t\tAn administrator is shutting down the server.\n\r\t\t\t\tClosing link now.\x1B[0m\n\r"
 #define SHUTDOWN_PASSWORD		"Secret"
