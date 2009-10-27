@@ -8,11 +8,13 @@
  *		       David Brown	    -	dcbrown73@yahoo.com	       *
  ***************************************************************/
 #include <iostream>
+#include <map>
 #include <time.h>
 #include <stdlib.h>
 #include <fstream>
 #include <winsock2.h>
 #include "tcpcomm.h"
+#include "scheduler.h"
 #include "combat.h"
 #include "room.h"
 #include "item.h"

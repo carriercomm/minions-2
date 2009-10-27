@@ -185,6 +185,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\headers\events.h"
+				>
+			</File>
+			<File
 				RelativePath=".\headers\Item.h"
 				>
 			</File>
@@ -202,6 +206,10 @@
 			</File>
 			<File
 				RelativePath=".\headers\room.h"
+				>
+			</File>
+			<File
+				RelativePath=".\headers\scheduler.h"
 				>
 			</File>
 			<File
@@ -229,6 +237,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\source\events.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\source\Item.cpp"
 				>
 			</File>
@@ -246,6 +258,10 @@
 			</File>
 			<File
 				RelativePath=".\source\room.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\source\scheduler.cpp"
 				>
 			</File>
 			<File
