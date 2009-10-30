@@ -9,12 +9,14 @@
  ***************************************************************/
 #include <iostream>
 #include <map>
+#include <vector>
 #include <time.h>
 #include <stdlib.h>
 #include <fstream>
 #include <winsock2.h>
 #include "tcpcomm.h"
 #include "scheduler.h"
+#include "events.h"
 #include "combat.h"
 #include "room.h"
 #include "item.h"
@@ -69,6 +71,10 @@ void main( void )
 	LoadRaceTables();
 	LoadClassTables();
 
+	// Load scheduler and add the inital combat event
+    scheduler eventScheduler;
+	eventScheduler.pushWaitStack(time(NULL), &meCombat());
+
 	/* quick hack to put a few items on the floor for testing */
 	TempRoom = SearchForRoom( 1 );
 	TempItem = SearchForItem( 1 );
@@ -104,11 +110,15 @@ void main( void )
 		/*  Get the current time */
 		time( &CurrentTime );
 		
-		if( (CurrentTime - LastTime) > 4 )
-		{
-			LastTime = CurrentTime;
-			DoCombatRound();
-		}
+//		if( (CurrentTime - LastTime) > 4 )
+//		{
+//			LastTime = CurrentTime;
+//			DoCombatRound();
+//		}
+
+		eventScheduler.checkEventsStatus();
+		eventScheduler.doEvents();
+
 
 		/*  Check the socket sets and read or write to/from them */
 		CheckReadSet();

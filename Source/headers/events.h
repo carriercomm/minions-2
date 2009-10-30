@@ -47,6 +47,7 @@ public:
 
 	int getEventObjectType();
 	time_t getEventTime();
+	virtual void execEvent()=0;  // Virtual functions def =0 marks it as purely virtual 
 
 };
 
@@ -61,5 +62,5 @@ class meCombat : public minionsEvent
 public:
     meCombat();
 	~meCombat();
-	void execCombat();
+	void execEvent();
 };

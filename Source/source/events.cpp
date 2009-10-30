@@ -10,6 +10,7 @@
 #include <time.h>
 #include <iostream>
 #include <map>
+#include <vector>
 #include "events.h"
 #include "combat.h"
 
@@ -54,9 +55,6 @@ time_t minionsEvent::getEventTime()
 	return eventTime;
 };
 
-
-
-
 /*==============================================================
  meCombat class -> Derived from minionsEvent class
 
@@ -78,7 +76,8 @@ meCombat -> execCombat()
 
 Execute combat round
 ===============================================================*/
-void meCombat::execCombat()
+void meCombat::execEvent()
 {
     DoCombatRound();
+	
 }

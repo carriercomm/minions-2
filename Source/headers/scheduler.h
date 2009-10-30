@@ -15,15 +15,16 @@ class minionsEvent;
 class scheduler
 { 
 	// Create a multimap type that holds ptr to minionsEvent objects (and derivitives)
-	typedef std::multimap<time_t, minionsEvent *> eventStack;
+	typedef std::multimap<time_t, minionsEvent *> wStack;
+	typedef std::vector<minionsEvent *> eStack;
 
     // Create multimaps for incoming and outgoing events stacks
-	eventStack waitStack;
-	eventStack execStack;
+	wStack waitStack;
+	eStack execStack;
 
 	// Create multimap's iterators
-	eventStack::iterator wsIter;  
-	eventStack::iterator esIter;  
+	wStack::iterator wsIter;  
+	eStack::iterator esIter;  
 	
 
 
@@ -31,9 +32,11 @@ public:
 
 	scheduler();
 	~scheduler();
-	eventStack getWaitStack();   
-	eventStack getExecStack();
+	wStack getWaitStack();   
+	eStack getExecStack();
 	void pushWaitStack(time_t eTime, minionsEvent *mEvent);
-    void pushExecStack(time_t eTime, minionsEvent *mEvent);
+//   void pushExecStack(time_t eTime, minionsEvent *mEvent);
+	void doEvents();
+	void checkEventsStatus();
 	
 };
