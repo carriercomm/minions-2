@@ -16,7 +16,7 @@ bool LoadRaceTables( void )
 	sqlite3_stmt	*SqlStatement = 0;
 	bool			Finished = false;
 
-	SqliteReturnCode = sqlite3_open( CLASS_DATABASE, &DatabaseHandle);
+	SqliteReturnCode = sqlite3_open( RACE_DATABASE, &DatabaseHandle);
 	
 	if( SqliteReturnCode ) //if returns anything but SQLITE_OK some kind of error occurred
 	{
@@ -81,7 +81,7 @@ bool LoadRaceTables( void )
 
 	sqlite3_finalize( SqlStatement ); //destroy the compiled sqlite statement and free its memory
 	sqlite3_close( DatabaseHandle );	//close the database connection.
-	ServerLog( "Loaded %i races into memory.", ++RowCount );
+	ServerLog( "Loaded %i races into memory.", RowCount );
 	return true;
 }
 
@@ -161,7 +161,7 @@ bool LoadClassTables( void )
 
 	sqlite3_finalize( SqlStatement ); //destroy the compiled sqlite statement and free its memory
 	sqlite3_close( DatabaseHandle );	//close the database connection.
-	ServerLog( "Loaded %i classes into memory.", ++RowCount );
+	ServerLog( "Loaded %i classes into memory.", RowCount );
 	return true;
 }
 

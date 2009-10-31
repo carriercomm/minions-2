@@ -17,7 +17,7 @@
 #define MAX_BROADCAST_SIZE		256
 #define MAX_ALSO_HERE			450
 #define MAX_EXIT_STRING			80
-#define ROOM_DATABASE			"minions.db"
+#define ROOM_DATABASE			"c:\\builds\\minions\\minions.db"
 
 
 

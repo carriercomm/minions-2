@@ -14,8 +14,9 @@
 #define MAX_CLASS_NAME         21
 #define MAX_RACE_DESC			80
 #define MAX_CLASS_DESC			80
-#define ROOM_DATABASE			"minions.db"
-#define CLASS_DATABASE			"minions.db"
+#define ROOM_DATABASE			"c:\\builds\\minions\\minions.db"
+#define CLASS_DATABASE			"c:\\builds\\minions\\minions.db"
+#define RACE_DATABASE			"c:\\builds\\minions\\minions.db"
 
 struct RaceTable
 {
