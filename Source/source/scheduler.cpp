@@ -90,7 +90,7 @@ Add event object on to the execStack.
 /*==============================================================
 scheduler -> doEvents()
 
-Take execStack and execute the events then delete the event and multimap element
+Take execStack and execute the events then delete the event and vector element
 ===============================================================*/
 
 void scheduler::doEvents(scheduler *eventScheduler)
@@ -132,7 +132,6 @@ void scheduler::checkEventsStatus()
 	thisEvent=tmpStack.begin();
 	// Loops through all events that are ready to be executed
 	for (x=1; x <= stackSize; x++)
-	//for (thisEvent=tmpStack.begin(); thisEvent != tmpStack.end(); thisEvent++)
 	{
 		if (currentTime > (*thisEvent).first) 
 		{

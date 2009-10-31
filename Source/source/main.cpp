@@ -12,6 +12,7 @@
 #include <vector>
 #include <time.h>
 #include <stdlib.h>
+#include "direct.h"
 #include <fstream>
 #include <winsock2.h>
 #include "tcpcomm.h"
@@ -44,6 +45,8 @@ void main( void )
 	cout<<"\t     *-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*\n"<<endl;
 	
 	
+ 	char curPath[256];
+	cout<<"Current working directory is: "<<getcwd(curPath, 256)<<endl;
 	/*  open a file for logging */
 	cout<<"Opening log files for writing."<<endl;
 	LogFile.open( SERVER_LOG_PATH, ios::app );
