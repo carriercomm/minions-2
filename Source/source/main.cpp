@@ -91,7 +91,10 @@ void main( void )
 	// Load scheduler and add the inital combat event
     scheduler eventScheduler;
 	minionsEvent *minionsCombat = new meCombat();
-	eventScheduler.pushWaitStack((time(NULL)+4), minionsCombat);
+	minionsEvent *minionsHeal = new meHeal();
+	eventScheduler.pushWaitStack((time(NULL)+COMBAT_TIME_INTERVAL), minionsCombat);
+	eventScheduler.pushWaitStack((time(NULL)+HEAL_TIME_INTERVAL), minionsHeal);
+
 
 	/* quick hack to put a few items on the floor for testing */
 	TempRoom = SearchForRoom( 1 );

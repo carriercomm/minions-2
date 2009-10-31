@@ -11,10 +11,12 @@
 
 // Define Combat time interval in seconds
 #define COMBAT_TIME_INTERVAL            4
+#define HEAL_TIME_INTERVAL             15
 
 
 // Define Minion event types
-#define ME_COMBAT                        1
+#define ME_COMBAT                       1
+#define ME_HEAL                         2 
 
 
 class scheduler;
@@ -63,4 +65,19 @@ public:
     meCombat();
 	~meCombat();
 	void execEvent(scheduler *eventScheduler);
+};
+
+
+/*==============================================================
+ meHeal class -> Derived from minionsEvent class
+
+ Heal event to schedule normal timed healing cycle
+===============================================================*/
+class meHeal : public minionsEvent
+{
+public:
+    meHeal();
+	~meHeal();
+	void execEvent(scheduler *eventScheduler);
+	void naturalHeal();
 };
