@@ -7,7 +7,6 @@
  *			 Mark Richardson	-	sinbaud@hotmail.com	       *
  *		       David Brown	    -	dcbrown73@yahoo.com	       *
  ***************************************************************/
-#include <string.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <iostream>
@@ -17,12 +16,13 @@
 #include "room.h"
 #include "tcpcomm.h"
 #include "item.h"
+#include "sqlite3.h"
 
 using namespace std;
 /**********************************************************
  *  Global variables                                      *
  **********************************************************/
-struct RoomList		*FirstRoomInList = '\0';
+struct RoomList		*FirstRoomInList = NULL;
 //extern MYSQL		SQLConnection;
 
 
@@ -299,7 +299,7 @@ char *Room::GetAlsoHereString( Connection *Conn )
 Connection *Room::SearchRoomForPlayer( char *Name )
 {
 	PlayersInRoom	*PlayerList = '\0';
-	int				Len = strlen( Name );
+	size_t			Len = strlen( Name );
 
 	for( PlayerList = FirstPlayer; PlayerList; PlayerList = PlayerList->Next )
 	{
@@ -400,105 +400,110 @@ Room::~Room()
 
 
 /**********************************************************
- *  Functions that are not part of the Room class         *
+	Load the Room database - The format expected is:
+	RoomNumber bigint PRIMARY KEY
+    ShortDesc VARCHAR(82) NOT NULL
+    LongDesc VARCHAR(322) NOT NULL
+    north INTEGER NOT NULL
+    northeast INTEGER NOT NULL
+    east INTEGER NOT NULL
+    southeast INTEGER NOT NULL
+    south INTEGER NOT NULL
+    southwest INTEGER NOT NULL
+    west INTEGER NOT NULL
+    northwest INTEGER NOT NULL
+    up INTEGER NOT NULL
+    down INTEGER NOT NULL
  **********************************************************/
-int LoadRoomDatabase( void )
+bool LoadRoomDatabase( void )
 {
-	//MYSQL_RES	*Result;
-	//MYSQL_ROW	RowOfData;
-	RoomList	*RoomPtr = '\0';
-	int			NumFields = 0, Dir = 0;
-	FirstRoomInList = new RoomList;
-	RoomPtr = FirstRoomInList;
+	RoomList		*RoomPtr = NULL;
+	int				NumFields = 0, Dir = 0;	
+	sqlite3			*DatabaseHandle;
+	char			*SqliteErrorString = 0;
+	int				SqliteReturnCode, RowCount = 0; //set RowCount to Zero
+	sqlite3_stmt	*SqlStatement = 0;
+	bool			Finished = false;
 
-	RoomPtr->Next = '\0';
+	SqliteReturnCode = sqlite3_open( ROOM_DATABASE, &DatabaseHandle);
 	
-	RoomPtr->Value = new Room;
-	RoomPtr->Value->SetRoomNumber( 1 );
-	RoomPtr->Value->SetShortDesc( "Town Square" );
-	RoomPtr->Value->SetLongDesc( "This is main street square in minionsville." );
-	RoomPtr->Value->SetExitToRoomNumber( 0, 2 );
-	RoomPtr->Value->SetExitToRoomNumber( 6, 3 );
-	
-	RoomPtr->Next = new RoomList;
-	RoomPtr = RoomPtr->Next;
-	RoomPtr->Value = new Room;
-	RoomPtr->Value->SetRoomNumber( 2 );
-	RoomPtr->Value->SetShortDesc( "North of town square" );
-	RoomPtr->Value->SetLongDesc( "This is north of the main street square in minionsville." );
-	RoomPtr->Value->SetExitToRoomNumber( 4, 1 );
+	if( SqliteReturnCode ) //if returns anything but SQLITE_OK some kind of error occurred
+	{
+		ServerLog( "Can't open database: %s\n", sqlite3_errmsg( DatabaseHandle ) );
+		sqlite3_close( DatabaseHandle );
+		return false;
+	}
+	/*  compile the sqlite sql statement  */
+	SqliteReturnCode = sqlite3_prepare_v2( DatabaseHandle, "select * from rooms", -1, &SqlStatement, NULL );
 
-	RoomPtr->Next = new RoomList;
-	RoomPtr = RoomPtr->Next;
-	RoomPtr->Value = new Room;
-	RoomPtr->Value->SetRoomNumber( 3 );
-	RoomPtr->Value->SetShortDesc( "Minions Bank" );
-	RoomPtr->Value->SetLongDesc( "Lobby of the bank of minions." );
-	RoomPtr->Value->SetExitToRoomNumber( 2, 1 );
-	RoomPtr->Value->SetExitToRoomNumber( 9, 4 );
+	if( SqliteReturnCode ) //if returns anything other than SQLITE_OK
+	{
+		ServerLog( "Error in sqlite3_prepare_v2: %s\n", sqlite3_errmsg( DatabaseHandle ) );
+		sqlite3_close( DatabaseHandle );
+		return false;
+	}
 
-	RoomPtr->Next = new RoomList;
-	RoomPtr = RoomPtr->Next;
-	RoomPtr->Value = new Room;
-	RoomPtr->Value->SetRoomNumber( 4 );
-	RoomPtr->Value->SetShortDesc( "Bank Vault" );
-	RoomPtr->Value->SetLongDesc( "What the hell goes on down here?" );
-	RoomPtr->Value->SetExitToRoomNumber( 8, 4 );
+	/* we are ready to execute the prepared statement and start getting rows with sqlite3_step() */
+	while( !Finished )
+	{
+		SqliteReturnCode = sqlite3_step( SqlStatement );
 
-	RoomPtr->Next = '\0';
-	return 1;
+		switch( SqliteReturnCode )
+		{
+		case SQLITE_DONE:		//there are no more rows
+			Finished = true;	//this will break the while loop
+			if( RoomPtr )
+				RoomPtr->Next = NULL; //terminate the list
+			break;
 
-	//if ( mysql_query( &SQLConnection, "SELECT * FROM rooms" ) )
-		//exiterr(3);
-
-	//if ( !( Result = mysql_use_result( &SQLConnection ) ) )
-		//exiterr(4);
-
-
-	//FirstRoomInList = new RoomList;
-	//RoomPtr = FirstRoomInList;
-
-	//RowOfData = mysql_fetch_row( Result );
-
-	//for( ;; )
-	//{
-		//if( !RowOfData )
-			//break;
-
-		//RoomPtr->Next = '\0';
-		//RoomPtr->Value = new Room;
-
-		//RoomPtr->Value->SetRoomNumber( atoi( RowOfData[0] ) );
-		//RoomPtr->Value->SetShortDesc( RowOfData[1] );
-		//RoomPtr->Value->SetLongDesc( RowOfData[2] );
-
-		//Dir = 0;
-		//for( int loop = 3; loop < 13; loop++ )
-		//{
+		case SQLITE_ROW:		//we have a row of data
 			
-			//if( !RowOfData[loop] )
-			//{
-				//Dir++;
-				//continue;
-			//}
+			if( RowCount == 0 )	//If this is the first row allocate the first list node
+			{
+				/*  allocate and prep the Master Room Linked list First Node */
+				FirstRoomInList = new RoomList; //allocate first node in master room list
+				RoomPtr = FirstRoomInList;		//set the temporary pointer to this newly allocated node
+				RoomPtr->Next = NULL;			//terminate the list
+			}
+			else	//otherwise its not the first node so allocate a new node and move to it
+			{
+				RoomPtr->Next = new RoomList;	//allocate the next node of the list
+				RoomPtr = RoomPtr->Next;		//get the temp pointer incremented
+			}
 
-			//RoomPtr->Value->SetExitToRoomNumber( Dir, atoi( RowOfData[loop] ) );
-			//Dir++;
-		//}
-		
-		//if( !(RowOfData = mysql_fetch_row( Result ) ) )
-		//{
-			//RoomPtr->Next = '\0';
-			//break;
-		//}
+			RoomPtr->Next = NULL;		//make sure the list is terminated before allocating the next node.
+			RoomPtr->Value = new Room;	//allocate the Room Object
 
-		//RoomPtr->Next = new RoomList;
-		//RoomPtr = RoomPtr->Next;
-	//}
+			/* Load the result row into the Room Object pointed to by RoomPtr->Value */
+			RoomPtr->Value->SetRoomNumber( sqlite3_column_int( SqlStatement, 0 ) );
+			RoomPtr->Value->SetShortDesc( (char*)sqlite3_column_text( SqlStatement, 1 ) );
+			RoomPtr->Value->SetLongDesc( (char *)sqlite3_column_text( SqlStatement, 2 ) );
+			RoomPtr->Value->SetExitToRoomNumber( NORTH, sqlite3_column_int( SqlStatement, 3 ) );
+			RoomPtr->Value->SetExitToRoomNumber( NORTHEAST, sqlite3_column_int( SqlStatement, 4 ) );
+			RoomPtr->Value->SetExitToRoomNumber( EAST, sqlite3_column_int( SqlStatement, 5 ) );
+			RoomPtr->Value->SetExitToRoomNumber( SOUTHEAST, sqlite3_column_int( SqlStatement, 6 ) );
+			RoomPtr->Value->SetExitToRoomNumber( SOUTH, sqlite3_column_int( SqlStatement, 7 ) );
+			RoomPtr->Value->SetExitToRoomNumber( SOUTHWEST, sqlite3_column_int( SqlStatement, 8 ) );
+			RoomPtr->Value->SetExitToRoomNumber( WEST, sqlite3_column_int( SqlStatement, 9 ) );
+			RoomPtr->Value->SetExitToRoomNumber( NORTHWEST, sqlite3_column_int( SqlStatement, 10 ) );
+			RoomPtr->Value->SetExitToRoomNumber( UP, sqlite3_column_int( SqlStatement, 11 ) );
+			RoomPtr->Value->SetExitToRoomNumber( DOWN, sqlite3_column_int( SqlStatement, 12 ) );
 
-	//return 1;
+			RowCount++;		//dont forget to increment the row count.
+			break;
+
+		default:
+			ServerLog( "Serious issue! hit default case in LoadRoomDatabase()" );
+			break;
+		}	//end of the switch() block of code
+
+	}	//end of the while loop block of code
+
+	sqlite3_finalize( SqlStatement ); //destroy the compiled sqlite statement and free its memory
+	sqlite3_close( DatabaseHandle );	//close the database connection.
+	ServerLog( "Loaded %i rooms into memory.", ++RowCount );
+	return true;
 }
-
 
 void FixExits( void )
 {

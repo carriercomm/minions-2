@@ -17,6 +17,7 @@
 #define MAX_BROADCAST_SIZE		256
 #define MAX_ALSO_HERE			450
 #define MAX_EXIT_STRING			80
+#define ROOM_DATABASE			"minions.db"
 
 
 
@@ -119,7 +120,7 @@ struct RoomList
 
 
 
-int LoadRoomDatabase( void );
+bool LoadRoomDatabase( void );
 void FixExits( void );
 Room *SearchForRoom( unsigned int RoomNum );
 void exiterr(int exitcode);

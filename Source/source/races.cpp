@@ -1,167 +1,170 @@
 #include <winsock.h>
+#include <string.h>
 #include "races.h"
 #include "tcpcomm.h"
+#include "sqlite3.h"
 
 RaceTable   *MasterRaceTable = '\0';
 ClassTable  *MasterClassTable = '\0';
 
-//extern MYSQL	//	SQLConnection;
-
-int LoadRaceTables( void )
+bool LoadRaceTables( void )
 {
-	RaceTable   *RTable = '\0';
-	MasterRaceTable = new RaceTable;
-	RTable = MasterRaceTable;
+	RaceTable		*RTable = NULL;	
+	sqlite3			*DatabaseHandle;
+	char			*SqliteErrorString = 0;
+	int				SqliteReturnCode, RowCount = 0; //set RowCount to Zero
+	sqlite3_stmt	*SqlStatement = 0;
+	bool			Finished = false;
+
+	SqliteReturnCode = sqlite3_open( CLASS_DATABASE, &DatabaseHandle);
 	
-	RTable->RaceNumber = 1;
-	strcpy( RTable->RaceName, "Dark-Elf" );
-	
-	RTable->Next = new RaceTable;
-	RTable = RTable->Next;
-	RTable->RaceNumber = 2;
-	strcpy( RTable->RaceName, "Half-Elf" );
-	
-	RTable->Next = new RaceTable;
-	RTable = RTable->Next;
-	RTable->RaceNumber = 3;
-	strcpy( RTable->RaceName, "Human" );
-	
-	RTable->Next = new RaceTable;
-	RTable = RTable->Next;
-	RTable->RaceNumber = 4;
-	strcpy( RTable->RaceName, "Djinn" );
+	if( SqliteReturnCode ) //if returns anything but SQLITE_OK some kind of error occurred
+	{
+		ServerLog( "Can't open database: %s\n", sqlite3_errmsg( DatabaseHandle ) );
+		sqlite3_close( DatabaseHandle );
+		return false;
+	}
+	/*  compile the sqlite sql statement  */
+	SqliteReturnCode = sqlite3_prepare_v2( DatabaseHandle, "select * from races", -1, &SqlStatement, NULL );
 
-	RTable->Next = '\0';
+	if( SqliteReturnCode ) //if returns anything other than SQLITE_OK
+	{
+		ServerLog( "Error in sqlite3_prepare_v2: %s\n", sqlite3_errmsg( DatabaseHandle ) );
+		sqlite3_close( DatabaseHandle );
+		return false;
+	}
 
-	return 1;
-	//MYSQL_RES	*Result;
-	//MYSQL_ROW	RowOfData;
-	//RaceTable   *RTable = '\0';
-	
-	//if ( mysql_query( &SQLConnection, "SELECT * FROM races" ) )
-	//{
-		//ServerLog( "LoadRaceTables(): %s\n", mysql_error( &SQLConnection ) );
-		//return 0;
-	//}
+	/* we are ready to execute the prepared statement and start getting rows with sqlite3_step() */
+	while( !Finished )
+	{
+		SqliteReturnCode = sqlite3_step( SqlStatement );
 
-	//if ( !( Result = mysql_use_result( &SQLConnection ) ) )
-	//{
-		//ServerLog( "LoadRaceTables(): %s\n", mysql_error( &SQLConnection ) );
-		//return 0;
-	//}
+		switch( SqliteReturnCode )
+		{
+		case SQLITE_DONE:		//there are no more rows
+			Finished = true;	//this will break the while loop
+			if( RTable )
+				RTable->Next = NULL; //terminate the list
+			break;
 
+		case SQLITE_ROW:		//we have a row of data
+			
+			if( RowCount == 0 )	//If this is the first row allocate the first list node
+			{
+				/*  allocate and prep the Master Room Linked list First Node */
+				MasterRaceTable = new RaceTable; //allocate first node in master race list
+				RTable = MasterRaceTable;		//set the temporary pointer to this newly allocated node
+				RTable->Next = NULL;			//terminate the list
+			}
+			else	//otherwise its not the first node so allocate a new node and move to it
+			{
+				RTable->Next = new RaceTable;	//allocate the next node of the list
+				RTable = RTable->Next;			//get the temp pointer incremented
+			}
 
-	//MasterRaceTable = new RaceTable;
-	//RTable = MasterRaceTable;
+			RTable->Next = NULL;		//make sure the list is terminated before allocating the next node.
+			
+			/* Load the result row into the RaceTable entry  */
+			RTable->RaceNumber = sqlite3_column_int( SqlStatement, 0 );
+			strcpy( RTable->RaceName, (char*)sqlite3_column_text( SqlStatement, 1 ) );
+			strcpy( RTable->RaceDesc, (char*)sqlite3_column_text( SqlStatement, 2 ) );
 
-	//RowOfData = mysql_fetch_row( Result );
+			RowCount++;		//dont forget to increment the row count.
+			break;
 
-	//for( ;; )
-	//{
-		//if( !RowOfData )
-			//break;
+		default:
+			ServerLog( "Serious issue! hit default case in LoadRaceTables()" );
+			break;
+		}	//end of the switch() block of code
 
-		//RTable->Next = '\0';
-		
-		//RTable->RaceNumber = atoi( RowOfData[0] );
-		
-		//if( RowOfData[1] )
-			//strcpy( RTable->RaceName, RowOfData[1] );
-	
-		//if( !(RowOfData = mysql_fetch_row( Result ) ) )
-		//{
-			//RTable->Next = '\0';
-			//break;
-		//}
+	}	//end of the while loop block of code
 
-		//RTable->Next = new RaceTable;
-		//RTable = RTable->Next;
-	//}
-
-	//return 1;
+	sqlite3_finalize( SqlStatement ); //destroy the compiled sqlite statement and free its memory
+	sqlite3_close( DatabaseHandle );	//close the database connection.
+	ServerLog( "Loaded %i races into memory.", ++RowCount );
+	return true;
 }
 
-int LoadClassTables( void )
+
+
+bool LoadClassTables( void )
 {
-	ClassTable  *CTable = '\0';
+	ClassTable		*CTable = NULL;	
+	sqlite3			*DatabaseHandle;
+	char			*SqliteErrorString = 0;
+	int				SqliteReturnCode, RowCount = 0; //set RowCount to Zero
+	sqlite3_stmt	*SqlStatement = 0;
+	bool			Finished = false;
+
+	SqliteReturnCode = sqlite3_open( CLASS_DATABASE, &DatabaseHandle);
 	
-	MasterClassTable = new ClassTable;
-	CTable = MasterClassTable;
+	if( SqliteReturnCode ) //if returns anything but SQLITE_OK some kind of error occurred
+	{
+		ServerLog( "Can't open database: %s\n", sqlite3_errmsg( DatabaseHandle ) );
+		sqlite3_close( DatabaseHandle );
+		return false;
+	}
+	/*  compile the sqlite sql statement  */
+	SqliteReturnCode = sqlite3_prepare_v2( DatabaseHandle, "select * from classes", -1, &SqlStatement, NULL );
 
-	CTable->Next = '\0';
-	CTable->ClassNumber = 1;
-	strcpy( CTable->ClassName, "Druid" );
+	if( SqliteReturnCode ) //if returns anything other than SQLITE_OK
+	{
+		ServerLog( "Error in sqlite3_prepare_v2: %s\n", sqlite3_errmsg( DatabaseHandle ) );
+		sqlite3_close( DatabaseHandle );
+		return false;
+	}
 
-	CTable->Next = new ClassTable;
-	CTable = CTable->Next;
-	CTable->ClassNumber = 2;
-	strcpy( CTable->ClassName, "Warrior" );
+	/* we are ready to execute the prepared statement and start getting rows with sqlite3_step() */
+	while( !Finished )
+	{
+		SqliteReturnCode = sqlite3_step( SqlStatement );
 
-	CTable->Next = new ClassTable;
-	CTable = CTable->Next;
-	CTable->ClassNumber = 3;
-	strcpy( CTable->ClassName, "Paladin" );
+		switch( SqliteReturnCode )
+		{
+		case SQLITE_DONE:		//there are no more rows
+			Finished = true;	//this will break the while loop
+			if( CTable )
+				CTable->Next = NULL; //terminate the list
+			break;
 
-	CTable->Next = new ClassTable;
-	CTable = CTable->Next;
-	CTable->ClassNumber = 4;
-	strcpy( CTable->ClassName, "Ranger" );
+		case SQLITE_ROW:		//we have a row of data
+			
+			if( RowCount == 0 )	//If this is the first row allocate the first list node
+			{
+				/*  allocate and prep the Master Room Linked list First Node */
+				MasterClassTable = new ClassTable; //allocate first node in master race list
+				CTable = MasterClassTable;		//set the temporary pointer to this newly allocated node
+				CTable->Next = NULL;			//terminate the list
+			}
+			else	//otherwise its not the first node so allocate a new node and move to it
+			{
+				CTable->Next = new ClassTable;	//allocate the next node of the list
+				CTable = CTable->Next;			//get the temp pointer incremented
+			}
 
-	CTable->Next = new ClassTable;
-	CTable = CTable->Next;
-	CTable->ClassNumber = 5;
-	strcpy( CTable->ClassName, "Necromancer" );
+			CTable->Next = NULL;		//make sure the list is terminated before allocating the next node.
+			
+			/* Load the result row into the RaceTable entry  */
+			CTable->ClassNumber = sqlite3_column_int( SqlStatement, 0 );
+			strcpy( CTable->ClassName, (char*)sqlite3_column_text( SqlStatement, 1 ) );
+			strcpy( CTable->ClassDesc, (char*)sqlite3_column_text( SqlStatement, 2 ) );
 
+			RowCount++;		//dont forget to increment the row count.
+			break;
 
+		default:
+			ServerLog( "Serious issue! hit default case in LoadClassTables()" );
+			break;
+		}	//end of the switch() block of code
 
-	CTable->Next = '\0';
-	return 1;
-	//MYSQL_RES	*Result;
-	//MYSQL_ROW	RowOfData;
-	//ClassTable  *CTable = '\0';
-	
-	//if ( mysql_query( &SQLConnection, "SELECT * FROM classes" ) )
-	//{
-		//ServerLog( "LoadClassTables(): %s\n", mysql_error( &SQLConnection ) );
-		//return 0;
-	//}
+	}	//end of the while loop block of code
 
-	//if ( !( Result = mysql_use_result( &SQLConnection ) ) )
-	//{
-		//ServerLog( "LoadClassTables(): %s\n", mysql_error( &SQLConnection ) );
-		//return 0;
-	//}
-
-
-	//MasterClassTable = new ClassTable;
-	//CTable = MasterClassTable;
-
-	//RowOfData = mysql_fetch_row( Result );
-
-	//for( ;; )
-	//{
-		//if( !RowOfData )
-			//break;
-
-		//CTable->Next = '\0';
-		
-		//CTable->ClassNumber = atoi( RowOfData[0] );
-		
-		//if( RowOfData[1] )
-			//strcpy( CTable->ClassName, RowOfData[1] );
-	
-		//if( !(RowOfData = mysql_fetch_row( Result ) ) )
-		//{
-			//CTable->Next = '\0';
-			//break;
-		//}
-
-		//CTable->Next = new ClassTable;
-		//CTable = CTable->Next;
-	//}
-
-	//return 1;
+	sqlite3_finalize( SqlStatement ); //destroy the compiled sqlite statement and free its memory
+	sqlite3_close( DatabaseHandle );	//close the database connection.
+	ServerLog( "Loaded %i classes into memory.", ++RowCount );
+	return true;
 }
+
 
 char *LookupClassStr( int ClassNum )
 {

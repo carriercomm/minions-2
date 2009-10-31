@@ -12,24 +12,30 @@
 
 #define MAX_RACE_NAME          21
 #define MAX_CLASS_NAME         21
+#define MAX_RACE_DESC			80
+#define MAX_CLASS_DESC			80
+#define ROOM_DATABASE			"minions.db"
+#define CLASS_DATABASE			"minions.db"
 
 struct RaceTable
 {
-	char       RaceName[MAX_RACE_NAME];
-	int        RaceNumber;
+	char		RaceName[MAX_RACE_NAME];
+	int			RaceNumber;
+	char		RaceDesc[MAX_RACE_DESC];
 	RaceTable  *Next;
 };
 
 struct ClassTable
 {
-	char       ClassName[MAX_CLASS_NAME];
-	int        ClassNumber;
-	ClassTable *Next;
+	char		ClassName[MAX_CLASS_NAME];
+	int			ClassNumber;
+	char		ClassDesc[MAX_CLASS_DESC];
+	ClassTable	*Next;
 };
 
 
-int LoadRaceTables( void );
-int LoadClassTables( void );
+bool LoadRaceTables( void );
+bool LoadClassTables( void );
 char *LookupRaceStr( int RaceNum );
 char *LookupClassStr( int ClassNum );
 

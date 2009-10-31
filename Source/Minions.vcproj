@@ -189,6 +189,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\headers\globals.h"
+				>
+			</File>
+			<File
 				RelativePath=".\headers\Item.h"
 				>
 			</File>
@@ -210,6 +214,10 @@
 			</File>
 			<File
 				RelativePath=".\headers\scheduler.h"
+				>
+			</File>
+			<File
+				RelativePath=".\headers\sqlite3.h"
 				>
 			</File>
 			<File
@@ -262,6 +270,10 @@
 			</File>
 			<File
 				RelativePath=".\source\scheduler.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\source\sqlite3.c"
 				>
 			</File>
 			<File
