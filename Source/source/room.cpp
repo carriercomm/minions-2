@@ -502,6 +502,7 @@ bool LoadRoomDatabase( void )
 	sqlite3_finalize( SqlStatement ); //destroy the compiled sqlite statement and free its memory
 	sqlite3_close( DatabaseHandle );	//close the database connection.
 	ServerLog( "Loaded %i rooms into memory.", ++RowCount );
+	cout<<"Rooms into memory " << RowCount <<endl;
 	return true;
 }
 
