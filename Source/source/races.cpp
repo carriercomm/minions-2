@@ -4,8 +4,8 @@
 #include "tcpcomm.h"
 #include "sqlite3.h"
 
-RaceTable   *MasterRaceTable = '\0';
-ClassTable  *MasterClassTable = '\0';
+RaceTable   *MasterRaceTable = NULL;
+ClassTable  *MasterClassTable = NULL;
 
 bool LoadRaceTables( void )
 {
@@ -54,7 +54,6 @@ bool LoadRaceTables( void )
 				/*  allocate and prep the Master Room Linked list First Node */
 				MasterRaceTable = new RaceTable; //allocate first node in master race list
 				RTable = MasterRaceTable;		//set the temporary pointer to this newly allocated node
-				RTable->Next = NULL;			//terminate the list
 			}
 			else	//otherwise its not the first node so allocate a new node and move to it
 			{
@@ -134,7 +133,6 @@ bool LoadClassTables( void )
 				/*  allocate and prep the Master Room Linked list First Node */
 				MasterClassTable = new ClassTable; //allocate first node in master race list
 				CTable = MasterClassTable;		//set the temporary pointer to this newly allocated node
-				CTable->Next = NULL;			//terminate the list
 			}
 			else	//otherwise its not the first node so allocate a new node and move to it
 			{

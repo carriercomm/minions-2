@@ -59,7 +59,12 @@ void main( void )
 	
 	/* Try and load the room database */
 	cout<<"Loading Room Database."<<endl;
-	LoadRoomDatabase();
+	if( !LoadRoomDatabase() )
+	{
+		ServerLog( "Error Loading rooms database." );
+		ServerShutDown( true );
+	}
+
 	cout<<"Fixing room exits."<<endl;
 	FixExits();
 
@@ -71,8 +76,17 @@ void main( void )
 
 	/* Load the Race and Class Tables  */
 	cout<<"Loading class and race tables..."<<endl;
-	LoadRaceTables();
-	LoadClassTables();
+	if( !LoadRaceTables() )
+	{
+		ServerLog( "Error Loading Race Tables." );
+		ServerShutDown( true );
+	}
+
+	if( !LoadClassTables() )
+	{
+		ServerLog( "Error loading classes from database." );
+		ServerShutDown( true );
+	}
 
 	// Load scheduler and add the inital combat event
     scheduler eventScheduler;
