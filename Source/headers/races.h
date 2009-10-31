@@ -10,10 +10,10 @@
 #if !defined RACES_H_INCLUDED
 #define RACES_H_INCLUDED
 
-#define MAX_RACE_NAME          21
-#define MAX_CLASS_NAME         21
-#define MAX_RACE_DESC			80
-#define MAX_CLASS_DESC			80
+#define MAX_RACE_NAME           21
+#define MAX_CLASS_NAME          21
+#define MAX_RACE_DESC			321
+#define MAX_CLASS_DESC			321
 #define ROOM_DATABASE			"c:\\builds\\minions\\minions.db"
 #define CLASS_DATABASE			"c:\\builds\\minions\\minions.db"
 #define RACE_DATABASE			"c:\\builds\\minions\\minions.db"
