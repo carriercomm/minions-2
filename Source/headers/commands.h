@@ -14,6 +14,10 @@
 #define MAX_COMMAND_LENGTH			256
 #define COMMAND(name) void Cmd##name##( Connection *Player, char *FullCmd, char *Argument, char *Argument2 )
 
+// Resting status
+#define RESTING                       1
+#define NOT_RESTING                   2
+
 class Room; //forward declaration
 
 /*   structure of the command table   */
@@ -65,5 +69,5 @@ COMMAND(Remove);
 COMMAND(Emote);
 COMMAND(Spawn);
 COMMAND(Score);
-
+COMMAND(Rest);
 #endif //COMMANDS_H_INCLUDED

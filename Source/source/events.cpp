@@ -16,6 +16,7 @@
 #include "scheduler.h"
 #include "tcpcomm.h"
 #include "player.h"
+#include "commands.h"
 
 
 using namespace std;
@@ -171,6 +172,10 @@ void meHeal::naturalHeal()
 		// Setting heal rate to the players level. (probably should look into this later)
 		healRate=TempConn->Player.GetLevel();
 
+		if (TempConn->Player.GetRestingStatus() == RESTING)
+		{
+			healRate = healRate * 2;
+		}
 		// Is the player at max hit points?
 		if (curHP < maxHP)
 		{

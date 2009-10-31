@@ -441,3 +441,17 @@ Client::~Client()
 		cout<<"There were no items on the player: "<<FirstName<<endl;
 	}
 }
+
+	
+/*=====================================================================
+ Client -> SetRestingStatus()
+
+ Sets the resting status of the player.
+ =====================================================================*/
+
+bool Client::SetRestingStatus( int rest_status )
+{
+	Resting = rest_status;
+	return true;
+}
+

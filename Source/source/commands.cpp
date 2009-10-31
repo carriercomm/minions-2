@@ -63,6 +63,7 @@ Command_Table CommandTable[] =
 	{"gossip",		"gossip    ",	CmdGossip,		false },
 	{"spawn",		"spawn     ",	CmdSpawn,		true  },
 	{"score",       "score     ",   CmdScore,       false },
+	{"rest",        "rest      ",   CmdRest,        false },
 	//{"sneak",       "sneak     ",   CmdSneak,       false },
 	//{"admin",       "admin     ",   CmdAdmin,       false },
 	{NULL}
@@ -367,6 +368,9 @@ COMMAND(Attack)
 	Connection	*Victim = '\0';
 	Room		*TempRoom = '\0';
 
+	// Can't be resting if you're even attempting to attack!
+	Player->Player.SetRestingStatus(NOT_RESTING);
+
 	if( Argument == '\0' )
 	{
 		WriteToBuffer( Player, "Usage: bs <target>\n\r" );
@@ -380,7 +384,8 @@ COMMAND(Attack)
 		WriteToBuffer( Player, "You don't see %s here.\n\r", Argument );
 		return;
 	}
-
+	// If being attacked, you can't rest.
+	Victim->Player.SetRestingStatus(NOT_RESTING);
 	if( Player == Victim )
 	{
 		WriteToBuffer( Player, "%sAre you a masochist or what?%s\n\r",
@@ -838,6 +843,9 @@ COMMAND(MoveNorth)
 		return;
 	}
 
+	//Can't rest if you're trying to move
+	Player->Player.SetRestingStatus(NOT_RESTING);
+
 	NewRoom = RoomPtr->GetExit( NORTH );
 
 	if( !NewRoom )
@@ -875,6 +883,9 @@ COMMAND(MoveSouth)
 		WriteToBuffer( Player, "There was an error\n\r" );
 		return;
 	}
+
+	//Can't rest if you're trying to move
+	Player->Player.SetRestingStatus(NOT_RESTING);
 
 	NewRoom = RoomPtr->GetExit( SOUTH );
 
@@ -915,6 +926,9 @@ COMMAND(MoveUp)
 		return;
 	}
 
+	//Can't rest if you're trying to move
+	Player->Player.SetRestingStatus(NOT_RESTING);
+
 	NewRoom = RoomPtr->GetExit( UP );
 
 	if( !NewRoom )
@@ -952,6 +966,9 @@ COMMAND(MoveDown)
 		WriteToBuffer( Player, "There was an error\n\r" );
 		return;
 	}
+
+	//Can't rest if you're trying to move
+	Player->Player.SetRestingStatus(NOT_RESTING);
 
 	NewRoom = RoomPtr->GetExit( DOWN );
 
@@ -991,6 +1008,9 @@ COMMAND(MoveEast)
 		return;
 	}
 
+	//Can't rest if you're trying to move
+	Player->Player.SetRestingStatus(NOT_RESTING);
+
 	NewRoom = RoomPtr->GetExit( EAST );
 
 	if( !NewRoom )
@@ -1027,6 +1047,9 @@ COMMAND(MoveWest)
 		WriteToBuffer( Player, "There was an error\n\r" );
 		return;
 	}
+
+	//Can't rest if you're trying to move
+	Player->Player.SetRestingStatus(NOT_RESTING);
 
 	NewRoom = RoomPtr->GetExit( WEST );
 
@@ -1065,6 +1088,9 @@ COMMAND(MoveNE)
 		return;
 	}
 
+	//Can't rest if you're trying to move
+	Player->Player.SetRestingStatus(NOT_RESTING);
+
 	NewRoom = RoomPtr->GetExit( NORTHEAST );
 
 	if( !NewRoom )
@@ -1100,6 +1126,9 @@ COMMAND(MoveSE)
 		WriteToBuffer( Player, "There was an error\n\r" );
 		return;
 	}
+
+	//Can't rest if you're trying to move
+	Player->Player.SetRestingStatus(NOT_RESTING);
 
 	NewRoom = RoomPtr->GetExit( SOUTHEAST );
 
@@ -1137,6 +1166,9 @@ COMMAND(MoveSW)
 		return;
 	}
 
+	//Can't rest if you're trying to move
+	Player->Player.SetRestingStatus(NOT_RESTING);
+
 	NewRoom = RoomPtr->GetExit( SOUTHWEST );
 
 	if( !NewRoom )
@@ -1172,6 +1204,9 @@ COMMAND(MoveNW)
 		WriteToBuffer( Player, "There was an error\n\r" );
 		return;
 	}
+
+	//Can't rest if you're trying to move
+	Player->Player.SetRestingStatus(NOT_RESTING);
 
 	NewRoom = RoomPtr->GetExit( NORTHWEST );
 
@@ -1214,6 +1249,9 @@ COMMAND(Teleport)
 			ANSI_BR_CYAN, RoomNum, ANSI_WHITE );
 		return;
 	}
+
+	//Can't rest if you're teleporting
+	Player->Player.SetRestingStatus(NOT_RESTING);
 
 	CurRom = Player->Player.GetRoom();
 	CurRom->RemovePlayerFromRoom( Player );
@@ -1653,5 +1691,24 @@ COMMAND(Spawn)
 	WriteToBuffer( Player, "%sA %s has been added to your inventory!%s\n\r",
 		ANSI_BR_RED, TempItem->GetItemName(), ANSI_WHITE );
 	
+	return;
+}
+
+/*=============================================================================
+ Rest command
+ ============================================================================*/
+
+COMMAND(Rest)
+{
+	Room			*TempRoom = '\0';
+
+	TempRoom = Player->Player.GetRoom();
+
+	Player->Player.SetRestingStatus(RESTING);
+	TempRoom->SelectiveBroadcast( Player, NULL, "%s%s stops to rest%s\n\r", ANSI_BR_BLUE,
+	Player->Player.GetFirstName(), ANSI_WHITE ); 
+	
+	WriteToBuffer( Player, "%sYou stop to rest%s\n\r", ANSI_BR_BLUE, ANSI_WHITE );
+
 	return;
 }

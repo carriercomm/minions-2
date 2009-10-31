@@ -40,7 +40,7 @@ class Client
 	char			HostName[MAX_STRING_LENGTH];
 	unsigned int	ArmorClass, Stealth, MaxDamage, DamageBonus;
 	unsigned int	Strength, Agility, Health, Luck, Wisdom, Sex; 
-	int				HitPoints, MaxHits, Mana, MaxMana, Level, Race, THAC0, Class;
+	int				HitPoints, MaxHits, Mana, MaxMana, Level, Race, THAC0, Class, Resting;
 	unsigned int	Exp, Kills, BeenKilled;
 	Room			*CurrentRoom;
     unsigned int	CurrentRoomNumber;
@@ -66,6 +66,8 @@ public:
 	int GetMana( void ) { return Mana; };
 	int GetMaxMana( void ) { return MaxMana; };
 	bool SetMana( int new_mana );
+	int GetRestingStatus( void) { return Resting; };
+	bool SetRestingStatus( int rest_status );
 	int GetLevel( void ) { return Level; };
 	bool SetLevel( int new_level );
 	bool SetDesc( char *new_desc );
