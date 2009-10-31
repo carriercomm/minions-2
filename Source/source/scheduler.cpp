@@ -95,11 +95,14 @@ Take execStack and execute the events then delete the event and multimap element
 
 void scheduler::doEvents(scheduler *eventScheduler)
 {
+	minionsEvent *p;
 	eStack::iterator curEvent;
 
-	for (curEvent=execStack.begin(); curEvent != execStack.end(); curEvent++) 
+	for (curEvent=execStack.begin(); curEvent != execStack.end(); ++curEvent) 
 	{
 		(*curEvent)->execEvent(eventScheduler);
+		p=*curEvent;
+		delete p;
 	}
 	execStack.clear();
 };

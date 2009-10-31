@@ -80,6 +80,6 @@ Execute combat round
 void meCombat::execEvent(scheduler *eventScheduler)
 {
     DoCombatRound();
-	meCombat *combatEvent = new meCombat();
+	minionsEvent *combatEvent = new meCombat();
 	eventScheduler->pushWaitStack((time(NULL) + COMBAT_TIME_INTERVAL), combatEvent);
 }
