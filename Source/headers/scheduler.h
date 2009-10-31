@@ -35,8 +35,8 @@ public:
 	wStack getWaitStack();   
 	eStack getExecStack();
 	void pushWaitStack(time_t eTime, minionsEvent *mEvent);
-//   void pushExecStack(time_t eTime, minionsEvent *mEvent);
-	void doEvents();
+ //   void pushExecStack(time_t eTime, minionsEvent *mEvent);
+	void doEvents(scheduler *eventScheduler);
 	void checkEventsStatus();
 	
 };

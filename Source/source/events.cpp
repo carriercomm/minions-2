@@ -13,6 +13,7 @@
 #include <vector>
 #include "events.h"
 #include "combat.h"
+#include "scheduler.h"
 
 
 using namespace std;
@@ -76,8 +77,9 @@ meCombat -> execCombat()
 
 Execute combat round
 ===============================================================*/
-void meCombat::execEvent()
+void meCombat::execEvent(scheduler *eventScheduler)
 {
     DoCombatRound();
-	
+	meCombat *combatEvent = new meCombat();
+	eventScheduler->pushWaitStack((time(NULL) + COMBAT_TIME_INTERVAL), combatEvent);
 }

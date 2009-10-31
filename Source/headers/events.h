@@ -10,14 +10,14 @@
 
 
 // Define Combat time interval in seconds
-#define COMBAT_TIME_INTERVAL             4
+#define COMBAT_TIME_INTERVAL            4
 
 
 // Define Minion event types
 #define ME_COMBAT                        1
 
 
-
+class scheduler;
 
 /*==============================================================
 minionsEvent class
@@ -47,7 +47,7 @@ public:
 
 	int getEventObjectType();
 	time_t getEventTime();
-	virtual void execEvent()=0;  // Virtual functions def =0 marks it as purely virtual 
+	virtual void execEvent(scheduler *eventScheduler)=0;  // Virtual functions def =0 marks it as purely virtual 
 
 };
 
@@ -62,5 +62,5 @@ class meCombat : public minionsEvent
 public:
     meCombat();
 	~meCombat();
-	void execEvent();
+	void execEvent(scheduler *eventScheduler);
 };
