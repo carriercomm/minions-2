@@ -349,10 +349,14 @@ COMMAND(Help)
 	
 	for( int loop = 0; CommandTable[loop].Command != NULL; loop++ )
 	{
-		if( loop % 5 == 0)
+		if( loop % 5 == 0)		//break to the next line
 			WriteToBuffer( Player, "\n\r" );
 
-		WriteToBuffer( Player, "%s  ", CommandTable[loop].Padded );
+		/* If its an administrative command flag it as so  */
+		if( CommandTable[loop].AdminOnly == true )
+			WriteToBuffer( Player, "%s%s[admin]%s ", CommandTable[loop].Padded, ANSI_BR_YELLOW, ANSI_BR_CYAN );
+		else
+			WriteToBuffer( Player, "%s  ", CommandTable[loop].Padded );
 	}
 	
 	WriteToBuffer( Player, "%s\n\r", ANSI_WHITE );
@@ -1292,7 +1296,7 @@ COMMAND(Inventory)
 		WriteToBuffer( Player, "%s", ListPtr->Item->GetItemName() );
 		
 		if( ListPtr->Item == Player->Player.GetWieldedItem() )
-			WriteToBuffer( Player, " ( Weapon Hand )\n\r" );
+			WriteToBuffer( Player, " ( Weapon Hand )\n\r" ); //TODO: Fix this bug (multiple items wielded)
 		else
 			WriteToBuffer( Player, "\n\r" );
 	}
@@ -1648,7 +1652,7 @@ COMMAND(Emote)
 	EmoteArg++;
 
 	/* send it on out to all connections */
-	TempRoom->BroadcastRoom( "%s%s %s.%s\n\r", ANSI_BR_CYAN,
+	TempRoom->BroadcastRoom( "%s%s %s%s\n\r", ANSI_BR_CYAN,
 		Player->Player.GetFirstName(), EmoteArg, ANSI_WHITE );
 
 	return;
