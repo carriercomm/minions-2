@@ -12,6 +12,7 @@
 
 #define MAX_ITEM_STRING		20
 #define MAX_DESC_LENGTH		200
+#define ITEM_DATABASE		"minions.db"
 
 
 class Item
@@ -61,7 +62,7 @@ struct ItemList
 	Item	 *Value;
 };
 
-int LoadItemDatabase( void );
+bool LoadItemDatabase( void );
 Item *SearchForItem( unsigned int ItemNum );
 
 

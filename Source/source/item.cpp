@@ -10,6 +10,7 @@
 #include <winsock2.h>
 #include "item.h"
 #include "tcpcomm.h"
+#include "sqlite3.h"
 
 /*  Gloabals */
 ItemList  *FirstItemInList;
@@ -27,7 +28,10 @@ Item::Item()
 bool Item::SetItemName( char *NewName )
 {
 	if( strlen( NewName ) >= MAX_ITEM_STRING )
+	{
+		strcpy( Name, "MinionsLengthTooLong" );
 		return false;
+	}
 
 	strcpy( Name, NewName );
 	return true;
@@ -37,7 +41,10 @@ bool Item::SetItemName( char *NewName )
 bool Item::SetItemDesc( char *NewDesc )
 {
 	if( strlen( NewDesc ) >= MAX_DESC_LENGTH )
+	{
+		strcpy( Description, "Minions-Length-Too-Long" );
 		return false;
+	}
 
 	strcpy( Description, NewDesc );
 	return true;
@@ -53,142 +60,104 @@ bool Item::SetAttackType( char *String )
 }
 
 /**********************************************************
- *  Functions that are not part of the Item class         *
+	Load the Item Database exepcts the following schema:
+	ItemNumber int,
+	Value int,
+	Weight int,
+	ItemName VARCHAR(21),
+	ItemDesc VARCHAR(201),
+	MaxDamage int,
+	ToHitBonus int,
+	Speed int,
+	ArmorValue int,
+	AttackType VARCHAR(21),
+	MinDamage int
  **********************************************************/
-int LoadItemDatabase( void )
+bool LoadItemDatabase( void )
 {
-	ItemList	*ItemPtr = '\0';
-	FirstItemInList = new ItemList;
-	ItemPtr = FirstItemInList;
+	ItemList			*ItemPtr = NULL;	
+	sqlite3				*DatabaseHandle;
+	char				*SqliteErrorString = 0;
+	int					SqliteReturnCode, RowCount = 0; //set RowCount to Zero
+	sqlite3_stmt		*SqlStatement = 0;
+	bool				Finished = false;
 
-	ItemPtr->Next = '\0';
-	ItemPtr->Value = new Item;
-	ItemPtr->Value->SetItemNumber( 1 );
-	ItemPtr->Value->SetItemValue( 25 );
-	ItemPtr->Value->SetWeight( 22 );
-	ItemPtr->Value->SetItemName( "cowflop" );
-	ItemPtr->Value->SetItemDesc( "This moist, warm cowflop can be used to kill someone." );
-	ItemPtr->Value->SetMaxDamage( 29 );
-	ItemPtr->Value->SetToHitBonus( 2 );
-	ItemPtr->Value->SetSpeed( 15 );
-	ItemPtr->Value->SetArmorValue( 5 );
-	ItemPtr->Value->SetAttackType( "slop" );
-	ItemPtr->Value->SetMinDamage( 1 );
-
-	ItemPtr->Next = new ItemList;
-	ItemPtr = ItemPtr->Next;
-	ItemPtr->Value = new Item;
-	ItemPtr->Value->SetItemNumber( 2 );
-	ItemPtr->Value->SetItemValue( 50 );
-	ItemPtr->Value->SetWeight( 25 );
-	ItemPtr->Value->SetItemName( "diamond tipped whip" );
-	ItemPtr->Value->SetItemDesc( "It looks very deadly when wielded by someone who knows how to use it" );
-	ItemPtr->Value->SetMaxDamage( 55 );
-	ItemPtr->Value->SetToHitBonus( 4 );
-	ItemPtr->Value->SetSpeed( 19 );
-	ItemPtr->Value->SetArmorValue( 2 );
-	ItemPtr->Value->SetAttackType( "whip" );
-	ItemPtr->Value->SetMinDamage( 6 );
-
-	ItemPtr->Next = new ItemList;
-	ItemPtr = ItemPtr->Next;
-	ItemPtr->Value = new Item;
-	ItemPtr->Value->SetItemNumber( 3 );
-	ItemPtr->Value->SetItemValue( 57 );
-	ItemPtr->Value->SetWeight( 30 );
-	ItemPtr->Value->SetItemName( "ramrod" );
-	ItemPtr->Value->SetItemDesc( "This solid gold ramrod can be used to really stick it to someone." );
-	ItemPtr->Value->SetMaxDamage( 60 );
-	ItemPtr->Value->SetToHitBonus( 5 );
-	ItemPtr->Value->SetSpeed( 33 );
-	ItemPtr->Value->SetArmorValue( 7 );
-	ItemPtr->Value->SetAttackType( "ram" );
-	ItemPtr->Value->SetMinDamage( 10 );
-
-	ItemPtr->Next = new ItemList;
-	ItemPtr = ItemPtr->Next;
-	ItemPtr->Value = new Item;
-	ItemPtr->Value->SetItemNumber( 4 );
-	ItemPtr->Value->SetItemValue( 175 );
-	ItemPtr->Value->SetWeight( 22 );
-	ItemPtr->Value->SetItemName( "golden sword" );
-	ItemPtr->Value->SetItemDesc( "This enchanted golden sword packs a punch." );
-	ItemPtr->Value->SetMaxDamage( 95 );
-	ItemPtr->Value->SetToHitBonus( 8 );
-	ItemPtr->Value->SetSpeed( 45 );
-	ItemPtr->Value->SetArmorValue( 15 );
-	ItemPtr->Value->SetAttackType( "slice" );
-	ItemPtr->Value->SetMinDamage( 20 );
-
-	ItemPtr->Next = '\0';
+	SqliteReturnCode = sqlite3_open( ITEM_DATABASE, &DatabaseHandle);
 	
-	return 1;
-	//MYSQL_RES	*Result;
-	//MYSQL_ROW	RowOfData;
-	///ItemList	*ItemPtr = '\0';
+	if( SqliteReturnCode ) //if returns anything but SQLITE_OK some kind of error occurred
+	{
+		ServerLog( "Can't open database: %s\n", sqlite3_errmsg( DatabaseHandle ) );
+		sqlite3_close( DatabaseHandle );
+		return false;
+	}
+	/*  compile the sqlite sql statement  */
+	SqliteReturnCode = sqlite3_prepare_v2( DatabaseHandle, "select * from items", -1, &SqlStatement, NULL );
+
+	if( SqliteReturnCode ) //if returns anything other than SQLITE_OK
+	{
+		ServerLog( "Error in sqlite3_prepare_v2: %s\n", sqlite3_errmsg( DatabaseHandle ) );
+		sqlite3_close( DatabaseHandle );
+		return false;
+	}
+
+	/* we are ready to execute the prepared statement and start getting rows with sqlite3_step() */
+	while( !Finished )
+	{
+		SqliteReturnCode = sqlite3_step( SqlStatement );
+
+		switch( SqliteReturnCode )
+		{
+		case SQLITE_DONE:		//there are no more rows
+			Finished = true;	//this will break the while loop
+			if( ItemPtr )
+				ItemPtr->Next = NULL; //terminate the list
+			break;
+
+		case SQLITE_ROW:		//we have a row of data
+			
+			if( RowCount == 0 )	//If this is the first row allocate the first list node
+			{
+				/*  allocate and prep the Master Room Linked list First Node */
+				FirstItemInList = new ItemList; //allocate first node in master item list
+				ItemPtr = FirstItemInList;		//set the temporary pointer to this newly allocated node
+				ItemPtr->Next = NULL;			//terminate the list
+			}
+			else	//otherwise its not the first node so allocate a new node and move to it
+			{
+				ItemPtr->Next = new ItemList;	//allocate the next node of the list
+				ItemPtr = ItemPtr->Next;		//get the temp pointer incremented
+			}
+
+			ItemPtr->Next = NULL;		//make sure the list is terminated before allocating the next node.
+			ItemPtr->Value = new Item;	//allocate the Item Object
+
+			/* Load the result row into the Item Object pointed to by ItemPtr->Value */
+			ItemPtr->Value->SetItemNumber( sqlite3_column_int( SqlStatement, 0 ) );
+			ItemPtr->Value->SetItemValue( sqlite3_column_int( SqlStatement, 1 ) );
+			ItemPtr->Value->SetWeight( sqlite3_column_int( SqlStatement, 2 ) );
+			ItemPtr->Value->SetItemName( (char *)sqlite3_column_text( SqlStatement, 3 ) );
+			ItemPtr->Value->SetItemDesc( (char *)sqlite3_column_text( SqlStatement, 4 ) );
+			ItemPtr->Value->SetMaxDamage( sqlite3_column_int( SqlStatement, 5) );
+			ItemPtr->Value->SetToHitBonus( sqlite3_column_int( SqlStatement, 6) );
+			ItemPtr->Value->SetSpeed( sqlite3_column_int( SqlStatement, 7) );
+			ItemPtr->Value->SetArmorValue( sqlite3_column_int( SqlStatement, 8) );
+			ItemPtr->Value->SetAttackType( (char *)sqlite3_column_text( SqlStatement, 9) );
+			ItemPtr->Value->SetMinDamage( sqlite3_column_int( SqlStatement, 10) );
 	
-	//if ( mysql_query( &SQLConnection, "SELECT * FROM items" ) )
-	//{
-	//	ServerLog( "LoadItemDatabase: %s\n", mysql_error( &SQLConnection ) );
-	//	return 0;
-	//}
+			RowCount++;		//dont forget to increment the row count.
+			break;
 
-	//if ( !( Result = mysql_use_result( &SQLConnection ) ) )
-	//{
-	//	ServerLog( "LoadItemDatabase: %s\n", mysql_error( &SQLConnection ) );
-	////	return 0;
-	//}
+		default:
+			ServerLog( "Serious issue! hit default case in LoadItemDatabase()" );
+			break;
+		}	//end of the switch() block of code
 
+	}	//end of the while loop block of code
 
-	//FirstItemInList = new ItemList;
-	//ItemPtr = FirstItemInList;
-
-	//RowOfData = mysql_fetch_row( Result );
-
-	//for( ;; )
-	//{
-		//if( !RowOfData )
-			//break;
-
-		//ItemPtr->Next = '\0';
-		//ItemPtr->Value = new Item;
-
-		//ItemPtr->Value->SetItemNumber( atoi( RowOfData[0] ) );
-		
-		//if( RowOfData[1] )
-			//ItemPtr->Value->SetItemValue( atoi( RowOfData[1] ) );
-		//if( RowOfData[2] )
-			//ItemPtr->Value->SetWeight( atoi( RowOfData[2] ) );
-		
-		//ItemPtr->Value->SetItemName( RowOfData[3] );
-		//ItemPtr->Value->SetItemDesc( RowOfData[4] );
-
-		//if( RowOfData[5] )
-			//ItemPtr->Value->SetMaxDamage( atoi( RowOfData[5] ) );
-		//if( RowOfData[6] )
-			//ItemPtr->Value->SetToHitBonus( atoi( RowOfData[6] ) );
-		//if( RowOfData[7] )
-			//ItemPtr->Value->SetSpeed( atoi( RowOfData[7] ) );
-		//if( RowOfData[8] )
-			//ItemPtr->Value->SetArmorValue( atoi( RowOfData[8] ) );
-
-		//ItemPtr->Value->SetAttackType( RowOfData[9] );
-
-		//if( RowOfData[9] )
-			//ItemPtr->Value->SetMinDamage( atoi( RowOfData[8] ) );
-
-		
-		//if( !(RowOfData = mysql_fetch_row( Result ) ) )
-		//{
-			//ItemPtr->Next = '\0';
-			//break;
-		//}
-
-		//ItemPtr->Next = new ItemList;
-		//ItemPtr = ItemPtr->Next;
-	//}
-
-	//return 1;
+	sqlite3_finalize( SqlStatement ); //destroy the compiled sqlite statement and free its memory
+	sqlite3_close( DatabaseHandle );	//close the database connection.
+	ServerLog( "Loaded %i items into memory.", RowCount );
+	return true;
 }
 
 Item *SearchForItem( unsigned int ItemNum )

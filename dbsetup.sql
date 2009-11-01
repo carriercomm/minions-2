@@ -29,3 +29,17 @@ CREATE TABLE classes(
        ClassDesc VARCHAR(322) NOT NULL
 );
 
+CREATE TABLE items(
+	ItemNumber int PRIMARY KEY,
+	Value int NOT NULL,
+	Weight int NOT NULL,
+	ItemName VARCHAR(21) NOT NULL,
+	ItemDesc VARCHAR(201) NOT NULL,
+	MaxDamage int NOT NULL,
+	ToHitBonus int NOT NULL,
+	Speed int NOT NULL,
+	ArmorValue int NOT NULL,
+	AttackType VARCHAR(21) NOT NULL,
+	MinDamage int NOT NULL
+);
+
