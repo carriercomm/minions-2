@@ -159,7 +159,7 @@ void meHeal::naturalHeal()
 	int maxHP;
 	int healRate;
 /*
-   Need to add "atRest" player stats.  If a player is resting, he heals at 2x rest rate.
+   If a player is resting, he heals at 2x rest rate.
    For now, I'm using player level as his heal rate.  1st level heals at 1hp per tick. 
    Maybe if they are resting, they heal at healRate times 2?
 */
@@ -174,7 +174,7 @@ void meHeal::naturalHeal()
 
 		if (TempConn->Player.GetRestingStatus() == RESTING)
 		{
-			healRate = healRate * 2;
+			healRate *= 2;
 		}
 		// Is the player at max hit points?
 		if (curHP < maxHP)
@@ -191,4 +191,6 @@ void meHeal::naturalHeal()
 			}
 		}
 	}
+//	curHP=TempConn->Player.GetHitPoints();
+//	WriteToBuffer( TempConn, "[HP=%s/%s]", curHP, maxHP );
 };

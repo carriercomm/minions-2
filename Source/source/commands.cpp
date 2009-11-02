@@ -1616,7 +1616,7 @@ void WalkingLook( Connection *Conn, Room *Rom )
 	}
 
 	if( Rom->GetPlayerCount() > 1 )
-	WriteToBuffer( Conn, "%sAlso here: %s%s\n\r", ANSI_BR_MAGENTA, Rom->GetAlsoHereString( Conn ), ANSI_WHITE );
+	WriteToBuffer( Conn, "%sAlso here: %s%s%s\n\r", ANSI_BR_GREEN, ANSI_BR_MAGENTA, Rom->GetAlsoHereString( Conn ), ANSI_WHITE );
 
 	WriteToBuffer( Conn, "%sObvious exits: %s%s\n\r", ANSI_BR_YELLOW,
 		Rom->GetExitString(), ANSI_WHITE );
@@ -1705,13 +1705,15 @@ COMMAND(Spawn)
 COMMAND(Rest)
 {
 	Room			*TempRoom = '\0';
-
+    
+	// Get room so we can tell everyone in room
 	TempRoom = Player->Player.GetRoom();
-
+    // Player is now resting so tell the damn computer that!
 	Player->Player.SetRestingStatus(RESTING);
+	// Lets tell the aholes in the room who is resting
 	TempRoom->SelectiveBroadcast( Player, NULL, "%s%s stops to rest%s\n\r", ANSI_BR_BLUE,
 	Player->Player.GetFirstName(), ANSI_WHITE ); 
-	
+	// I'm stupid tell me I'm resting.
 	WriteToBuffer( Player, "%sYou stop to rest%s\n\r", ANSI_BR_BLUE, ANSI_WHITE );
 
 	return;
