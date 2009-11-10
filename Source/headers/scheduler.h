@@ -21,6 +21,7 @@ class scheduler
     // Create multimaps for incoming and outgoing events stacks
 	wStack waitStack;
 	eStack execStack;
+	eStack combatStack;
 
 	// Create multimap's iterators
 	wStack::iterator wsIter;  
@@ -36,7 +37,9 @@ public:
 	eStack getExecStack();
 	void pushWaitStack(time_t eTime, minionsEvent *mEvent);
  //   void pushExecStack(time_t eTime, minionsEvent *mEvent);
+	void pushCombatStack(minionsEvent *mEvent);
 	void doEvents(scheduler *eventScheduler);
+	void doMeleeEvents(scheduler *eventScheduler);
 	void checkEventsStatus();
 	
 };

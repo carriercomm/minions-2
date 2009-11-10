@@ -27,6 +27,8 @@ using namespace std;
 
 bool	ServerDown;
 time_t	CurrentTime, LastTime, BootTime;
+scheduler eventScheduler;
+
 
 extern ofstream		LogFile;
 
@@ -89,7 +91,6 @@ void main( void )
 	}
 
 	// Load scheduler and add the inital combat event
-    scheduler eventScheduler;
 	minionsEvent *minionsCombat = new meCombat();
 	minionsEvent *minionsHeal = new meHeal();
 	eventScheduler.pushWaitStack((time(NULL)+COMBAT_TIME_INTERVAL), minionsCombat);

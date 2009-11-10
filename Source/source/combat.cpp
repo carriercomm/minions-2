@@ -8,12 +8,19 @@
  *		       David Brown	    -	dcbrown73@yahoo.com	       *
  ***************************************************************/
 #include <stdlib.h>
+#include <vector>
+#include <map>
 #include "combat.h"
+#include "events.h"
+#include "scheduler.h"
 #include "room.h"
 #include "ansicolor.h"
 #include "tcpcomm.h"
 #include "item.h"
 
+
+
+using namespace std;
 /**********************************************************
  *   Global Variables                                     *
  **********************************************************/
@@ -24,6 +31,10 @@ CombatList			*FirstCombantant = '\0';
 /**********************************************************
  *   Functions                                            *
  **********************************************************/
+//void baseCombat( void )
+//{
+
+
 void DoCombatRound( void )
 {
 	Connection  *TempConn = '\0';
@@ -228,6 +239,9 @@ void Die( Connection *Player, Room *CurRom )
 	/* when ya die yer no longer engaged on anyone */
 	Player->Victim = '\0';
 
+	// Kill any attack event in the queue!
+	if (Player->Player.GetAttackEvent())
+		Player->Player.GetAttackEvent()->killEvent();
 	/*  get the respawn room */
 	Rom = SearchForRoom( 1 );
 	
@@ -257,3 +271,120 @@ void Die( Connection *Player, Room *CurRom )
 	Player->Player.SubtractKill();
 	return;
 }
+
+/*======================================================================
+DisplayCombatStatus()
+
+Simple way to display combat status
+
+Status is a boolean true or false.  (is combat true, or false)
+======================================================================*/
+
+void DisplayCombatStatus(Connection *Player, bool Status)
+{
+	if (Player->Victim == '\0')
+	{
+		ServerLog( "DisplayCombatStatus: Player had no victim! ...bailing out of function!");
+		return;
+	}
+	switch(Status)
+	{
+	case true:
+ 		WriteToBuffer( Player, "%s*** Combat Engaged ***%s\n\r", ANSI_YELLOW, ANSI_WHITE );
+		WriteToBuffer( Player->Victim, "%s*** %s moves to attack you! ***%s\n\r",ANSI_YELLOW, Player->Player.GetFirstName(), ANSI_WHITE );
+		break;
+	case false:
+		WriteToBuffer( Player, "%s*** Combat Off ***%s\n\r", ANSI_YELLOW, ANSI_WHITE );
+		break;
+	}
+}
+
+/*======================================================================
+DisplayCombat()
+
+Simple way to display combat attacks
+
+======================================================================*/
+
+void DisplayMeleeCombat(Connection *Player, char *attackType, char *Weapon, int Damage, bool Critical)
+{
+	Room *CurRoom = Player->Player.GetRoom();
+	if (Player->Victim == '\0')
+		ServerLog( "DisplayCombat: Player had no victim! ...bailing out of function!");
+
+	if (Damage == 0) {
+		// Tell the attacker
+		WriteToBuffer( Player, "%sYou swing at %s with your %s, but miss!%s\n\r",
+			ANSI_BR_RED, Player->Victim->Player.GetFirstName(),
+		    Weapon, ANSI_WHITE );
+
+		// Tell the victim
+		WriteToBuffer( Player->Victim, "%s%s swings at you with his %s, but missed!%s\n\r",
+			ANSI_BR_RED, Player->Player.GetFirstName(), Weapon, ANSI_WHITE );
+
+		// Let everyone else in the room know the victim got punked!
+		CurRoom->SelectiveBroadcast( Player, Player->Victim, "%s%s swings at %s with his %s, but misses!%s\n\r",
+			ANSI_BR_RED, Player->Player.GetFirstName(), Player->Victim->Player.GetFirstName(), Weapon, ANSI_WHITE );
+	}
+	else if (!Critical) 
+	{
+		// Tell the attacker
+		WriteToBuffer( Player, "%sYou %s %s with your %s for %d damage!%s\n\r",
+			ANSI_BR_RED, attackType, Player->Victim->Player.GetFirstName(),
+		    Weapon, Damage, ANSI_WHITE );
+
+		// Tell the victim
+		WriteToBuffer( Player->Victim, "%s%s %ss you with his %s for %d damage!%s\n\r",
+			ANSI_BR_RED, Player->Player.GetFirstName(), attackType,
+		    Weapon, Damage, ANSI_WHITE );
+
+		// Let everyone else in the room know the victim got punked!
+		CurRoom->SelectiveBroadcast( Player, Player->Victim, "%s%s %ss %s with his %s for %d damage!%s\n\r",
+			ANSI_BR_RED, Player->Player.GetFirstName(), attackType,
+			Player->Victim->Player.GetFirstName(), Weapon,
+			Damage, ANSI_WHITE );
+	}
+	else
+	{
+		// Tell the attacker
+		WriteToBuffer( Player, "%sYou critically %s %s with your %s for %d damage!%s\n\r",
+			ANSI_BR_RED, attackType, Player->Victim->Player.GetFirstName(),
+		    Weapon, Damage, ANSI_WHITE );
+
+		// Tell the victim
+		WriteToBuffer( Player->Victim, "%s%s critically %ss you with his %s for %d damage!%s\n\r",
+			ANSI_BR_RED, Player->Player.GetFirstName(), attackType,
+		    Weapon, Damage, ANSI_WHITE );
+
+		// Let everyone else in the room know the victim got punked!
+		CurRoom->SelectiveBroadcast( Player, Player->Victim, "%s%s critically %ss %s with his %s for %d damage!%s\n\r",
+			ANSI_BR_RED, Player->Player.GetFirstName(), attackType,
+			Player->Victim->Player.GetFirstName(), Weapon,
+			Damage, ANSI_WHITE );
+	}
+
+
+}
+
+
+/*void doCombatMath(Connection *Player, int CombatType)
+{
+	char punch[] "punch";
+	char cast[] = "cast";
+	char *attackType;
+
+	if (CombatType = SPELL) 
+	{
+		attackType = "cast";
+	}
+	else 
+	{
+		if (!Player->GetWieldedItem())
+		{
+			attackType = "punch";
+		}
+		else
+		{
+			attackType = Player->Player.GetAttackType();
+
+*/

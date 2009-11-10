@@ -19,6 +19,8 @@
 #define NOT_RESTING                   2
 
 class Room; //forward declaration
+class minionsEvent;
+struct Connection;
 
 /*   structure of the command table   */
 struct Command_Table

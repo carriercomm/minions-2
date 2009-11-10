@@ -37,6 +37,7 @@ Client::Client()
 	ArmorClass = 5;
 	THAC0 = 14;
 	Class = Race = 0;
+	AttackEvent = '\0';
 	
 }
 
@@ -299,8 +300,8 @@ bool Client::UpdateHitPoints( int value, bool add_subtract )
 	{
 		if( (HitPoints - value) < 1 )
 		{
-                    HitPoints = MaxHits;
-	     	        return false;
+            HitPoints = MaxHits;
+	     	return false;
 		}
 		else
 		{

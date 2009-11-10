@@ -8,6 +8,8 @@
  *		       David Brown	    -	dcbrown73@yahoo.com	       *
  ***************************************************************/
 #include <iostream>
+#include <map>
+#include <vector>
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
@@ -16,11 +18,16 @@
 #include "ansicolor.h"
 #include "room.h"
 #include "item.h"
+#include "scheduler.h"
+#include "events.h"
+#include "combat.h"
 
+using namespace std;
 /**********************************************************
  *  External variables this module uses                   *
  **********************************************************/
 extern Connection *PlayerList;
+extern scheduler eventScheduler;
 extern bool ServerDown;
 extern time_t CurrentTime, BootTime;
 extern char HelpScreen[MAX_OUTPUT_BUFFER], TitleScreen[MAX_OUTPUT_BUFFER];
@@ -403,7 +410,14 @@ COMMAND(Attack)
 			ANSI_BR_RED, Argument, ANSI_WHITE );
 		return;
 	}
-
+    Player->Victim = Victim;
+	Victim->Player.SetRestingStatus(NOT_RESTING);
+	// Tell players combat started and create combat event
+	DisplayCombatStatus(Player, true);
+	minionsEvent *meleeEvent = new meMelee(Player, Victim);
+	Player->Player.SetAttackEvent(meleeEvent);
+	eventScheduler.pushCombatStack(meleeEvent);
+/*
 	Player->Victim = Victim;
 	TempRoom = Player->Player.GetRoom();
 
@@ -417,7 +431,7 @@ COMMAND(Attack)
 		ANSI_YELLOW, Player->Player.GetFirstName(), Victim->Player.GetFirstName(),
 		ANSI_WHITE );
 
-
+*/
 
 	return;
 }
@@ -436,11 +450,17 @@ COMMAND(ClrScr)
  **********************************************************/
 COMMAND(BreakCombat)
 {
+	minionsEvent *thisEvent;
 	if( !Player->Victim )
 	{
 		WriteToBuffer( Player, "%sYou are not engaged in combat!%s\n\r",
 			ANSI_BR_RED, ANSI_WHITE );
 		return;
+	}
+	if (Player->Player.GetAttackEvent())
+	{
+		thisEvent = Player->Player.GetAttackEvent();
+		thisEvent->killEvent();
 	}
 
 	WriteToBuffer( Player, "%s*** You break combat ***%s\n\r", ANSI_YELLOW,
@@ -1309,7 +1329,7 @@ COMMAND(GetItem)
 	Item			*TempItem = '\0';
 	Room			*TempRoom = '\0';
 	ItemsInRoom		*ItemList = '\0';
-	int				Len = strlen( Argument );	
+	int				Len;
 
 	if(!Player)return;
 	if(!Argument)
@@ -1318,7 +1338,8 @@ COMMAND(GetItem)
 			ANSI_RED, ANSI_WHITE );
 		return;
 	}
-	
+
+	Len = strlen( Argument );	
 	TempRoom = Player->Player.GetRoom();
 
 	if( !TempRoom )
@@ -1706,6 +1727,7 @@ COMMAND(Rest)
 {
 	Room			*TempRoom = '\0';
     
+	//if (Player->Player.
 	// Get room so we can tell everyone in room
 	TempRoom = Player->Player.GetRoom();
     // Player is now resting so tell the damn computer that!

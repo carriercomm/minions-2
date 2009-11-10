@@ -19,6 +19,7 @@
 
 class Room;  //forward declaration
 class Item;  //forward declaration
+class minionsEvent;
 
 /*  link list of items in this players possesion */
 struct ItemsOnPlayer
@@ -46,6 +47,7 @@ class Client
     unsigned int	CurrentRoomNumber;
 	ItemsOnPlayer	*FirstItem;
 	Item			*Wielded;
+	minionsEvent    *AttackEvent;
 
 public:
 	Client();
@@ -108,6 +110,8 @@ public:
 	bool SetClass( int ClassNum );
 	int GetBeenKilled( void ) { return BeenKilled; };
 	void AddBeenKilled( void ) { BeenKilled++; };
+	void SetAttackEvent(minionsEvent *Event) { AttackEvent = Event; }; 
+	minionsEvent *GetAttackEvent( void ) { return AttackEvent; };
 	~Client();
 };
 

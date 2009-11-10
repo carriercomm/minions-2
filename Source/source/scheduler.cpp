@@ -76,16 +76,16 @@ void scheduler::pushWaitStack(time_t eTime, minionsEvent *mEvent)
 
 
 /*==============================================================
-scheduler -> pushExecStack()
+scheduler -> pushCombatStack()
 
-Add event object on to the execStack.
+Add event object on to the combatStack.
 ===============================================================*/
 
-//void scheduler::pushExecStack(time_t eTime, minionsEvent *mEvent)
-//{
-//	esIter=execStack.end();
-//	execStack.insert(esIter, pair<time_t, minionsEvent *>(eTime, mEvent));
-//};
+void scheduler::pushCombatStack(minionsEvent *mEvent)
+{
+	combatStack.push_back(mEvent);
+};
+
 
 /*==============================================================
 scheduler -> doEvents()
@@ -107,6 +107,31 @@ void scheduler::doEvents(scheduler *eventScheduler)
 	execStack.clear();
 };
 
+
+/*==============================================================
+scheduler -> doMeleeEvents()
+
+Take execStack and execute the events then delete the event and vector element
+===============================================================*/
+
+void scheduler::doMeleeEvents(scheduler *eventScheduler)
+{
+	minionsEvent *p;
+	eStack::iterator curEvent;
+	eStack tmpStack;
+
+	tmpStack.swap(combatStack);
+	combatStack.clear();
+
+	for (curEvent=tmpStack.begin(); curEvent != tmpStack.end(); ++curEvent) 
+	{
+		(*curEvent)->execEvent(eventScheduler);
+		p=*curEvent;
+		delete p;
+	}
+	//combatStack.clear();
+};
+
 /*==============================================================
 scheduler -> checkEventsStatus()
 
@@ -117,8 +142,8 @@ ready to be executed into the execStack
 void scheduler::checkEventsStatus()
 {
 	time_t currentTime;
-	unsigned int stackSize;
-	int x;
+	size_t stackSize;
+	size_t x;
 	wStack tmpStack;
 	wStack::iterator thisEvent;
 

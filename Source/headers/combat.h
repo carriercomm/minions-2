@@ -12,6 +12,7 @@
 
 struct Connection; //forward declaration
 class Room;			//forward declaration
+class scheduler;
 
 /*  Different types of possible attacks  */
 enum AttackType
@@ -33,6 +34,9 @@ void DoCombatRound( void );
 void Die( Connection *Player, Room *CurRom );
 void AddToCombatList( Connection *Agressor, Connection *Victim, AttackType AType );
 void RemoveFromCombatList( Connection *Aggressor, Connection *Victim );
+void DisplayCombatStatus( Connection *Player, bool Status);
+void doCombatMath(Connection *Player, int CombatType);
+void DisplayMeleeCombat(Connection *Player, char *attackType, char *Weapon, int Damage, bool Critical);
 
 
 #endif //_COMBAT_H_INCLUDED

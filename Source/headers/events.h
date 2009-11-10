@@ -17,9 +17,21 @@
 // Define Minion event types
 #define ME_COMBAT                       1
 #define ME_HEAL                         2 
+#define ME_MELEE_COMBAT                 3
 
+// Combat stuff 
 
+const int CRITICAL                   = 16;
+const int MAX_PUNCH_DAMAGE           =  3;
+//const char PUNCH[]                   = "punch";
+//const char PUNCH_WEAPON[]            = "fist";
+
+// Forward declarations
 class scheduler;
+struct Connection;
+class Room;
+class Client;
+class Item;
 
 /*==============================================================
 minionsEvent class
@@ -44,12 +56,14 @@ class minionsEvent
 protected:
 	int eventType;
 	time_t eventTime;
+	bool deadEvent;
 
 public:
 
 	int getEventObjectType();
 	time_t getEventTime();
 	virtual void execEvent(scheduler *eventScheduler)=0;  // Virtual functions def =0 marks it as purely virtual 
+	virtual void killEvent()=0;
 
 };
 
@@ -65,6 +79,7 @@ public:
     meCombat();
 	~meCombat();
 	void execEvent(scheduler *eventScheduler);
+	void killEvent();
 };
 
 
@@ -79,5 +94,31 @@ public:
     meHeal();
 	~meHeal();
 	void execEvent(scheduler *eventScheduler);
+	void killEvent();
 	void naturalHeal();
 };
+
+
+/*==============================================================
+ meMelee class -> Derived from minionsEvent class
+
+ Melee event, all melee (weapn) based attacks that come in 
+ the timed combat round.
+===============================================================*/
+
+class meMelee : public minionsEvent
+{
+	Connection *Player;
+	Connection *Victim;
+	Item *Weapon;
+
+public:
+
+	char punch[6];
+	char punchWeapon[5];
+	meMelee(Connection *Attacker, Connection *Attacked);
+	~meMelee();
+	void execEvent(scheduler *eventScheduler);
+	void killEvent();
+};
+	
