@@ -315,6 +315,16 @@ void meMelee::execEvent(scheduler *eventScheduler)
 		else
 			DisplayMeleeCombat(Player, attackType, Weapon->GetItemName(), Damage, Critical);
 	}
+	//Did we stun him?
+	if ( ToHitRoll == 20 )
+	{	
+		DisplayStunStatus( Victim );
+		if (Victim->Player.GetAttackEvent())
+			Victim->Player.GetAttackEvent()->killEvent();
+		Victim->Player.SetAttackEvent('\0');
+		Victim->Victim='\0';
+	}
+
 	// Is the player dead?  If so, kill his ass and close combat
 	if(!Player->Victim->Player.UpdateHitPoints( Damage, false ))
 	{ 						

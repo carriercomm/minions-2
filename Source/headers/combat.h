@@ -37,6 +37,7 @@ void RemoveFromCombatList( Connection *Aggressor, Connection *Victim );
 void DisplayCombatStatus( Connection *Player, bool Status);
 void doCombatMath(Connection *Player, int CombatType);
 void DisplayMeleeCombat(Connection *Player, char *attackType, char *Weapon, int Damage, bool Critical);
+void DisplayStunStatus(Connection *Player);
 
 
 #endif //_COMBAT_H_INCLUDED

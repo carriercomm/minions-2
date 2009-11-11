@@ -241,7 +241,11 @@ void Die( Connection *Player, Room *CurRom )
 
 	// Kill any attack event in the queue!
 	if (Player->Player.GetAttackEvent())
+	{	
 		Player->Player.GetAttackEvent()->killEvent();
+		Player->Player.SetAttackEvent('\0');
+
+	}
 	/*  get the respawn room */
 	Rom = SearchForRoom( 1 );
 	
@@ -300,7 +304,7 @@ void DisplayCombatStatus(Connection *Player, bool Status)
 }
 
 /*======================================================================
-DisplayCombat()
+DisplayMeleeCombat()
 
 Simple way to display combat attacks
 
@@ -366,25 +370,21 @@ void DisplayMeleeCombat(Connection *Player, char *attackType, char *Weapon, int 
 
 }
 
+/*======================================================================
+DisplayStunStatus()
 
-/*void doCombatMath(Connection *Player, int CombatType)
+Simple way to display stun output
+
+======================================================================*/
+
+void DisplayStunStatus( Connection *Player )
 {
-	char punch[] "punch";
-	char cast[] = "cast";
-	char *attackType;
+	Room *CurRoom = Player->Player.GetRoom();
+    // Tell the victim 
+	WriteToBuffer( Player, "%sYou are stun!%s\n\r",
+		ANSI_BLUE, ANSI_WHITE );
 
-	if (CombatType = SPELL) 
-	{
-		attackType = "cast";
-	}
-	else 
-	{
-		if (!Player->GetWieldedItem())
-		{
-			attackType = "punch";
-		}
-		else
-		{
-			attackType = Player->Player.GetAttackType();
-
-*/
+	// Tell the room */
+	CurRoom->SelectiveBroadcast( Player, Player, "%s%s stumbles backwards!%s\n\r",
+		ANSI_BLUE, Player->Player.GetFirstName(), ANSI_WHITE );
+}
