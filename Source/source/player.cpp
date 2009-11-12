@@ -53,7 +53,7 @@ bool Client::SetRoom( Room *NewRoom )
 
 bool Client::SetFirstName( char *new_name )
 {
-	char *temp = new_name;
+	char *temp = &new_name;
 
 	while( *temp )
 	{
@@ -66,7 +66,7 @@ bool Client::SetFirstName( char *new_name )
 		temp++;
 	}
 
-	if( strlen( new_name ) >= MAX_STRING_LENGTH )
+	if( strlen( new_name ) >= MAX_NAME_LENGTH )
 		return false;
 
 	if( strlen( new_name ) <= 2 )
@@ -81,7 +81,7 @@ bool Client::SetFirstName( char *new_name )
 
 bool Client::SetLastName( char *new_name )
 {
-	char *temp = new_name;
+	char *temp = &new_name;
 
 	while( *temp )
 	{
@@ -94,7 +94,7 @@ bool Client::SetLastName( char *new_name )
 		*temp++;
 	}
 
-	if( strlen( new_name ) >= MAX_STRING_LENGTH )
+	if( strlen( new_name ) >= MAX_NAME_LENGTH )
 		return false;
 
 	if( strlen( new_name ) <= 2 )
@@ -150,7 +150,7 @@ bool Client::SetIpAddress( char *new_address )
 
 bool Client::SetHostName( char *host )
 {
-	char *temp = host;
+	char *temp = &host;
 
 	while( *temp )
 	{

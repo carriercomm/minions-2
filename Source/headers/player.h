@@ -11,6 +11,7 @@
 #define PLAYER_H_INCLUDED
 
 #define	MAX_STRING_LENGTH				80
+#define MAX_NAME_LENGTH					15
 #define MAX_STATS						6
 #define MAX_LEVEL_ALLOWED				150
 #define MAX_DESCRIPTION_LENGTH			400

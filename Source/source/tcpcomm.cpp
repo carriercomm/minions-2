@@ -116,9 +116,12 @@ bool StartupWinsock( void )
 
 char *LookupHostName( char *IpAddress )
 {
-	hostent			*RemoteHost;
+	hostent				*RemoteHost;
+	struct sockaddr_in	Ipv4Addr;
 
-	RemoteHost = gethostbyaddr( (char *)&IpAddress, 4, PF_INET );
+	Ipv4Addr.sin_addr.S_un.S_addr = inet_addr( IpAddress ); //set the IP in sockaddr_in struct
+	
+	RemoteHost = gethostbyaddr( (char *)&Ipv4Addr.sin_addr, sizeof( Ipv4Addr.sin_addr ), AF_INET );
 	
 	if( RemoteHost == NULL )
 	{
@@ -183,7 +186,7 @@ bool AcceptConnection( void )
 	if( !NewConn->Player.SetIpAddress( inet_ntoa( NewConnection.sin_addr ) ) )
 		NewConn->Player.SetIpAddress( "Unknown" );
 
-	NewConn->Player.SetHostName( inet_ntoa( NewConnection.sin_addr ) );
+	NewConn->Player.SetHostName( LookupHostName( inet_ntoa( NewConnection.sin_addr )) );
 
 	/* Log the connection */
 	ServerLog( "%sAccepting connection request from [%s] - %s\n",
@@ -585,7 +588,7 @@ bool Logon( Connection *Conn, char *Cmd )
 		if( !Conn->Player.SetFirstName( Cmd ) )
 		{
 			WriteToBuffer( Conn, "\n\rThat name will not work, pick another: ");
-			Conn->Strikes++;
+			//Conn->Strikes++;
 			break;
 		}
 		
@@ -604,7 +607,7 @@ bool Logon( Connection *Conn, char *Cmd )
 		
 		else 
 			WriteToBuffer( Conn, "\n\rOk...Give me another damn name then: ");
-		Conn->Strikes++;
+		//Conn->Strikes++;
 		Conn->Status = STATUS_GET_NAME;
 		break;
 	
@@ -748,6 +751,7 @@ bool Logon( Connection *Conn, char *Cmd )
 				Conn->Player.SetRoom( TempRom );
 			    TempRom = Conn->Player.GetRoom();
 			    TempRom->AddPlayerToRoom( Conn );
+				Conn->Player.SavePlayer(); //save the newly created player character
 				return true;
 			}
 		}

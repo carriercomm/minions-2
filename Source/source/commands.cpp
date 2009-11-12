@@ -361,7 +361,7 @@ COMMAND(Help)
 
 		/* If its an administrative command flag it as so  */
 		if( CommandTable[loop].AdminOnly == true )
-			WriteToBuffer( Player, "%s%s[admin]%s ", CommandTable[loop].Padded, ANSI_BR_YELLOW, ANSI_BR_CYAN );
+			WriteToBuffer( Player, "%s%s%s ", ANSI_BR_YELLOW, CommandTable[loop].Padded, ANSI_BR_CYAN );
 		else
 			WriteToBuffer( Player, "%s  ", CommandTable[loop].Padded );
 	}
@@ -523,6 +523,14 @@ COMMAND(Telepath)
 		return;
 	}
 
+	/*  if you have telepaths off you cannot telepath!  */
+	if( !FLAG_IS_SET( Player->Flags, FLAG_TELEPATHS ) )
+	{
+		WriteToBuffer( Player, "%sYour telepaths are disabled. Re-enable them if you would like to telepath someone!%s\n\r",
+			ANSI_BR_CYAN, ANSI_WHITE );
+		return;
+	}
+
 	Receiver = SearchForPlayer( Argument );
 
 	if( !Receiver )
@@ -584,6 +592,13 @@ COMMAND(Gossip)
 				ANSI_BR_CYAN, ANSI_WHITE );
 		}
 		
+		return;
+	}
+
+	/*  if you have gossips off you cannot gossip!  */
+	if( !FLAG_IS_SET( Player->Flags, FLAG_GOSSIPS ) )
+	{
+		WriteToBuffer( Player, "%sYour Gossips are disabled. Re-enable them if you would like to gossip!%s\n\r", ANSI_BR_MAGENTA, ANSI_WHITE );
 		return;
 	}
 
