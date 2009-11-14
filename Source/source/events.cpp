@@ -107,7 +107,7 @@ void meCombat::execEvent(scheduler *eventScheduler)
 	eventScheduler->pushWaitStack((time(NULL) + COMBAT_TIME_INTERVAL), combatEvent);
 };
 
-void meCombat::killEvent()
+void meCombat::killEvent(Connection *Conn)
 {
 	deadEvent = true;
 };
@@ -139,7 +139,7 @@ meHeal::meHeal()
 // meCombat class Destructor
 meHeal::~meHeal() { };
 
-void meHeal::killEvent()
+void meHeal::killEvent(Connection *Conn)
 {
 	deadEvent = true;
 };
@@ -226,9 +226,29 @@ meMelee::meMelee(Connection *Attacker, Connection *Attacked)
 	Player->Victim     = Attacked;
 };
 
-void meMelee::killEvent()
+/*===============================================================
+killEvent -> meMelee
+
+This kills events in the event queue.  It takes one argument of 
+type connection.  If the connection is NULL, just kill the event.
+If it has an actual address location, compare Player->Victim to
+the Conn pointer.  If they are the same, kill the event.  
+
+killEvent is called with a pointer (not null) if a player disconnect
+This allows us to delete any associated objects for the disconnected
+player
+================================================================*/
+void meMelee::killEvent(Connection *Conn)
 {
-	deadEvent = true;
+	// Null means just kill the event. 
+	if (Conn == NULL)
+		deadEvent = true;
+	else
+	{   // If Conn == Victim, kill the event as the Victim disconnected
+		// If it doesn't, nothing to do.
+		if (Conn == Player->Victim )
+			deadEvent = true;
+	}
 };
 
 /*===============================================================
@@ -319,12 +339,6 @@ void meMelee::execEvent(scheduler *eventScheduler)
 	{	
 		DisplayStunStatus( Victim );
 		StopCombat(Victim);
-		/*
-		if (Victim->Player.GetAttackEvent())
-			Victim->Player.GetAttackEvent()->killEvent();
-		Victim->Player.SetAttackEvent('\0');
-		Victim->Victim='\0';
-		*/
 	}
 
 	// Is the player dead?  If so, kill his ass and close combat

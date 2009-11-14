@@ -418,21 +418,6 @@ COMMAND(Attack)
 	minionsEvent *meleeEvent = new meMelee(Player, Victim);
 	Player->Player.SetAttackEvent(meleeEvent);
 	eventScheduler.pushCombatStack(meleeEvent);
-/*
-	Player->Victim = Victim;
-	TempRoom = Player->Player.GetRoom();
-
-	WriteToBuffer( Player, "%s*** Combat Engaged on %s ***%s\n\r", ANSI_YELLOW,
-		Victim->Player.GetFirstName() ,ANSI_BR_WHITE );
-
-	WriteToBuffer( Victim, "%s*** %s moves to attack you! ***%s\n\r", ANSI_YELLOW,
-		Player->Player.GetFirstName(), ANSI_WHITE );
-
-	TempRoom->SelectiveBroadcast( Player, Victim, "%s%s moves to attack %s!%s\n\r",
-		ANSI_YELLOW, Player->Player.GetFirstName(), Victim->Player.GetFirstName(),
-		ANSI_WHITE );
-
-*/
 
 	return;
 }

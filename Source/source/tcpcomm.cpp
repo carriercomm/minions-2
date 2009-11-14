@@ -12,6 +12,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <fstream>
+#include <map>
+#include <vector>
 #include <time.h>
 #include "tcpcomm.h"
 #include "ansicolor.h"
@@ -19,6 +21,8 @@
 #include "room.h"
 #include "item.h"
 #include "races.h"
+#include "scheduler.h"
+#include "events.h"
 
 using namespace std;
 
@@ -41,7 +45,11 @@ extern RaceTable    *MasterRaceTable;
 extern ClassTable   *MasterClassTable;
 extern RoomList		*FirstRoomInList;
 extern ItemList		*FirstItemInList;
+extern scheduler    eventScheduler;
 //extern MYSQL		SQLConnection;
+
+class minionsEvent;
+class scheduler;
 
 /***************************************************************
  * Function: StartupWinsock()								   *
@@ -445,6 +453,9 @@ void Broadcast( Connection *Conn, char *format, ... )
 
 void Disconnect( Connection *Conn )
 {
+	// Remove events attacking this fellow
+	eventScheduler.ClearPlayerEvents( Conn );
+
 	Connection	*TempConn = '\0';
 	Room		*TempRoom = '\0';
 
@@ -1073,3 +1084,5 @@ void ServerShutDown( bool term_code )
 	
 	return;
 }
+
+

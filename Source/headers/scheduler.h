@@ -41,5 +41,6 @@ public:
 	void doEvents(scheduler *eventScheduler);
 	void doMeleeEvents(scheduler *eventScheduler);
 	void checkEventsStatus();
+	void ClearPlayerEvents( Connection *Conn );
 	
 };

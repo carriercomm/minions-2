@@ -63,7 +63,9 @@ public:
 	int getEventObjectType();
 	time_t getEventTime();
 	virtual void execEvent(scheduler *eventScheduler)=0;  // Virtual functions def =0 marks it as purely virtual 
-	virtual void killEvent()=0;
+	virtual void killEvent(Connection *Conn)=0;
+	virtual Connection *getAttacker()=0;
+	virtual Connection *getVictim()=0;
 
 };
 
@@ -75,11 +77,15 @@ public:
 ===============================================================*/
 class meCombat : public minionsEvent
 {
+	Connection *Player;
+	Connection *Victim;
 public:
     meCombat();
 	~meCombat();
 	void execEvent(scheduler *eventScheduler);
-	void killEvent();
+	void killEvent(Connection *Conn);
+	Connection *getAttacker() { return Player; };
+	Connection *getVictim() { return Victim; };
 };
 
 
@@ -90,12 +96,16 @@ public:
 ===============================================================*/
 class meHeal : public minionsEvent
 {
+	Connection *Player;
+	Connection *Victim;
 public:
     meHeal();
 	~meHeal();
 	void execEvent(scheduler *eventScheduler);
-	void killEvent();
+	void killEvent(Connection *Conn);
 	void naturalHeal();
+	Connection *getAttacker() { return Player; };
+	Connection *getVictim() { return Victim; };
 };
 
 
@@ -119,6 +129,8 @@ public:
 	meMelee(Connection *Attacker, Connection *Attacked);
 	~meMelee();
 	void execEvent(scheduler *eventScheduler);
-	void killEvent();
+	void killEvent(Connection *Conn);
+	Connection *getAttacker() { return Player; };
+	Connection *getVictim() { return Victim; };
 };
 	

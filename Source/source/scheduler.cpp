@@ -14,6 +14,8 @@
 #include "time.h"
 #include "events.h"
 #include "scheduler.h"
+#include "tcpcomm.h"
+#include "combat.h"
 //#include "erase.h"
 
 using namespace std;
@@ -167,3 +169,28 @@ void scheduler::checkEventsStatus()
 		thisEvent++;
 	}
 };
+
+
+void scheduler::ClearPlayerEvents( Connection *Conn )
+{
+	Connection *Attacker;
+	// Iterator for stack
+	eStack::iterator curEvent;
+	// Melee Specific point so we can access extra functions not
+	// accessable through the generic minionsEvent pointer.
+	minionsEvent *Event;
+
+	// Kill all Melee events for both the disconnected and those attacking the disconnected player
+	for (curEvent=combatStack.begin(); curEvent != combatStack.end(); ++curEvent)
+	{
+		Event=*curEvent;
+		if (Event->getVictim() == Conn )
+		{
+			Attacker = Event->getAttacker();
+			DisplayCombatStatus(Attacker, false);
+			StopCombat(Event->getAttacker());
+		}
+		else if ( Event->getAttacker() == Conn )
+			StopCombat(Conn);
+	}
+}

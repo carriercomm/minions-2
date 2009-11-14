@@ -409,7 +409,8 @@ void StopCombat( Connection *Player )
 	// Kill any attack event in the queue!
 	if (Player->Player.GetAttackEvent())
 	{	
-		Player->Player.GetAttackEvent()->killEvent();
+		Player->Player.GetAttackEvent()->killEvent(NULL);
 		Player->Player.SetAttackEvent('\0');
 	}
 }
+
