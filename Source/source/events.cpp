@@ -19,6 +19,7 @@
 #include "tcpcomm.h"
 #include "player.h"
 #include "commands.h"
+#include "ansicolor.h"
 
 
 using namespace std;
@@ -195,10 +196,12 @@ void meHeal::naturalHeal()
 			if ((curHP + healRate) > maxHP)
 			{
 				TempConn->Player.SetHitPoints(maxHP);
+				WriteToBuffer( TempConn, "%s%s[ HP: %i] > %s", ANSI_CLR_SOL, ANSI_BR_CYAN, TempConn->Player.GetHitPoints(), ANSI_WHITE );
 			}
 			else
 			{
 				TempConn->Player.SetHitPoints((curHP + healRate));
+				WriteToBuffer( TempConn, "%s%s[ HP: %i] > %s", ANSI_CLR_SOL, ANSI_BR_CYAN, TempConn->Player.GetHitPoints(), ANSI_WHITE );
 			}
 		}
 	}

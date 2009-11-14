@@ -305,7 +305,7 @@ bool WriteToSocket( Connection *Conn )
 	
 	Conn->OutBuffer[0] = '\0';
 	Conn->OutTop = 0;
-	
+
 	return true;
 }
 
@@ -388,7 +388,7 @@ bool WriteToBuffer( Connection *Conn, char *format, ... )
 		Conn->OutTop = 2;
     }*/
 
-    /* No overflows please */
+    /* No overflows please - todo: this just dumps the whole input, make this cleaner */
     if( Conn->OutTop + Length >= MAX_OUTPUT_BUFFER - 5 )
     {
         memset( Conn->OutBuffer, '\0', MAX_OUTPUT_BUFFER );

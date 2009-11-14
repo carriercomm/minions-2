@@ -130,15 +130,21 @@ void ParseCommand( Connection *Player, char *CmdLine )
 	
 	for( int loop = 0; CommandTable[loop].Command != NULL; loop++ )
 	{
-		if( !strnicmp( CommandTable[loop].Command, cmdList[0], len ) )
+		if( !strnicmp( CommandTable[loop].Command, cmdList[0], len ) ) //if command matches a real command
 		{
-			(*CommandTable[loop].FuncPtr )( Player, CmdLine, cmdList[1], cmdList[2] );
+			(*CommandTable[loop].FuncPtr )( Player, CmdLine, cmdList[1], cmdList[2] ); //execute command
+
+			/* added the status prompt code here  */
+			WriteToBuffer( Player, "%s%s[ HP: %i] > %s", ANSI_CLR_SOL, ANSI_BR_CYAN, Player->Player.GetHitPoints(), ANSI_WHITE );
+
 			return;
 		}
 
 	}
 	WriteToBuffer( Player, "%s***  Your command had no effect. ***%s\n\r",
 		ANSI_BR_RED, ANSI_WHITE );
+
+	WriteToBuffer( Player, "%s%s[ HP: %i] > %s", ANSI_CLR_SOL, ANSI_BR_CYAN, Player->Player.GetHitPoints(), ANSI_WHITE );
 
 	delete tempbuf;
 

@@ -12,8 +12,9 @@
 
 
 /*  cursor manipulation */
-#define ANSI_CLR_SCR     			"\x1B[2J"
-#define ANSI_CLR_LINE				"\x1B[K"
+#define ANSI_CLR_SCR     			"\x1B[2J"	//clear screen and home cursor
+#define ANSI_CLR_LINE				"\x1B[K"	//clear to end of line
+#define ANSI_CLR_SOL				"\x1B[80;1f" //clear to start of line *dependent on the size of prompt
 
 /* normal video display Ansi colors  */
 #define ANSI_BLACK		"\x1B[0;30m"
