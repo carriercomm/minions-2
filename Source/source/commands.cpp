@@ -84,6 +84,13 @@ Command_Table CommandTable[] =
  **********************************************************/
 void ParseCommand( Connection *Player, char *CmdLine )
 {
+	// If stun, you can't do anything
+	if (FLAG_IS_SET(Player->Flags, FLAG_STUN))
+	{
+		WriteToBuffer( Player, "%sYou can do that while stun!%s", ANSI_BR_CYAN, ANSI_WHITE );
+		return;
+	}
+
 	/* this is David parse function from the original minions -circa 1998 */
 	if( *CmdLine == ' ' || *CmdLine + 1 == '\0' )
 	{
@@ -1735,6 +1742,7 @@ COMMAND(Rest)
 	TempRoom = Player->Player.GetRoom();
     // Player is now resting so tell the damn computer that!
 	Player->Player.SetRestingStatus(RESTING);
+	StopCombat(Player);
 	// Lets tell the aholes in the room who is resting
 	TempRoom->SelectiveBroadcast( Player, NULL, "%s%s stops to rest%s\n\r", ANSI_BR_BLUE,
 	Player->Player.GetFirstName(), ANSI_WHITE ); 

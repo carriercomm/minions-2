@@ -10,21 +10,36 @@
 
 
 // Define Combat time interval in seconds
-#define COMBAT_TIME_INTERVAL            4
-#define HEAL_TIME_INTERVAL             15
+const int COMBAT_TIME_INTERVAL       =  4;
+const int HEAL_TIME_INTERVAL         = 15;
+const int STUN_TIME_INTERVAL         =  4;
 
 
 // Define Minion event types
-#define ME_COMBAT                       1
-#define ME_HEAL                         2 
-#define ME_MELEE_COMBAT                 3
+const int ME_COMBAT                  =  1;
+const int ME_HEAL                    =  2; 
+const int ME_MELEE_COMBAT            =  3;
+const int ME_REMOVE_FLAG             =  4;
 
 // Combat stuff 
 
 const int CRITICAL                   = 16;
 const int MAX_PUNCH_DAMAGE           =  3;
-//const char PUNCH[]                   = "punch";
-//const char PUNCH_WEAPON[]            = "fist";
+
+// Rates
+const int HEAL_RATE                  =  3;
+
+// enum of flags
+enum Flags {
+		E_FLAG_HIDDEN,
+		E_FLAG_FIGHTING,
+		E_FLAG_BLIND,
+		E_FLAG_SNEAKING,
+		E_FLAG_GOSSIPS,
+		E_FLAG_TELEPATHS,
+		E_FLAG_HIDING,
+		E_FLAG_STUN
+}; 	
 
 // Forward declarations
 class scheduler;
@@ -133,4 +148,25 @@ public:
 	Connection *getAttacker() { return Player; };
 	Connection *getVictim() { return Victim; };
 };
-	
+
+/*==========================================================
+ meRemoveFlag class -> Derived from minionsEvent class
+
+Removes any flags set when time runs out
+
+
+===========================================================*/
+class meRemoveFlag : public minionsEvent
+{
+	Connection *Player;
+	Connection *Victim;
+	int Flag;
+
+public:
+    meRemoveFlag(Connection *Player, int FlagToSet);
+	~meRemoveFlag();
+	void execEvent(scheduler *eventScheduler);
+	void killEvent(Connection *Conn);
+	Connection *getAttacker() { return Player; };
+	Connection *getVictim() { return Victim; };
+};

@@ -44,7 +44,7 @@
 #define FLAG_GOSSIPS		(1 <<  4)
 #define FLAG_TELEPATHS		(1 <<  5)
 #define FLAG_HIDING			(1 <<  6)
-#define Bit7		(1 <<  7)
+#define FLAG_STUN   		(1 <<  7)
 #define Bit8		(1 <<  8)
 #define Bit9		(1 <<  9)
 #define Bit10		(1 << 10)

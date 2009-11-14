@@ -169,7 +169,7 @@ void meHeal::naturalHeal()
 	Connection  *TempConn = '\0';
 	int curHP;
 	int maxHP;
-	int healRate;
+	int healRate = HEAL_RATE;
 /*
    If a player is resting, he heals at 2x rest rate.
    For now, I'm using player level as his heal rate.  1st level heals at 1hp per tick. 
@@ -182,7 +182,7 @@ void meHeal::naturalHeal()
 		curHP=TempConn->Player.GetHitPoints();
 		maxHP=TempConn->Player.GetMaxHitPoints();
 		// Setting heal rate to the players level. (probably should look into this later)
-		healRate=TempConn->Player.GetLevel();
+		
 
 		if (TempConn->Player.GetRestingStatus() == RESTING)
 		{
@@ -194,15 +194,11 @@ void meHeal::naturalHeal()
 			// Nope, lets see if one heal would raise the player above max hitpoints
 			// if it does, set maximum HPs, otherwise heal player at healRate
 			if ((curHP + healRate) > maxHP)
-			{
 				TempConn->Player.SetHitPoints(maxHP);
-				WriteToBuffer( TempConn, "%s%s[ HP: %i] > %s", ANSI_CLR_SOL, ANSI_BR_CYAN, TempConn->Player.GetHitPoints(), ANSI_WHITE );
-			}
 			else
-			{
 				TempConn->Player.SetHitPoints((curHP + healRate));
-				WriteToBuffer( TempConn, "%s%s[ HP: %i] > %s", ANSI_CLR_SOL, ANSI_BR_CYAN, TempConn->Player.GetHitPoints(), ANSI_WHITE );
-			}
+			WriteToBuffer( TempConn, "%s%s[ HP: %i] > %s", ANSI_CLR_SOL, ANSI_BR_CYAN, TempConn->Player.GetHitPoints(), ANSI_WHITE );
+
 		}
 	}
 };
@@ -341,7 +337,11 @@ void meMelee::execEvent(scheduler *eventScheduler)
 	if ( ToHitRoll == 20 )
 	{	
 		DisplayStunStatus( Victim );
+		SET_PFLAG(Victim->Flags, FLAG_STUN);
+		minionsEvent *RemoveEvent = new meRemoveFlag(Victim, E_FLAG_STUN);
+		eventScheduler->pushWaitStack((time(NULL)+STUN_TIME_INTERVAL), RemoveEvent);
 		StopCombat(Victim);
+
 	}
 
 	// Is the player dead?  If so, kill his ass and close combat
@@ -366,3 +366,57 @@ void meMelee::execEvent(scheduler *eventScheduler)
 
 
 	
+
+/*========================================================================
+meRemoveFlag
+
+=========================================================================*/
+
+meRemoveFlag::meRemoveFlag(Connection *StunPlayer, int FlagToSet)
+{
+	eventType = ME_REMOVE_FLAG;
+	eventTime = (time(NULL) + STUN_TIME_INTERVAL);
+	Player = StunPlayer;
+	Victim = StunPlayer;
+	deadEvent = false;
+	Flag = FlagToSet;
+}
+
+// meCombat class Destructor
+meRemoveFlag::~meRemoveFlag() { };
+
+void meRemoveFlag::killEvent(Connection *Conn)
+{
+	deadEvent = true;
+};
+
+/*===============================================================
+meRemoveFlag -> execEvent()
+
+Execute healing event and add next healing event to stack
+===============================================================*/
+void meRemoveFlag::execEvent(scheduler *eventScheduler)
+{
+	switch (Flag)
+	{
+	case E_FLAG_HIDDEN:
+		break;
+	case E_FLAG_FIGHTING:
+		break;
+	case E_FLAG_BLIND:
+		break;
+	case E_FLAG_SNEAKING:
+		break;
+	case E_FLAG_GOSSIPS:
+		break;
+	case E_FLAG_TELEPATHS:
+		break;
+	case E_FLAG_HIDING:
+		break;
+	case E_FLAG_STUN:
+		REMOVE_PFLAG(Player->Flags, FLAG_STUN);
+		break;
+	default:
+		break;
+	}
+}
