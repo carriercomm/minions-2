@@ -126,7 +126,7 @@ char *LookupHostName( char *IpAddress )
 	if( RemoteHost == NULL )
 	{
 		ServerLog("gethostbyaddr() failed, Error Code: [%d]", WSAGetLastError() );
-		return "Unknown Host Name";
+		return NULL;
 	}
 	
 	return RemoteHost->h_name;

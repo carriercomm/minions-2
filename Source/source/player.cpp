@@ -150,6 +150,12 @@ bool Client::SetIpAddress( char *new_address )
 
 bool Client::SetHostName( char *host )
 {
+	if( host == NULL )
+	{
+		strcpy( HostName, "un-resolvable hostname" );
+		return true;
+	}
+
 	char *temp = host;
 
 	while( *temp )
