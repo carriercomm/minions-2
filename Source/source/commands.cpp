@@ -460,12 +460,6 @@ COMMAND(BreakCombat)
 	}
 
 	
-	if (Player->Player.GetAttackEvent())
-	{
-		thisEvent = Player->Player.GetAttackEvent();
-		thisEvent->killEvent();
-	}
-	
 	WriteToBuffer( Player, "%s*** You break combat ***%s\n\r", ANSI_YELLOW,
 		ANSI_WHITE );
 
