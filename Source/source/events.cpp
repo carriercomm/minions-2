@@ -222,7 +222,7 @@ meMelee::meMelee(Connection *Attacker, Connection *Attacked)
 	deadEvent          = false;
 	Player             = Attacker;
 	Victim             = Attacked;
-	Weapon             = Player->Player.GetWieldedItem();
+	Weapon             = '\0';
 	Player->Victim     = Attacked;
 };
 
@@ -249,6 +249,7 @@ void meMelee::execEvent(scheduler *eventScheduler)
 	char        punchWeapon[] = "fist";
 	bool        Critical = false;
 	Room        *CurRoom = Player->Player.GetRoom();
+	Item        *Weapon = Player->Player.GetWieldedItem();
 
 	// Is this a dead event?  If so, skip it!
 	if (deadEvent == true) {
@@ -286,9 +287,9 @@ void meMelee::execEvent(scheduler *eventScheduler)
 	{
 		Critical = true;
 		if (!Weapon) // Does he have a weapon or is he punching?
-			Damage = (rand() % MAX_PUNCH_DAMAGE) + MAX_PUNCH_DAMAGE;
+			Damage = (rand() % MAX_PUNCH_DAMAGE) + (MAX_PUNCH_DAMAGE + 1);
 		else 
-			Damage = ( rand() % Weapon->GetMaxDamage() ) + Weapon->GetMaxDamage();
+			Damage = ( rand() % Weapon->GetMaxDamage() ) + (Weapon->GetMaxDamage() + 1);
 	}
 	else if (ToHitRoll > ToHitValue) // Ok, did he at least hit the player?
 	{

@@ -288,6 +288,9 @@ Status is a boolean true or false.  (is combat true, or false)
 
 void DisplayCombatStatus(Connection *Player, bool Status)
 {
+	Room *CurRoom = Player->Player.GetRoom();
+	Connection *Victim = Player->Victim;
+
 	if (Player->Victim == '\0')
 	{
 		ServerLog( "DisplayCombatStatus: Player had no victim! ...bailing out of function!");
@@ -298,6 +301,8 @@ void DisplayCombatStatus(Connection *Player, bool Status)
 	case true:
  		WriteToBuffer( Player, "%s*** Combat Engaged ***%s\n\r", ANSI_YELLOW, ANSI_WHITE );
 		WriteToBuffer( Player->Victim, "%s*** %s moves to attack you! ***%s\n\r",ANSI_YELLOW, Player->Player.GetFirstName(), ANSI_WHITE );
+		CurRoom->SelectiveBroadcast( Player, Victim, "%s%s moves to attack %s!%s\n\r", ANSI_YELLOW, 
+			Player->Player.GetFirstName(), Victim->Player.GetFirstName(), ANSI_WHITE );
 		break;
 	case false:
 		WriteToBuffer( Player, "%s*** Combat Off ***%s\n\r", ANSI_YELLOW, ANSI_WHITE );
