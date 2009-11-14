@@ -410,6 +410,7 @@ COMMAND(Attack)
 			ANSI_BR_RED, Argument, ANSI_WHITE );
 		return;
 	}
+	StopCombat(Player);
     Player->Victim = Victim;
 	Victim->Player.SetRestingStatus(NOT_RESTING);
 	// Tell players combat started and create combat event
@@ -457,20 +458,22 @@ COMMAND(BreakCombat)
 			ANSI_BR_RED, ANSI_WHITE );
 		return;
 	}
+
+	/*
 	if (Player->Player.GetAttackEvent())
 	{
 		thisEvent = Player->Player.GetAttackEvent();
 		thisEvent->killEvent();
 	}
-
+	*/
 	WriteToBuffer( Player, "%s*** You break combat ***%s\n\r", ANSI_YELLOW,
 		ANSI_WHITE );
 
 	WriteToBuffer( Player->Victim, "%s*** %s stops attacking you ***%s\n\r",
 		ANSI_YELLOW, Player->Player.GetFirstName(), ANSI_WHITE );
 
-	
-	Player->Victim = '\0';
+	StopCombat(Player);
+	//Player->Victim = '\0';
 }
 
 /**********************************************************

@@ -129,7 +129,6 @@ void scheduler::doMeleeEvents(scheduler *eventScheduler)
 		p=*curEvent;
 		delete p;
 	}
-	//combatStack.clear();
 };
 
 /*==============================================================

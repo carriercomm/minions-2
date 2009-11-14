@@ -237,7 +237,8 @@ void Die( Connection *Player, Room *CurRom )
 	}
 
 	/* when ya die yer no longer engaged on anyone */
-	Player->Victim = '\0';
+	StopCombat(Player);
+	/*Player->Victim = '\0';
 
 	// Kill any attack event in the queue!
 	if (Player->Player.GetAttackEvent())
@@ -246,6 +247,7 @@ void Die( Connection *Player, Room *CurRom )
 		Player->Player.SetAttackEvent('\0');
 
 	}
+	*/
 	/*  get the respawn room */
 	Rom = SearchForRoom( 1 );
 	
@@ -326,7 +328,7 @@ void DisplayMeleeCombat(Connection *Player, char *attackType, char *Weapon, int 
 		WriteToBuffer( Player->Victim, "%s%s swings at you with his %s, but missed!%s\n\r",
 			ANSI_BR_RED, Player->Player.GetFirstName(), Weapon, ANSI_WHITE );
 
-		// Let everyone else in the room know the victim got punked!
+		// Let everyone else in the room know that the attacker is blind as a bat!
 		CurRoom->SelectiveBroadcast( Player, Player->Victim, "%s%s swings at %s with his %s, but misses!%s\n\r",
 			ANSI_BR_RED, Player->Player.GetFirstName(), Player->Victim->Player.GetFirstName(), Weapon, ANSI_WHITE );
 	}
@@ -387,4 +389,22 @@ void DisplayStunStatus( Connection *Player )
 	// Tell the room */
 	CurRoom->SelectiveBroadcast( Player, Player, "%s%s stumbles backwards!%s\n\r",
 		ANSI_BLUE, Player->Player.GetFirstName(), ANSI_WHITE );
+}
+
+/*======================================================================
+StopCombat()
+
+Simple way cleanly shutdown combat
+
+======================================================================*/
+void StopCombat( Connection *Player )
+{
+	Player->Victim = '\0';
+
+	// Kill any attack event in the queue!
+	if (Player->Player.GetAttackEvent())
+	{	
+		Player->Player.GetAttackEvent()->killEvent();
+		Player->Player.SetAttackEvent('\0');
+	}
 }

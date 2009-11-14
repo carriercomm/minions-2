@@ -202,8 +202,6 @@ void meHeal::naturalHeal()
 			}
 		}
 	}
-//	curHP=TempConn->Player.GetHitPoints();
-//	WriteToBuffer( TempConn, "[HP=%s/%s]", curHP, maxHP );
 };
 
 
@@ -319,10 +317,13 @@ void meMelee::execEvent(scheduler *eventScheduler)
 	if ( ToHitRoll == 20 )
 	{	
 		DisplayStunStatus( Victim );
+		StopCombat(Victim);
+		/*
 		if (Victim->Player.GetAttackEvent())
 			Victim->Player.GetAttackEvent()->killEvent();
 		Victim->Player.SetAttackEvent('\0');
 		Victim->Victim='\0';
+		*/
 	}
 
 	// Is the player dead?  If so, kill his ass and close combat
@@ -331,7 +332,8 @@ void meMelee::execEvent(scheduler *eventScheduler)
 		Die( Victim, CurRoom );
 		DisplayCombatStatus(Player, false);
 		Player->Player.AddKill();
-        Player->Victim = '\0';
+        //Player->Victim = '\0';
+		StopCombat(Player);
 		return;
 	}
 
