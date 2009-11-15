@@ -1386,13 +1386,12 @@ COMMAND(GetItem)
 	}
 
 	TempRoom->RemoveItemFromRoom( TempItem );
-	Player->Player.AddItemToPlayer( TempItem );
-	
-	TempRoom->SelectiveBroadcast( Player, NULL, "%s%s picks up a %s%s\n\r", ANSI_BR_BLUE,
-		Player->Player.GetFirstName(), TempItem->GetItemName(), ANSI_WHITE ); 
-	
-	WriteToBuffer( Player, "%sYou pick up a %s%s\n\r", ANSI_BR_BLUE,
-		TempItem->GetItemName(), ANSI_WHITE );
+	if (Player->Player.AddItemToPlayer( TempItem ))
+	{	TempRoom->SelectiveBroadcast( Player, NULL, "%s%s picks up a %s%s\n\r", ANSI_BR_BLUE,
+			Player->Player.GetFirstName(), TempItem->GetItemName(), ANSI_WHITE ); 
+		WriteToBuffer( Player, "%sYou pick up a %s%s\n\r", ANSI_BR_BLUE,
+			TempItem->GetItemName(), ANSI_WHITE );
+	}
 
 	return;
 }
@@ -1494,23 +1493,25 @@ COMMAND(GiveItem)
 		Player->Player.WieldItem( '\0' );
 
 	/* do the transfer of the item from Player to Victim */
-	Player->Player.RemoveItemFromPlayer( TempItem );
-	Victim->Player.AddItemToPlayer( TempItem );
+	if ( Victim->Player.AddItemToPlayer( TempItem ) )
+	{
+		Player->Player.RemoveItemFromPlayer( TempItem );
 	
-	/* tell the room about it */
-	TempRoom->SelectiveBroadcast( Player, Victim, "%s%s gives a %s to %s%s\n\r",
-		ANSI_BR_BLUE, Player->Player.GetFirstName(), TempItem->GetItemName(),
-		Victim->Player.GetFirstName(), ANSI_WHITE ); 
 	
-	/* tell the giver */
-	WriteToBuffer( Player, "%sYou give the %s to %s%s\n\r",
-		ANSI_BR_BLUE, TempItem->GetItemName(), Victim->Player.GetFirstName(), ANSI_WHITE );
+		/* tell the room about it */
+		TempRoom->SelectiveBroadcast( Player, Victim, "%s%s gives a %s to %s%s\n\r",
+			ANSI_BR_BLUE, Player->Player.GetFirstName(), TempItem->GetItemName(),
+			Victim->Player.GetFirstName(), ANSI_WHITE ); 
+	
+		/* tell the giver */
+		WriteToBuffer( Player, "%sYou give the %s to %s%s\n\r",
+			ANSI_BR_BLUE, TempItem->GetItemName(), Victim->Player.GetFirstName(), ANSI_WHITE );
 
-	/*  tell the reciever  */
-	WriteToBuffer( Victim, "%s%s gives you a %s%s\n\r",
-		ANSI_BR_BLUE, Player->Player.GetFirstName(),
-		TempItem->GetItemName(), ANSI_WHITE );
-
+		/*  tell the reciever  */
+		WriteToBuffer( Victim, "%s%s gives you a %s%s\n\r",
+			ANSI_BR_BLUE, Player->Player.GetFirstName(),
+			TempItem->GetItemName(), ANSI_WHITE );
+	}
 	return;
 }
 
@@ -1718,15 +1719,15 @@ COMMAND(Spawn)
 	}
 
 	/*  physically add it to thier inventory */
-	Player->Player.AddItemToPlayer( TempItem );
+	if ( Player->Player.AddItemToPlayer( TempItem ) )
+	{
+		/* tell everyone who needs to know  */
+		TempRoom->BroadcastRoom( "%s%s pulls a %s out of thin air!%s\n\r", ANSI_BR_CYAN,
+			Player->Player.GetFirstName(), TempItem->GetItemName(), ANSI_WHITE );
 
-	/* tell everyone who needs to know  */
-	TempRoom->BroadcastRoom( "%s%s pulls a %s out of thin air!%s\n\r", ANSI_BR_CYAN,
-		Player->Player.GetFirstName(), TempItem->GetItemName(), ANSI_WHITE );
-
-	WriteToBuffer( Player, "%sA %s has been added to your inventory!%s\n\r",
-		ANSI_BR_RED, TempItem->GetItemName(), ANSI_WHITE );
-	
+		WriteToBuffer( Player, "%sA %s has been added to your inventory!%s\n\r",
+			ANSI_BR_RED, TempItem->GetItemName(), ANSI_WHITE );
+	}
 	return;
 }
 

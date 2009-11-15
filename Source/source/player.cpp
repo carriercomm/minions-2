@@ -12,6 +12,7 @@
 #include <fstream>
 #include <ctype.h>
 #include "player.h"
+#include "ansicolor.h"
 #include "room.h"
 #include "tcpcomm.h"
 #include "item.h"
@@ -38,7 +39,8 @@ Client::Client()
 	ArmorClass = 5;
 	THAC0 = 14;
 	Class = Race = 0;
-	AttackEvent = '\0';
+	AttackEvent = NULL;
+	MyConnection = NULL;
 	
 }
 
@@ -322,6 +324,7 @@ void Client::DropAllItems( void )
 {
 	ItemsOnPlayer	*ListPtr = '\0';
 	ItemsOnPlayer	*ListPtr_Next = '\0';
+	bool WeightSet;
 
 	ListPtr = FirstItem;
 
@@ -341,8 +344,7 @@ void Client::DropAllItems( void )
 	FirstItem = '\0';
 	Wielded = '\0';
 	// Set player weight to exactly zero.
-	SetPlayerWeight( 0, EXACTLY );
-
+	WeightSet = SetPlayerWeight( 0, EXACTLY );
 	return;
 }
 
@@ -351,6 +353,7 @@ bool Client::AddItemToPlayer( Item *NewItem )
 {
 	ItemsOnPlayer	*TempItemsOnPlayer;
 	ItemsOnPlayer	*PlaceHolder;
+	Connection      *Player;
 	
 	TempItemsOnPlayer = new ItemsOnPlayer;
 
@@ -360,21 +363,25 @@ bool Client::AddItemToPlayer( Item *NewItem )
 		return false;
 	}
 	
+	if ( !SetPlayerWeight( NewItem->GetWeight(), ADD) )
+	{
+		WriteToBuffer(MyConnection, "%sYou cannot carry that much weight!\n\r%s", ANSI_CYAN, ANSI_WHITE);
+		return false;
+	}
+
 	if( FirstItem )
 	{
 		PlaceHolder = FirstItem;
 		FirstItem = TempItemsOnPlayer;
 		FirstItem->Next = PlaceHolder;
 		FirstItem->Item = NewItem;
-		SetPlayerWeight( NewItem->GetWeight(), ADD);
 		return true;
 	}
 	
 	FirstItem = TempItemsOnPlayer;
 	FirstItem->Next = '\0';
 	FirstItem->Item = NewItem;
-	SetPlayerWeight( NewItem->GetWeight(), ADD);
-
+	
 	return true;
 
 }
@@ -388,6 +395,7 @@ Removes item from a player
 bool Client::RemoveItemFromPlayer( Item *ItemToDelete )
 {
 	ItemsOnPlayer	*Temp, *ToDelete;
+	bool tmp;
 
 	if( FirstItem->Item == ItemToDelete ) 
 	{
@@ -408,7 +416,7 @@ bool Client::RemoveItemFromPlayer( Item *ItemToDelete )
 	}
 
 	delete ToDelete;
-	SetPlayerWeight( ItemToDelete->GetWeight(), SUBTRACT );
+	tmp = SetPlayerWeight( ItemToDelete->GetWeight(), SUBTRACT );
 	
 	return true;
 }
@@ -479,20 +487,28 @@ Client -> SetWeight(int value, int add_subtract)
 
 Accepts two ints and adds or substracts from the current value
 =====================================================================*/
-void Client::SetPlayerWeight( int value, int add_subtract )
+bool Client::SetPlayerWeight( int value, int add_subtract )
 {
 	switch (add_subtract)
 	{
-	case ADD:
+	case ADD:  // Don't added if over player's maximum strength weight
+		if ( (Weight + value) > (Strength * MAX_STR_MULTIPLIER) )
+			return false;
 		Weight += value;
+		return true;
 		break;
 	case SUBTRACT:
 		Weight -= value;
+		return true;
 		break;
-	case EXACTLY:
+	case EXACTLY: // Don't set weight if over player's maximum strength weight
+		if ( (Weight + value) > (Strength * MAX_STR_MULTIPLIER) )
+			return false;
 		Weight = value;
+		return true;
 	default:
 		ServerLog("SetPlayerWeight() encountered default case switch value: %d", add_subtract);
+		return false;
 		break;
 	}
 }

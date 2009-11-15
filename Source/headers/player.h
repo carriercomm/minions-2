@@ -16,6 +16,7 @@
 #define MAX_LEVEL_ALLOWED				150
 #define MAX_DESCRIPTION_LENGTH			400
 #define MAX_HOST_NAME					80
+const int MAX_STR_MULTIPLIER          = 3;
 #define PLAYER_SAVE_PATH				"players\\"
 
 // Sort of booleans for adding or subtracting stats in functions
@@ -26,6 +27,7 @@ const int EXACTLY                     = 3;
 class Room;  //forward declaration
 class Item;  //forward declaration
 class minionsEvent;
+struct Connection;
 
 /*  link list of items in this players possesion */
 struct ItemsOnPlayer
@@ -54,9 +56,11 @@ class Client
 	ItemsOnPlayer	*FirstItem;
 	Item			*Wielded;
 	minionsEvent    *AttackEvent;
+	Connection      *MyConnection;  // So I can send stuff to buffer from member functions
 
 public:
 	Client();
+	void SetConnection( Connection *Conn ) { MyConnection = Conn; };	
 	void AddKill( void ) { Kills++; };
 	int GetKills( void ) {return Kills; };
 	void SubtractKill( void ) { Kills--; };
@@ -114,7 +118,7 @@ public:
 	bool SetClassStr( char *NewStr );
 	char *GetClassStr( void ) { return ClassStr; };
 	bool SetClass( int ClassNum );
-	void SetPlayerWeight( int add_weight_value, int add_subtract );
+	bool SetPlayerWeight( int add_weight_value, int add_subtract );
 	int GetPlayerWeight( void ) { return Weight; };
 	int GetBeenKilled( void ) { return BeenKilled; };
 	void AddBeenKilled( void ) { BeenKilled++; };

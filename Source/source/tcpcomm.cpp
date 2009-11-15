@@ -195,6 +195,7 @@ bool AcceptConnection( void )
 		NewConn->Player.SetIpAddress( "Unknown" );
 
 	NewConn->Player.SetHostName( LookupHostName( inet_ntoa( NewConnection.sin_addr )) );
+	NewConn->Player.SetConnection(NewConn);
 
 	/* Log the connection */
 	ServerLog( "%sAccepting connection request from [%s] - %s\n",
