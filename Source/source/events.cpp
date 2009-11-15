@@ -415,6 +415,7 @@ void meRemoveFlag::execEvent(scheduler *eventScheduler)
 		break;
 	case E_FLAG_STUN:
 		REMOVE_PFLAG(Player->Flags, FLAG_STUN);
+		WriteToBuffer(Player, "%sYou are no longer stun.\n\r%s", ANSI_BLUE, ANSI_WHITE);
 		break;
 	default:
 		break;
