@@ -17,14 +17,17 @@
 #include "tcpcomm.h"
 #include "item.h"
 #include "races.h"
+#include "ansicolor.h"
 
 using namespace std;
 
 Client::Client()
 {
-	FirstName[0] = LastName[0] = IpAddress[0] = Password[0] = HostName[0] = RaceStr[0] = ClassStr[0] = '\0';
+	FirstName[0] = LastName[0] = IpAddress[0] = Password[0] = HostName[0] = RaceStr[0] = ClassStr[0] = NULL;
+	Description[0] = NULL;
 	strcpy( FirstName, "-Login" );
 	strcpy( LastName, "In Progress -" );
+	strcpy( Description, "Constructor Default Description" );
 	Stealth = MaxDamage = DamageBonus = 25;
 	Strength = Agility = Health = Luck = Wisdom = 32; 
 	HitPoints = MaxHits = Mana = MaxMana = 120;
@@ -512,3 +515,44 @@ bool Client::SetPlayerWeight( int value, int add_subtract )
 		break;
 	}
 }
+
+/************************************************************************
+	Client -> GetDescription(void)
+	Build up the description string, then return a pointer to it.
+*************************************************************************/
+char* Client::GetDescription( void ) 
+{
+	char TempDesc[MAX_DESCRIPTION_LENGTH];
+	char HealthStatusDesc[20];
+	char WieldedDesc[MAX_STRING_LENGTH];
+
+	/* get the health status string */
+	if( HitPoints <= ( MaxHits * .25 ) )
+		strcpy( HealthStatusDesc, "slightly" );
+	else if( HitPoints <= ( MaxHits * .50 ) )
+		strcpy( HealthStatusDesc, "moderately" );
+	else if( HitPoints <= ( MaxHits * .75 ) )
+		strcpy( HealthStatusDesc, "heavily" );
+	else if( HitPoints <= ( MaxHits * .80 ) )
+		strcpy( HealthStatusDesc, "critically" );
+	else
+		strcpy( HealthStatusDesc, "not" );
+
+	/* get the item wielded currently  */
+	if( Wielded )
+		strcpy( WieldedDesc, Wielded->GetItemName() );
+	else
+		strcpy( WieldedDesc, "nothing." );
+
+	/* build it into the TempDesc char array  */	
+	sprintf( TempDesc, "%s%s[ %s %s ] - %s%s %s\n\r%s%s is %s wounded.\n\r%s is wielding: %s\n\r", ANSI_CLR_SOL, ANSI_BR_GREEN, FirstName,
+		LastName, ANSI_BR_WHITE, RaceStr, ClassStr, ANSI_BR_YELLOW, FirstName, HealthStatusDesc, FirstName, WieldedDesc );
+
+	if( strlen( TempDesc ) >= MAX_DESCRIPTION_LENGTH )
+		strcpy( Description, "Description Too Long in Client::GetDescription()" );
+	else
+		strcpy( Description, TempDesc );
+
+	return Description;
+}
+	

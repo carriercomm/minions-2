@@ -184,14 +184,16 @@ void Say( Connection *Conn, char *Text )
 	{
 		if( ListPtr->Player == Conn )
 		{
-			WriteToBuffer( Conn, "%sYou say: %s%s\n\r", ANSI_BR_GREEN, ANSI_WHITE, Text );
+			WriteToBuffer( Conn, "%s%sYou say: %s%s\n\r", ANSI_CLR_SOL, ANSI_BR_GREEN, ANSI_WHITE, Text );
+			WriteToBuffer( Conn, "%s%s[ HP: %i] > %s", ANSI_CLR_SOL, ANSI_BR_CYAN, Conn->Player.GetHitPoints(), ANSI_WHITE );
 			continue;
 		}
 
 		if( ListPtr->Player->Status == STATUS_AUTHENTICATED )
 		{
-			WriteToBuffer( ListPtr->Player, "%s%s says: %s%s\n\r", ANSI_BR_GREEN,
+			WriteToBuffer( ListPtr->Player, "%s%s%s says: %s%s\n\r", ANSI_CLR_SOL, ANSI_BR_GREEN,
 		                Conn->Player.GetFirstName(), ANSI_WHITE, Text );
+			WriteToBuffer( ListPtr->Player, "%s%s[ HP: %i] > %s", ANSI_CLR_SOL, ANSI_BR_CYAN, ListPtr->Player->Player.GetHitPoints(), ANSI_WHITE );
 		}
 	}
 
@@ -221,6 +223,7 @@ COMMAND(Credits)
 		//WriteToBuffer( Player, "%s-------[ Minions Mud Server - %s ]------------\n\r\t    %s(C)1998 - 2009 SonzoSoft%s\n\rProgramming: Mark Richardson - sinbaud@hotmail.com\n\r\t\tAnd David Brown.\n\r-----------------------------------------------------\n\r", ANSI_BR_RED, SERVER_VERSION, ANSI_WHITE, ANSI_BR_RED );
 		DisplayFile( Player, HelpScreen );
 		WriteToBuffer( Player, "\n\r" );
+		WriteToBuffer( Player, "%s%s[ HP: %i] > %s", ANSI_CLR_SOL, ANSI_BR_CYAN, Player->Player.GetHitPoints(), ANSI_WHITE );
 		return;
 	}
 
@@ -305,6 +308,7 @@ COMMAND(Who)
 		ANSI_BR_GREEN );
 
 	WriteToBuffer( Player, "Server uptime in %s: %i\n\r", TimeString, UpTime );
+	WriteToBuffer( Player, "%s%s[ HP: %i] > %s", ANSI_CLR_SOL, ANSI_BR_CYAN, Player->Player.GetHitPoints(), ANSI_WHITE );
 	return;
 }
 
@@ -354,6 +358,7 @@ COMMAND(Score)
 		ANSI_BR_GREEN );
 
 	WriteToBuffer( Player, "Server uptime in %s: %i\n\r", TimeString, UpTime );
+	WriteToBuffer( Player, "%s%s[ HP: %i] > %s", ANSI_CLR_SOL, ANSI_BR_CYAN, Player->Player.GetHitPoints(), ANSI_WHITE );
 	return;
 }
 
@@ -380,7 +385,7 @@ COMMAND(Help)
 			WriteToBuffer( Player, "%s  ", CommandTable[loop].Padded );
 	}
 	
-	WriteToBuffer( Player, "%s\n\r", ANSI_WHITE );
+	WriteToBuffer( Player, "%s%s[ HP: %i] > %s", ANSI_CLR_SOL, ANSI_BR_CYAN, Player->Player.GetHitPoints(), ANSI_WHITE );
 
 	return;
 }
@@ -441,7 +446,7 @@ COMMAND(Attack)
  **********************************************************/
 COMMAND(ClrScr)
 {
-	WriteToBuffer( Player, "%s", ANSI_CLR_SCR );
+	WriteToBuffer( Player, "%s%s[ HP: %i] > %s", ANSI_CLR_SCR, ANSI_BR_CYAN, Player->Player.GetHitPoints(), ANSI_WHITE );
 	return;
 }
 
@@ -652,9 +657,7 @@ COMMAND(Look)
 		Victim = TempRom->SearchRoomForPlayer( Argument );
 		if( Victim )
 		{
-			WriteToBuffer( Player, "%s[ %s %s ]\n\r%s seems like a nice enough person.%s\n\r",
-				ANSI_BR_CYAN, Victim->Player.GetFirstName(), Victim->Player.GetLastName(),
-				Victim->Player.GetFirstName(), ANSI_WHITE );
+			WriteToBuffer( Player, "%s", Victim->Player.GetDescription() );
 			
 			WriteToBuffer( Victim, "%s%s looks you over.%s\n\r", ANSI_BR_BLUE,
 				Player->Player.GetFirstName(), ANSI_WHITE );

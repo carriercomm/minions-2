@@ -83,7 +83,6 @@ public:
 	int GetLevel( void ) { return Level; };
 	bool SetLevel( int new_level );
 	bool SetDesc( char *new_desc );
-	char *GetDesc( void ) { return Description; };
 	bool LoadPlayer( char *name );
 	bool SavePlayer( void );
 	bool SetPassword( char *new_password );
@@ -124,6 +123,7 @@ public:
 	void AddBeenKilled( void ) { BeenKilled++; };
 	void SetAttackEvent(minionsEvent *Event) { AttackEvent = Event; }; 
 	minionsEvent *GetAttackEvent( void ) { return AttackEvent; };
+	char *GetDescription( void ); //build and return a detailed player description.
 	~Client();
 };
 
