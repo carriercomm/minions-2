@@ -29,6 +29,7 @@ Client::Client()
 	HitPoints = MaxHits = Mana = MaxMana = 120;
 	Level = Sex = 1;
 	Exp = Kills = 0;
+	Weight = 0;
 	CurrentRoom = NULL;
 	BeenKilled = 0;
 	FirstItem = NULL;
@@ -339,6 +340,8 @@ void Client::DropAllItems( void )
 
 	FirstItem = '\0';
 	Wielded = '\0';
+	// Set player weight to exactly zero.
+	SetPlayerWeight( 0, EXACTLY );
 
 	return;
 }
@@ -363,16 +366,24 @@ bool Client::AddItemToPlayer( Item *NewItem )
 		FirstItem = TempItemsOnPlayer;
 		FirstItem->Next = PlaceHolder;
 		FirstItem->Item = NewItem;
+		SetPlayerWeight( NewItem->GetWeight(), ADD);
 		return true;
 	}
 	
 	FirstItem = TempItemsOnPlayer;
 	FirstItem->Next = '\0';
 	FirstItem->Item = NewItem;
+	SetPlayerWeight( NewItem->GetWeight(), ADD);
 
 	return true;
 
 }
+
+/*=======================================================
+RemoveItemRomPlayer -> Client
+
+Removes item from a player
+=======================================================*/
 
 bool Client::RemoveItemFromPlayer( Item *ItemToDelete )
 {
@@ -397,6 +408,7 @@ bool Client::RemoveItemFromPlayer( Item *ItemToDelete )
 	}
 
 	delete ToDelete;
+	SetPlayerWeight( ItemToDelete->GetWeight(), SUBTRACT );
 	
 	return true;
 }
@@ -462,3 +474,25 @@ bool Client::SetRestingStatus( int rest_status )
 	return true;
 }
 
+/*=====================================================================
+Client -> SetWeight(int value, int add_subtract)
+
+Accepts two ints and adds or substracts from the current value
+=====================================================================*/
+void Client::SetPlayerWeight( int value, int add_subtract )
+{
+	switch (add_subtract)
+	{
+	case ADD:
+		Weight += value;
+		break;
+	case SUBTRACT:
+		Weight -= value;
+		break;
+	case EXACTLY:
+		Weight = value;
+	default:
+		ServerLog("SetPlayerWeight() encountered default case switch value: %d", add_subtract);
+		break;
+	}
+}

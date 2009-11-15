@@ -18,6 +18,11 @@
 #define MAX_HOST_NAME					80
 #define PLAYER_SAVE_PATH				"players\\"
 
+// Sort of booleans for adding or subtracting stats in functions
+const int ADD                         = 1;
+const int SUBTRACT                    = 2;
+const int EXACTLY                     = 3;
+
 class Room;  //forward declaration
 class Item;  //forward declaration
 class minionsEvent;
@@ -42,7 +47,7 @@ class Client
 	char			HostName[MAX_STRING_LENGTH];
 	unsigned int	ArmorClass, Stealth, MaxDamage, DamageBonus;
 	unsigned int	Strength, Agility, Health, Luck, Wisdom, Sex; 
-	int				HitPoints, MaxHits, Mana, MaxMana, Level, Race, THAC0, Class, Resting;
+	int				HitPoints, MaxHits, Mana, MaxMana, Level, Race, THAC0, Class, Resting, Weight;
 	unsigned int	Exp, Kills, BeenKilled;
 	Room			*CurrentRoom;
     unsigned int	CurrentRoomNumber;
@@ -109,6 +114,8 @@ public:
 	bool SetClassStr( char *NewStr );
 	char *GetClassStr( void ) { return ClassStr; };
 	bool SetClass( int ClassNum );
+	void SetPlayerWeight( int add_weight_value, int add_subtract );
+	int GetPlayerWeight( void ) { return Weight; };
 	int GetBeenKilled( void ) { return BeenKilled; };
 	void AddBeenKilled( void ) { BeenKilled++; };
 	void SetAttackEvent(minionsEvent *Event) { AttackEvent = Event; }; 

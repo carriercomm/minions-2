@@ -87,7 +87,7 @@ void ParseCommand( Connection *Player, char *CmdLine )
 	// If stun, you can't do anything
 	if (FLAG_IS_SET(Player->Flags, FLAG_STUN))
 	{
-		WriteToBuffer( Player, "%sYou can do that while stun!%s", ANSI_BR_CYAN, ANSI_WHITE );
+		WriteToBuffer( Player, "%sYou can not do that while stun!\n\r%s", ANSI_BR_CYAN, ANSI_WHITE );
 		return;
 	}
 
@@ -484,10 +484,10 @@ COMMAND(Status)
 		ANSI_BR_GREEN, ANSI_WHITE, Player->Player.GetArmorClass(), ANSI_BR_GREEN,
 		ANSI_WHITE, Player->Player.GetTHAC0() );
 	
-	WriteToBuffer( Player, "%sStrength: %s%d          %sHealth: %s%d\n\r%sAgility:  %s%d          %sLuck:   %s%d\n\r%sWisdom:   %s%d\n\r",
+	WriteToBuffer( Player, "%sStrength: %s%d          %sHealth: %s%d\n\r%sAgility:  %s%d          %sLuck:   %s%d\n\r%sWisdom:   %s%d          %sWeight:   %s%d\n\r",
 		ANSI_BR_GREEN, ANSI_WHITE, Player->Player.GetStrength(), ANSI_BR_GREEN, ANSI_WHITE, Player->Player.GetHealth(), ANSI_BR_GREEN,
 		ANSI_WHITE, Player->Player.GetAgility(), ANSI_BR_GREEN, ANSI_WHITE, Player->Player.GetLuck(), ANSI_BR_GREEN, ANSI_WHITE,
-		Player->Player.GetWisdom() );
+		Player->Player.GetWisdom(), ANSI_BR_GREEN, ANSI_WHITE, Player->Player.GetPlayerWeight() );
 	return;
 }
 

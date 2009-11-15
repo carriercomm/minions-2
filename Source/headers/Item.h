@@ -19,7 +19,7 @@ class Item
 {
 	unsigned int		ItemNumber;
 	unsigned int		Value;
-	unsigned int		Weight;
+	int					Weight;
 	char				Name[MAX_ITEM_STRING];
 	char				Description[MAX_DESC_LENGTH];
 	char				AttackType[MAX_ITEM_STRING];
@@ -35,8 +35,8 @@ public:
 	void SetItemNumber( unsigned int NewNum ) { ItemNumber = NewNum; };
 	unsigned int GetItemValue( void ) { return Value; };
 	void SetItemValue( unsigned int NewVal ) { Value = NewVal; };
-	unsigned int GetWeight( void ) { return Weight; };
-	void SetWeight( unsigned int NewWeight ) { Weight = NewWeight; };
+	int GetWeight( void ) { return Weight; };
+	void SetWeight( int NewWeight ) { Weight = NewWeight; };
 	bool SetItemName( char *NewName );
 	char *GetItemName( void ) { return Name; };
 	bool SetItemDesc( char *NewDesc );
