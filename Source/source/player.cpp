@@ -527,14 +527,16 @@ char* Client::GetDescription( void )
 	char WieldedDesc[MAX_STRING_LENGTH];
 
 	/* get the health status string */
+	if( HitPoints <= ( MaxHits * .95 ) )
+		strcpy( HealthStatusDesc, "critically"
 	if( HitPoints <= ( MaxHits * .25 ) )
-		strcpy( HealthStatusDesc, "slightly" );
+		strcpy( HealthStatusDesc, "heavily" );
 	else if( HitPoints <= ( MaxHits * .50 ) )
 		strcpy( HealthStatusDesc, "moderately" );
 	else if( HitPoints <= ( MaxHits * .75 ) )
-		strcpy( HealthStatusDesc, "heavily" );
-	else if( HitPoints <= ( MaxHits * .80 ) )
-		strcpy( HealthStatusDesc, "critically" );
+		strcpy( HealthStatusDesc, "slighlty" );
+	else if( HitPoints <= ( MaxHits * .95 ) )
+		strcpy( HealthStatusDesc, "mildly" );
 	else
 		strcpy( HealthStatusDesc, "not" );
 
