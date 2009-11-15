@@ -25,7 +25,7 @@ INSERT INTO classes VALUES( 5, "Paladin", "Physical Combat is thier holy calling
 INSERT INTO classes VALUES( 6, "Priest", "Physical Combat is thier holy calling, and healing thier forte.");
 INSERT INTO classes VALUES( 7, "Night Owl", "Physical Combat is thier holy calling, and healing thier forte.");
 
-INSERT INTO items VALUES( 1, 30, 25, "turd-tipped crozier", "This fine crozier is of a high quality. An immensely sharpened, pertrified turd forms a deady tip.", 75, 5, 3, 10, "penetrate", 10);
-INSERT INTO items VALUES( 2, 30, 25, "flappy titties", "These appear to be discarded breast implants of very low quality.", 75, 5, 3, 10, "flap", 10);
-INSERT INTO items VALUES( 3, 30, 25, "cowflop", "This steaming flop is a humiliating deathblow.", 75, 5, 3, 10, "slop", 10);
-INSERT INTO items VALUES( 4, 30, 25, "holy avenger", "This fine golden sword is intricately carved, and enchanted to deal trememdous damage!", 560, 8, 3, 10, "penetrate", 65);
+INSERT INTO items VALUES( 1, 30, 1, 25, "turd-tipped crozier", "This fine crozier is of a high quality. An immensely sharpened, pertrified turd forms a deady tip.", 75, 5, 3, 10, "penetrate", 10, 0);
+INSERT INTO items VALUES( 2, 30, 1, 25, "flappy titties", "These appear to be discarded breast implants of very low quality.", 75, 5, 3, 10, "flap", 10, 0);
+INSERT INTO items VALUES( 3, 30, 1, 25, "cowflop", "This steaming flop is a humiliating deathblow.", 75, 5, 3, 10, "slop", 10, 0);
+INSERT INTO items VALUES( 4, 30, 1, 25, "holy avenger", "This fine golden sword is intricately carved, and enchanted to deal trememdous damage!", 560, 8, 3, 10, "penetrate", 65, 0);

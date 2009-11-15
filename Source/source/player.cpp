@@ -486,7 +486,7 @@ bool Client::SetRestingStatus( int rest_status )
 }
 
 /*=====================================================================
-Client -> SetWeight(int value, int add_subtract)
+Client -> SetPlayerWeight(int value, int add_subtract)
 
 Accepts two ints and adds or substracts from the current value
 =====================================================================*/

@@ -22,6 +22,7 @@ Item::Item()
 	ItemNumber =  Value = Weight = 0;
 	Name[0] = Description[0] = AttackType[0] = '\0';
 	MaxDamage = ToHitBonus = Speed = ArmorValue = 0;
+	WearLocation = ItemType = 0;
 }
 
 
@@ -134,15 +135,17 @@ bool LoadItemDatabase( void )
 			/* Load the result row into the Item Object pointed to by ItemPtr->Value */
 			ItemPtr->Value->SetItemNumber( sqlite3_column_int( SqlStatement, 0 ) );
 			ItemPtr->Value->SetItemValue( sqlite3_column_int( SqlStatement, 1 ) );
-			ItemPtr->Value->SetWeight( sqlite3_column_int( SqlStatement, 2 ) );
-			ItemPtr->Value->SetItemName( (char *)sqlite3_column_text( SqlStatement, 3 ) );
-			ItemPtr->Value->SetItemDesc( (char *)sqlite3_column_text( SqlStatement, 4 ) );
-			ItemPtr->Value->SetMaxDamage( sqlite3_column_int( SqlStatement, 5) );
-			ItemPtr->Value->SetToHitBonus( sqlite3_column_int( SqlStatement, 6) );
-			ItemPtr->Value->SetSpeed( sqlite3_column_int( SqlStatement, 7) );
-			ItemPtr->Value->SetArmorValue( sqlite3_column_int( SqlStatement, 8) );
-			ItemPtr->Value->SetAttackType( (char *)sqlite3_column_text( SqlStatement, 9) );
-			ItemPtr->Value->SetMinDamage( sqlite3_column_int( SqlStatement, 10) );
+			ItemPtr->Value->SetItemType( sqlite3_column_int( SqlStatement, 2 ) );
+			ItemPtr->Value->SetWeight( sqlite3_column_int( SqlStatement, 3 ) );
+			ItemPtr->Value->SetItemName( (char *)sqlite3_column_text( SqlStatement, 4 ) );
+			ItemPtr->Value->SetItemDesc( (char *)sqlite3_column_text( SqlStatement, 5 ) );
+			ItemPtr->Value->SetMaxDamage( sqlite3_column_int( SqlStatement, 6) );
+			ItemPtr->Value->SetToHitBonus( sqlite3_column_int( SqlStatement, 7) );
+			ItemPtr->Value->SetSpeed( sqlite3_column_int( SqlStatement, 8) );
+			ItemPtr->Value->SetArmorValue( sqlite3_column_int( SqlStatement, 9) );
+			ItemPtr->Value->SetAttackType( (char *)sqlite3_column_text( SqlStatement, 10) );
+			ItemPtr->Value->SetMinDamage( sqlite3_column_int( SqlStatement, 11) );
+			ItemPtr->Value->SetMinDamage( sqlite3_column_int( SqlStatement, 12) );
 	
 			RowCount++;		//dont forget to increment the row count.
 			break;

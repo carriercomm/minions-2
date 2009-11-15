@@ -10,15 +10,31 @@
 #ifndef _ITEM_H_INCLUDED
 #define _ITEM_H_INCLUDED
 
-#define MAX_ITEM_STRING		20
-#define MAX_DESC_LENGTH		200
-#define ITEM_DATABASE		"minions.db"
+const int MAX_ITEM_STRING			= 20;
+const int MAX_DESC_LENGTH		    = 200;
+const char ITEM_DATABASE[]	    	= "minions.db";
 
+// Define item types
+const int ITEM_WEAPON				= 1;
+const int ITEM_WEAR				    = 2;
+const int ITEM_OTHER		        = 3;
+
+// Define where item worn
+const int ITEM_NOT_WORN				= 0;
+const int ITEM_WEAR_HEAD			= 1;
+const int ITEM_WEAR_LEFT_ARM		= 2;
+const int ITEM_WEAR_RIGHT_ARM		= 3;
+const int ITEM_WEAR_LEGS			= 4;
+const int ITEM_WEAR_RIGHT_FINGER	= 5;
+const int ITEM_WEAR_LEFT_FINGER		= 6;
+const int ITEM_WEAR_FEET			= 7;
+const int ITEM_WEAR_NECK			= 8;
 
 class Item
 {
 	unsigned int		ItemNumber;
 	unsigned int		Value;
+	int                 ItemType;
 	int					Weight;
 	char				Name[MAX_ITEM_STRING];
 	char				Description[MAX_DESC_LENGTH];
@@ -28,6 +44,7 @@ class Item
 	int					Speed;
 	int					ArmorValue;
 	int					MinDamage;
+	int                 WearLocation;
 
 public:
 	Item();
@@ -35,6 +52,8 @@ public:
 	void SetItemNumber( unsigned int NewNum ) { ItemNumber = NewNum; };
 	unsigned int GetItemValue( void ) { return Value; };
 	void SetItemValue( unsigned int NewVal ) { Value = NewVal; };
+	void SetItemType( int item_type ) { ItemType = item_type; };
+	int GetItemType( void ) { return ItemType; };
 	int GetWeight( void ) { return Weight; };
 	void SetWeight( int NewWeight ) { Weight = NewWeight; };
 	bool SetItemName( char *NewName );
@@ -53,6 +72,8 @@ public:
 	void SetArmorValue( int NewAV ) { ArmorValue = NewAV; };
 	bool SetAttackType( char *String );
 	char *GetAttackType( void ) { return AttackType; };
+	void SetWearLocation( int location ) { WearLocation = location; };
+	int GetWearLocation( void ) { return WearLocation; };
 
 };
 
