@@ -142,7 +142,8 @@ void ParseCommand( Connection *Player, char *CmdLine )
 			(*CommandTable[loop].FuncPtr )( Player, CmdLine, cmdList[1], cmdList[2] ); //execute command
 
 			/* added the status prompt code here  */
-			WriteToBuffer( Player, "%s%s[ HP: %i] > %s", ANSI_CLR_SOL, ANSI_BR_CYAN, Player->Player.GetHitPoints(), ANSI_WHITE );
+			if ( strnicmp(cmdList[0], "quit", 4) )
+				WriteToBuffer( Player, "%s%s[ HP: %i] > %s", ANSI_CLR_SOL, ANSI_BR_CYAN, Player->Player.GetHitPoints(), ANSI_WHITE );
 
 			return;
 		}
