@@ -528,7 +528,7 @@ char* Client::GetDescription( void )
 
 	/* get the health status string */
 	if( HitPoints <= ( MaxHits * .95 ) )
-		strcpy( HealthStatusDesc, "critically"
+		strcpy( HealthStatusDesc, "critically");
 	if( HitPoints <= ( MaxHits * .25 ) )
 		strcpy( HealthStatusDesc, "heavily" );
 	else if( HitPoints <= ( MaxHits * .50 ) )
