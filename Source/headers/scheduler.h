@@ -22,6 +22,7 @@ class scheduler
 	wStack waitStack;
 	eStack execStack;
 	eStack combatStack;
+	eStack eMasterStack;
 
 	// Create multimap's iterators
 	wStack::iterator wsIter;  

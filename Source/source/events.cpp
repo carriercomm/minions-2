@@ -274,12 +274,15 @@ void meMelee::execEvent(scheduler *eventScheduler)
 	if (deadEvent == true) {
 		return;
 	}
+	// Is victim already dead?
+	if (!Player->Victim)
+		return;
 
 	// Is the victim in the room?  If not, close combat sequence
 	if (CurRoom != Player->Victim->Player.GetRoom())
 	{
 		DisplayCombatStatus(Player, false);
-		Player->Victim = '\0';
+		Player->Victim = NULL;
 		return;
 	}
 
@@ -346,15 +349,12 @@ void meMelee::execEvent(scheduler *eventScheduler)
 
 	// Is the player dead?  If so, kill his ass and close combat
 	if(!Player->Victim->Player.UpdateHitPoints( Damage, false ))
-	{ 						
+	{ 	
 		Die( Victim, CurRoom );
 		DisplayCombatStatus(Player, false);
 		Player->Player.AddKill();
-        //Player->Victim = '\0';
-		StopCombat(Player);
 		return;
 	}
-
 
 	// Not dead, so keep attacking (add another combat event)
 	minionsEvent *meleeEvent = new meMelee(Player, Victim);

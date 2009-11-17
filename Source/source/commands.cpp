@@ -429,7 +429,8 @@ COMMAND(Attack)
 			ANSI_BR_RED, Argument, ANSI_WHITE );
 		return;
 	}
-	StopCombat(Player);
+	if (Player->Player.GetAttackEvent())
+		StopCombat(Player);
     Player->Victim = Victim;
 	Victim->Player.SetRestingStatus(NOT_RESTING);
 	// Tell players combat started and create combat event

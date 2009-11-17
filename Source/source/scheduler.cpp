@@ -86,6 +86,7 @@ Add event object on to the combatStack.
 void scheduler::pushCombatStack(minionsEvent *mEvent)
 {
 	combatStack.push_back(mEvent);
+	eMasterStack.push_back(mEvent);
 };
 
 
@@ -122,15 +123,20 @@ void scheduler::doMeleeEvents(scheduler *eventScheduler)
 	eStack::iterator curEvent;
 	eStack tmpStack;
 
+	eMasterStack = combatStack;
 	tmpStack.swap(combatStack);
 	combatStack.clear();
 
+	// Execute the events
+	for (curEvent=tmpStack.begin(); curEvent != tmpStack.end(); ++curEvent) 
+		(*curEvent)->execEvent(eventScheduler);
+	// Due death, disconnect, stun, etc, we need to delte AFTER we go through it
 	for (curEvent=tmpStack.begin(); curEvent != tmpStack.end(); ++curEvent) 
 	{
-		(*curEvent)->execEvent(eventScheduler);
 		p=*curEvent;
 		delete p;
 	}
+	eMasterStack.clear();
 };
 
 /*==============================================================
@@ -181,7 +187,7 @@ void scheduler::ClearPlayerEvents( Connection *Conn )
 	minionsEvent *Event;
 
 	// Kill all Melee events for both the disconnected and those attacking the disconnected player
-	for (curEvent=combatStack.begin(); curEvent != combatStack.end(); ++curEvent)
+	for (curEvent=eMasterStack.begin(); curEvent != eMasterStack.end(); ++curEvent)
 	{
 		Event=*curEvent;
 		if (Event->getVictim() == Conn )

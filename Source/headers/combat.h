@@ -30,7 +30,6 @@ struct CombatList
 };
 
 /*  function prototypes for comabt.cpp module */
-void DoCombatRound( void );
 void Die( Connection *Player, Room *CurRom );
 void AddToCombatList( Connection *Agressor, Connection *Victim, AttackType AType );
 void RemoveFromCombatList( Connection *Aggressor, Connection *Victim );
