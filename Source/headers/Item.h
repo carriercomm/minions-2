@@ -28,6 +28,7 @@ const int ITEM_WEAR_LEGS			= 4;
 const int ITEM_WEAR_FINGER			= 5;
 const int ITEM_WEAR_FEET			= 6;
 const int ITEM_WEAR_NECK			= 7;
+const int ITEM_WEAR_HANDS           = 8;
 
 class Item
 {

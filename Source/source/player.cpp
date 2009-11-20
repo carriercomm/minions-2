@@ -612,6 +612,10 @@ Item* Client::IsWearing( int wearing )
 		if (Feet != NULL)
 			return Feet;
 		break;
+	case ITEM_WEAR_HANDS:
+		if (Hands != NULL)
+			return Hands;
+		break;
 	default:
 		cout << "Error, IsWearing() case hit default!" << endl;
 		break;
@@ -652,6 +656,9 @@ void Client::WearItem( Item *ItemToWear, int ItemPlacement )
 		Finger = ItemToWear;
 	case ITEM_WEAR_FEET:
 		Feet = ItemToWear;
+		break;
+	case ITEM_WEAR_HANDS:
+		Hands = ItemToWear;
 		break;
 	default:
 		cout << "Error, WearItem() case hit default!" << endl;

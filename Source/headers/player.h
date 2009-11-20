@@ -66,6 +66,7 @@ class Client
 	Item			*Legs;
 	Item			*Feet;
 	Item			*Finger;
+	Item            *Hands;
 
 
 
