@@ -558,3 +558,48 @@ char* Client::GetDescription( void )
 	return Description;
 }
 	
+/*============================================================
+Client::IsWearing()
+
+Check to see if the player is wearing something at noted location
+============================================================*/
+
+bool Client::IsWearing( int wearing )
+{
+	switch ( wearing )
+	{
+	case ITEM_WEAR_HEAD:
+		if (Head == NULL)
+			return false;
+		return true;
+	case ITEM_WEAR_NECK:
+		if (Neck == NULL)
+			return false;
+		return true;
+	case ITEM_WEAR_TORSO:
+		if (Torso == NULL)
+			return false;
+		return true;
+	case ITEM_WEAR_ARMS:
+		if (Arms == NULL)
+			return false;
+		return true;
+	case ITEM_WEAR_LEGS:
+		if (Legs == NULL)
+			return false;
+		return true;
+	case ITEM_WEAR_FINGER:
+		if (Finger == NULL)
+			return false;
+		return true;
+	case ITEM_WEAR_FEET:
+		if (Feet == NULL)
+			return false;
+		return true;
+	default:
+		cout << "Error, IsWearing() case hit default!" << endl;
+		break;
+	}
+}
+
+			

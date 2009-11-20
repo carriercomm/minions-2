@@ -54,9 +54,19 @@ class Client
 	Room			*CurrentRoom;
     unsigned int	CurrentRoomNumber;
 	ItemsOnPlayer	*FirstItem;
-	Item			*Wielded;
 	minionsEvent    *AttackEvent;
 	Connection      *MyConnection;  // So I can send stuff to buffer from member functions
+	// Items worn or wielded
+	Item			*Wielded;
+	Item            *Head;
+	Item			*Neck;
+	Item			*Arms;
+	Item			*Torso;
+	Item			*Legs;
+	Item			*Feet;
+	Item			*Finger;
+
+
 
 public:
 	Client();
@@ -124,6 +134,7 @@ public:
 	void SetAttackEvent(minionsEvent *Event) { AttackEvent = Event; }; 
 	minionsEvent *GetAttackEvent( void ) { return AttackEvent; };
 	char *GetDescription( void ); //build and return a detailed player description.
+	bool IsWearing( int wearing );
 	~Client();
 };
 

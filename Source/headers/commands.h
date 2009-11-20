@@ -11,12 +11,12 @@
 #define COMMANDS_H_INCLUDED
 
 
-#define MAX_COMMAND_LENGTH			256
+const int MAX_COMMAND_LENGTH    	= 256;
 #define COMMAND(name) void Cmd##name##( Connection *Player, char *FullCmd, char *Argument, char *Argument2 )
 
 // Resting status
-#define RESTING                       1
-#define NOT_RESTING                   2
+const int RESTING                   = 1;
+const int NOT_RESTING               = 2;
 
 class Room; //forward declaration
 class minionsEvent;
@@ -67,6 +67,7 @@ COMMAND(GetItem);
 COMMAND(DropItem);
 COMMAND(GiveItem);
 COMMAND(Wield);
+COMMAND(Wear);
 COMMAND(Remove);
 COMMAND(Emote);
 COMMAND(Spawn);

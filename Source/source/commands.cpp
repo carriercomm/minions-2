@@ -1534,6 +1534,14 @@ COMMAND(Wield)
 	
 	TempItem = Player->Player.SearchPlayerForItem( Argument );
 
+	// Make sure it's a wieldable item!
+	if ( TempItem->GetItemType() != ITEM_WEAPON)
+	{
+		WriteToBuffer( Player, "%sYou cannot wield a %s!%s\n\r",
+			ANSI_BR_RED, Argument, ANSI_WHITE );
+		return;
+	}
+
 	if( !TempItem )
 	{
 		WriteToBuffer( Player, "%sYou dont have a %s to wield!%s\n\r",
@@ -1569,6 +1577,76 @@ COMMAND(Wield)
 
 }
 
+/*===================================================================
+COMMAND(Wear)
+
+===================================================================*/
+COMMAND(Wear)
+{
+	int             WearLocation = 0;
+	Item			*TempItem = '\0';
+	Item			*WieldedItem = '\0';
+	Room			*TempRoom = '\0';
+
+	if( !Argument )
+	{
+		WriteToBuffer( Player, "%sUsage:%s wear <item>\n\r",
+			ANSI_BR_RED, ANSI_WHITE );
+		return;
+	}
+	
+	TempItem = Player->Player.SearchPlayerForItem( Argument );
+
+	// Make sure it's a wearable item!
+	if ( TempItem->GetItemType() != ITEM_ARMOR)
+	{
+		WriteToBuffer( Player, "%sYou cannot wear a %s!%s\n\r",
+			ANSI_BR_RED, Argument, ANSI_WHITE );
+		return;
+	}
+
+	if( !TempItem )
+	{
+		WriteToBuffer( Player, "%sYou dont have a %s!%s\n\r",
+			ANSI_BR_RED, Argument, ANSI_WHITE );
+		return;
+	}
+
+	TempRoom = Player->Player.GetRoom();
+
+	// Where is it worn?
+	WearLocation = TempItem->GetWearLocation();
+
+	// Is player wearing someting in new item's location already?
+	if ( Player->Player.IsWearing(WearLocation) )
+/// FIX BELOW THIS!
+
+	if( WieldedItem )
+	{
+		WriteToBuffer( Player, "%sYou remove your %s!%s\n\r",
+			ANSI_BR_BLUE, WieldedItem->GetItemName(), ANSI_WHITE );
+
+		TempRoom->SelectiveBroadcast( Player, NULL, "%s%s un-wields a %s!%s\n\r",
+			ANSI_BR_BLUE, Player->Player.GetFirstName(), WieldedItem->GetItemName(),
+			ANSI_WHITE );
+	}
+
+	WriteToBuffer( Player, "%sYou wield the %s!%s\n\r",
+		ANSI_BR_BLUE, TempItem->GetItemName(), ANSI_WHITE );
+
+	Player->Player.WieldItem( TempItem );
+	
+	TempRoom->SelectiveBroadcast( Player, NULL, "%s%s wields a %s!%s\n\r",
+		ANSI_BR_BLUE, Player->Player.GetFirstName(), TempItem->GetItemName(),
+		ANSI_WHITE );
+
+	return;
+
+}
+
+
+
+//==================================================================
 COMMAND(Remove)
 {
 	Item	*TempItem = '\0';

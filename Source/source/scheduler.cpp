@@ -130,7 +130,7 @@ void scheduler::doMeleeEvents(scheduler *eventScheduler)
 	// Execute the events
 	for (curEvent=tmpStack.begin(); curEvent != tmpStack.end(); ++curEvent) 
 		(*curEvent)->execEvent(eventScheduler);
-	// Due death, disconnect, stun, etc, we need to delte AFTER we go through it
+	// Due to death, disconnect, stun, etc, we need to delete AFTER we go through the stack
 	for (curEvent=tmpStack.begin(); curEvent != tmpStack.end(); ++curEvent) 
 	{
 		p=*curEvent;
@@ -176,7 +176,12 @@ void scheduler::checkEventsStatus()
 	}
 };
 
+/*==============================================================
+scheduler -> ClearPlayerEvents()
 
+Clears all events that envolved the connection passed. 
+(as attcker or as victim) for events like death, or disconnect
+===============================================================*/
 void scheduler::ClearPlayerEvents( Connection *Conn )
 {
 	Connection *Attacker;

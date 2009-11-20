@@ -20,15 +20,14 @@ const int ITEM_WEAR				    = 2;
 const int ITEM_OTHER		        = 3;
 
 // Define where item worn
-const int ITEM_NOT_WORN				= 0;
+const int ITEM_NOT_WORN				= NULL;
 const int ITEM_WEAR_HEAD			= 1;
-const int ITEM_WEAR_LEFT_ARM		= 2;
-const int ITEM_WEAR_RIGHT_ARM		= 3;
+const int ITEM_WEAR_ARMS			= 2;
+const int ITEM_WEAR_TORSO           = 3;
 const int ITEM_WEAR_LEGS			= 4;
-const int ITEM_WEAR_RIGHT_FINGER	= 5;
-const int ITEM_WEAR_LEFT_FINGER		= 6;
-const int ITEM_WEAR_FEET			= 7;
-const int ITEM_WEAR_NECK			= 8;
+const int ITEM_WEAR_FINGER			= 5;
+const int ITEM_WEAR_FEET			= 6;
+const int ITEM_WEAR_NECK			= 7;
 
 class Item
 {
