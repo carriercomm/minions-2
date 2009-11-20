@@ -31,19 +31,26 @@ Client::Client()
 	Stealth = MaxDamage = DamageBonus = 25;
 	Strength = Agility = Health = Luck = Wisdom = 32; 
 	HitPoints = MaxHits = Mana = MaxMana = 120;
-	Level = Sex = 1;
-	Exp = Kills = 0;
-	Weight = 0;
-	CurrentRoom = NULL;
-	BeenKilled = 0;
-	FirstItem = NULL;
-	Wielded = NULL;
-	CurrentRoomNumber = 1;
-	ArmorClass = 5;
-	THAC0 = 14;
-	Class = Race = 0;
-	AttackEvent = NULL;
-	MyConnection = NULL;
+	Level = Sex             = 1;
+	Exp = Kills             = 0;
+	Weight                  = 0;
+	CurrentRoom             = NULL;
+	BeenKilled              = 0;
+	FirstItem               = NULL;
+	Wielded                 = NULL;
+	Head                    = NULL;
+	Neck                    = NULL;
+	Arms                    = NULL;
+	Torso                   = NULL;
+	Legs                    = NULL;
+	Feet                    = NULL;
+	Finger                  = NULL;
+	CurrentRoomNumber       = 1;
+	ArmorClass              = 5;
+	THAC0                   = 14;
+	Class = Race            = 0;
+	AttackEvent             = NULL;
+	MyConnection            = NULL;
 	
 }
 
@@ -339,13 +346,18 @@ void Client::DropAllItems( void )
 		ListPtr_Next = ListPtr->Next;
 
 		if( CurrentRoom )
+			// If player is holding the item adjust stats accordingly when removing.
+			if ( IsWearing(ListPtr->Item->GetWearLocation()) != NULL )
+			{		
+				AdjustPlayerStatsByItem(ListPtr->Item, REMOVE);
+				WearItem(NULL, ListPtr->Item->GetWearLocation());
+			}
 			CurrentRoom->AddItemToRoom( ListPtr->Item );
 
 		delete ListPtr;
 	}
 
-	FirstItem = '\0';
-	Wielded = '\0';
+	FirstItem = NULL;
 	// Set player weight to exactly zero.
 	WeightSet = SetPlayerWeight( 0, EXACTLY );
 	return;
@@ -371,7 +383,6 @@ bool Client::AddItemToPlayer( Item *NewItem )
 		WriteToBuffer(MyConnection, "%sYou cannot carry that much weight!\n\r%s", ANSI_CYAN, ANSI_WHITE);
 		return false;
 	}
-
 	if( FirstItem )
 	{
 		PlaceHolder = FirstItem;
@@ -417,9 +428,11 @@ bool Client::RemoveItemFromPlayer( Item *ItemToDelete )
 		ToDelete = Temp->Next;
 		Temp->Next = Temp->Next->Next;
 	}
-
+	
 	delete ToDelete;
 	tmp = SetPlayerWeight( ItemToDelete->GetWeight(), SUBTRACT );
+	AdjustPlayerStatsByItem(ItemToDelete, REMOVE);
+	WearItem(NULL, ItemToDelete->GetWearLocation());
 	
 	return true;
 }
@@ -564,42 +577,111 @@ Client::IsWearing()
 Check to see if the player is wearing something at noted location
 ============================================================*/
 
-bool Client::IsWearing( int wearing )
+Item* Client::IsWearing( int wearing )
 {
 	switch ( wearing )
 	{
+	case ITEM_WIELDED:
+		if (Wielded != NULL)
+			return Wielded;
 	case ITEM_WEAR_HEAD:
-		if (Head == NULL)
-			return false;
-		return true;
+		if (Head != NULL)
+			return Head;
+		break;
 	case ITEM_WEAR_NECK:
-		if (Neck == NULL)
-			return false;
-		return true;
+		if (Neck != NULL)
+			return Neck;
+		break;
 	case ITEM_WEAR_TORSO:
-		if (Torso == NULL)
-			return false;
-		return true;
+		if (Torso != NULL)
+			return Torso;
+		break;
 	case ITEM_WEAR_ARMS:
-		if (Arms == NULL)
-			return false;
-		return true;
+		if (Arms != NULL)
+			return Arms;
+		break;
 	case ITEM_WEAR_LEGS:
-		if (Legs == NULL)
-			return false;
-		return true;
+		if (Legs != NULL)
+			return Legs;
+		break;
 	case ITEM_WEAR_FINGER:
-		if (Finger == NULL)
-			return false;
-		return true;
+		if (Finger != NULL)
+			return Finger;
+		break;
 	case ITEM_WEAR_FEET:
-		if (Feet == NULL)
-			return false;
-		return true;
+		if (Feet != NULL)
+			return Feet;
+		break;
 	default:
 		cout << "Error, IsWearing() case hit default!" << endl;
 		break;
 	}
+	return NULL;
 }
 
 			
+/*============================================================
+Client::WearItem()
+
+Wear the item passed in the position passed.
+============================================================*/
+
+void Client::WearItem( Item *ItemToWear, int ItemPlacement )
+{
+	switch ( ItemPlacement )
+	{
+	case ITEM_WIELDED:
+		Wielded = ItemToWear;
+		break;
+	case ITEM_WEAR_HEAD:
+		Head = ItemToWear;
+		break;
+	case ITEM_WEAR_NECK:
+		Neck = ItemToWear;
+		break;
+	case ITEM_WEAR_TORSO:
+		Torso = ItemToWear;
+		break;
+	case ITEM_WEAR_ARMS:
+		Arms = ItemToWear;
+		break;
+	case ITEM_WEAR_LEGS:
+		Legs = ItemToWear;
+		break;
+	case ITEM_WEAR_FINGER:
+		Finger = ItemToWear;
+	case ITEM_WEAR_FEET:
+		Feet = ItemToWear;
+		break;
+	default:
+		cout << "Error, WearItem() case hit default!" << endl;
+		return;
+		break;
+	}
+}
+
+
+/*============================================================
+Client::AdjustPlayerStatsByItem( Item *CurItem, int add_remove )
+
+Adjust the players stats as they wield/wear or remove items
+============================================================*/
+void Client::AdjustPlayerStatsByItem( Item *CurItem, int add_remove )
+{
+	switch ( add_remove )
+	{
+	case ADD:
+		ArmorClass     += CurItem->GetArmorValue();
+		THAC0          += CurItem->GetToHitBonus();
+		// Add other stats as items stat modifiers get added to the Items class
+		break;
+	case REMOVE:
+		ArmorClass     -= CurItem->GetArmorValue();
+		THAC0          -= CurItem->GetToHitBonus();
+		// add matching stats as added to above
+		break;
+	default:
+		ServerLog( "AdjustPlayerStatsByItem(): Cannot adjust player stats by item if case is %d", add_remove );
+		break;
+	}
+}

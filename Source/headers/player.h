@@ -23,6 +23,7 @@ const int MAX_STR_MULTIPLIER          = 3;
 const int ADD                         = 1;
 const int SUBTRACT                    = 2;
 const int EXACTLY                     = 3;
+const int REMOVE                      = 4;
 
 class Room;  //forward declaration
 class Item;  //forward declaration
@@ -134,7 +135,9 @@ public:
 	void SetAttackEvent(minionsEvent *Event) { AttackEvent = Event; }; 
 	minionsEvent *GetAttackEvent( void ) { return AttackEvent; };
 	char *GetDescription( void ); //build and return a detailed player description.
-	bool IsWearing( int wearing );
+	Item *IsWearing( int wearing );
+	void WearItem( Item *ItemToWear, int ItemPlacement);
+	void AdjustPlayerStatsByItem(Item *CurItem, int add_remove );
 	~Client();
 };
 

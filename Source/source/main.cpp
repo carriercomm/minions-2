@@ -101,6 +101,8 @@ void main( void )
 	TempRoom = SearchForRoom( 1 );
 	TempItem = SearchForItem( 1 );
 	TempRoom->AddItemToRoom( TempItem );
+	TempItem = SearchForItem( 6 );
+	TempRoom->AddItemToRoom( TempItem );
 	TempRoom = SearchForRoom( 2 );
 	TempItem = SearchForItem( 2 );
 	TempRoom->AddItemToRoom( TempItem );

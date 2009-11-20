@@ -71,6 +71,7 @@ Command_Table CommandTable[] =
 	{"spawn",		"spawn     ",	CmdSpawn,		true  },
 	{"score",       "score     ",   CmdScore,       false },
 	{"rest",        "rest      ",   CmdRest,        false },
+	{"wear",        "wear      ",   CmdWear,        false },
 	//{"sneak",       "sneak     ",   CmdSneak,       false },
 	//{"admin",       "admin     ",   CmdAdmin,       false },
 	{NULL}
@@ -1389,9 +1390,12 @@ COMMAND(GetItem)
 		return;
 	}
 
-	TempRoom->RemoveItemFromRoom( TempItem );
+
+	
 	if (Player->Player.AddItemToPlayer( TempItem ))
-	{	TempRoom->SelectiveBroadcast( Player, NULL, "%s%s picks up a %s%s\n\r", ANSI_BR_BLUE,
+	{	
+		TempRoom->RemoveItemFromRoom( TempItem );
+		TempRoom->SelectiveBroadcast( Player, NULL, "%s%s picks up a %s%s\n\r", ANSI_BR_BLUE,
 			Player->Player.GetFirstName(), TempItem->GetItemName(), ANSI_WHITE ); 
 		WriteToBuffer( Player, "%sYou pick up a %s%s\n\r", ANSI_BR_BLUE,
 			TempItem->GetItemName(), ANSI_WHITE );
@@ -1430,13 +1434,22 @@ COMMAND(DropItem)
 		return;
 	}
 
-	if( TempItem == Player->Player.GetWieldedItem() )
-		Player->Player.WieldItem( '\0' );
+	if (TempItem == Player->Player.IsWearing(TempItem->GetWearLocation()) )
+	{
+		WriteToBuffer( Player, "%sYou remove the %s!%s\n\r",
+			ANSI_BR_BLUE, TempItem->GetItemName(), ANSI_WHITE );
+
+		TempRoom->SelectiveBroadcast( Player, NULL, "%s%s removes %s!%s\n\r",
+			ANSI_BR_BLUE, Player->Player.GetFirstName(), TempItem->GetItemName(), ANSI_WHITE );
+	}
+
+	//	if( TempItem == Player->Player.GetWieldedItem() )
+//		Player->Player.WieldItem( '\0' );
 	
 	TempRoom->AddItemToRoom( TempItem );
 	Player->Player.RemoveItemFromPlayer( TempItem );
 	
-		TempRoom->SelectiveBroadcast( Player, NULL, "%s%s drops a %s%s\n\r", ANSI_BR_BLUE,
+	TempRoom->SelectiveBroadcast( Player, NULL, "%s%s drops a %s%s\n\r", ANSI_BR_BLUE,
 		Player->Player.GetFirstName(), TempItem->GetItemName(), ANSI_WHITE ); 
 	
 	WriteToBuffer( Player, "%sYou drop the %s%s\n\r", ANSI_BR_BLUE,
@@ -1516,6 +1529,9 @@ COMMAND(GiveItem)
 			ANSI_BR_BLUE, Player->Player.GetFirstName(),
 			TempItem->GetItemName(), ANSI_WHITE );
 	}
+	else
+		WriteToBuffer( Player, "%s%s can't carry that much weight!%s\n\r",
+			ANSI_BR_BLUE, Victim->Player.GetFirstName(), ANSI_WHITE );
 	return;
 }
 
@@ -1585,7 +1601,7 @@ COMMAND(Wear)
 {
 	int             WearLocation = 0;
 	Item			*TempItem = '\0';
-	Item			*WieldedItem = '\0';
+	Item			*WornItem = '\0';
 	Room			*TempRoom = '\0';
 
 	if( !Argument )
@@ -1597,17 +1613,17 @@ COMMAND(Wear)
 	
 	TempItem = Player->Player.SearchPlayerForItem( Argument );
 
-	// Make sure it's a wearable item!
-	if ( TempItem->GetItemType() != ITEM_ARMOR)
+	if( !TempItem )
 	{
-		WriteToBuffer( Player, "%sYou cannot wear a %s!%s\n\r",
+		WriteToBuffer( Player, "%sYou dont have a %s!%s\n\r",
 			ANSI_BR_RED, Argument, ANSI_WHITE );
 		return;
 	}
 
-	if( !TempItem )
+	// Make sure it's a wearable item!
+	if ( TempItem->GetItemType() != ITEM_WEAR)
 	{
-		WriteToBuffer( Player, "%sYou dont have a %s!%s\n\r",
+		WriteToBuffer( Player, "%sYou cannot wear a %s!%s\n\r",
 			ANSI_BR_RED, Argument, ANSI_WHITE );
 		return;
 	}
@@ -1619,24 +1635,23 @@ COMMAND(Wear)
 
 	// Is player wearing someting in new item's location already?
 	if ( Player->Player.IsWearing(WearLocation) )
-/// FIX BELOW THIS!
-
-	if( WieldedItem )
 	{
+		WornItem = Player->Player.IsWearing(WearLocation);
+		Player->Player.AdjustPlayerStatsByItem( WornItem, REMOVE );
 		WriteToBuffer( Player, "%sYou remove your %s!%s\n\r",
-			ANSI_BR_BLUE, WieldedItem->GetItemName(), ANSI_WHITE );
+			ANSI_BR_BLUE, WornItem->GetItemName(), ANSI_WHITE );
 
-		TempRoom->SelectiveBroadcast( Player, NULL, "%s%s un-wields a %s!%s\n\r",
-			ANSI_BR_BLUE, Player->Player.GetFirstName(), WieldedItem->GetItemName(),
+		TempRoom->SelectiveBroadcast( Player, NULL, "%s%s removes a %s!%s\n\r",
+			ANSI_BR_BLUE, Player->Player.GetFirstName(), WornItem->GetItemName(),
 			ANSI_WHITE );
 	}
 
-	WriteToBuffer( Player, "%sYou wield the %s!%s\n\r",
+	WriteToBuffer( Player, "%sYou put on the %s!%s\n\r",
 		ANSI_BR_BLUE, TempItem->GetItemName(), ANSI_WHITE );
-
-	Player->Player.WieldItem( TempItem );
+	Player->Player.WearItem( TempItem, WearLocation );
+	Player->Player.AdjustPlayerStatsByItem( TempItem, ADD );
 	
-	TempRoom->SelectiveBroadcast( Player, NULL, "%s%s wields a %s!%s\n\r",
+	TempRoom->SelectiveBroadcast( Player, NULL, "%s%s wears a %s!%s\n\r",
 		ANSI_BR_BLUE, Player->Player.GetFirstName(), TempItem->GetItemName(),
 		ANSI_WHITE );
 
@@ -1651,6 +1666,7 @@ COMMAND(Remove)
 {
 	Item	*TempItem = '\0';
 	Room	*TempRoom = '\0';
+	int      ItemWearLocation;
 
 	if( !Argument )
 	{
@@ -1659,25 +1675,30 @@ COMMAND(Remove)
 		return;
 	}
 	
+	// Does the player have this item on his/her person?
 	TempItem = Player->Player.SearchPlayerForItem( Argument );
-
-	if( !TempItem )
+    // Wear is this items worn or wielded
+	ItemWearLocation = TempItem->GetWearLocation();
+    // Ensure the player has the item and he/she is wearing / wielding the item
+	if( ! ( TempItem && Player->Player.IsWearing(ItemWearLocation) ) )
 	{
-		WriteToBuffer( Player, "%sYou dont have a %s to remove!%s\n\r",
-			ANSI_BR_RED, Argument, ANSI_WHITE );
+		WriteToBuffer( Player, "%sYou cannot remove an item you aren't using!%s\n\r",
+			ANSI_BR_RED, ANSI_WHITE );
 		return;
 	}
 
+
 	TempRoom = Player->Player.GetRoom();
 
-	WriteToBuffer( Player, "%sYou are no longer wielding the %s!%s\n\r",
+	WriteToBuffer( Player, "%sYou remove the %s!%s\n\r",
 		ANSI_BR_BLUE, TempItem->GetItemName(), ANSI_WHITE );
 
-	TempRoom->SelectiveBroadcast( Player, NULL, "%s%s no longer wields a %s!%s\n\r",
+	TempRoom->SelectiveBroadcast( Player, NULL, "%s%s removes %s!%s\n\r",
 		ANSI_BR_BLUE, Player->Player.GetFirstName(), TempItem->GetItemName(),
 		ANSI_WHITE );
 	
-	Player->Player.WieldItem( '\0' );
+	Player->Player.WearItem( NULL, ItemWearLocation );
+	Player->Player.AdjustPlayerStatsByItem( TempItem, REMOVE );
 
 }
 

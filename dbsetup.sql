@@ -34,7 +34,7 @@ CREATE TABLE items(
 	Value int NOT NULL,
 	ItemType int NOT NULL,
 	Weight int NOT NULL,
-	ItemName VARCHAR(21) NOT NULL,
+	ItemName VARCHAR(35) NOT NULL,
 	ItemDesc VARCHAR(201) NOT NULL,
 	MaxDamage int NOT NULL,
 	ToHitBonus int NOT NULL,

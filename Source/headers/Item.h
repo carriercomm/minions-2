@@ -10,7 +10,7 @@
 #ifndef _ITEM_H_INCLUDED
 #define _ITEM_H_INCLUDED
 
-const int MAX_ITEM_STRING			= 20;
+const int MAX_ITEM_STRING			= 35;
 const int MAX_DESC_LENGTH		    = 200;
 const char ITEM_DATABASE[]	    	= "minions.db";
 
@@ -20,7 +20,7 @@ const int ITEM_WEAR				    = 2;
 const int ITEM_OTHER		        = 3;
 
 // Define where item worn
-const int ITEM_NOT_WORN				= NULL;
+const int ITEM_WIELDED				= 0;
 const int ITEM_WEAR_HEAD			= 1;
 const int ITEM_WEAR_ARMS			= 2;
 const int ITEM_WEAR_TORSO           = 3;

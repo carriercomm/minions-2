@@ -146,6 +146,7 @@ bool LoadItemDatabase( void )
 			ItemPtr->Value->SetAttackType( (char *)sqlite3_column_text( SqlStatement, 10) );
 			ItemPtr->Value->SetMinDamage( sqlite3_column_int( SqlStatement, 11) );
 			ItemPtr->Value->SetMinDamage( sqlite3_column_int( SqlStatement, 12) );
+			ItemPtr->Value->SetWearLocation( sqlite3_column_int( SqlStatement, 13 ) );
 	
 			RowCount++;		//dont forget to increment the row count.
 			break;

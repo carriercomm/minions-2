@@ -29,3 +29,5 @@ INSERT INTO items VALUES( 1, 30, 1, 25, "turd-tipped crozier", "This fine crozie
 INSERT INTO items VALUES( 2, 30, 1, 25, "flappy titties", "These appear to be discarded breast implants of very low quality.", 75, 5, 3, 10, "flap", 10, 0);
 INSERT INTO items VALUES( 3, 30, 1, 25, "cowflop", "This steaming flop is a humiliating deathblow.", 75, 5, 3, 10, "slop", 10, 0);
 INSERT INTO items VALUES( 4, 30, 1, 25, "holy avenger", "This fine golden sword is intricately carved, and enchanted to deal trememdous damage!", 560, 8, 3, 10, "penetrate", 65, 0);
+INSERT INTO items VALUES( 5, 30, 2, 25, "rusty chainmail armor", "This rusty chainmail looks like it had been stripped off of a dead goblin. The wearer is better off dead.", 0, 0, 0, 2, "None", 0, 3);
+INSERT INTO items VALUES( 6, 10, 3, 200, "black cauldren", "This gigantic black cauldren was once used by trolls to cook great feasts made up of humans caught in the night!", 0, 0, 0, 0, "None", 0, 0);
