@@ -1613,6 +1613,13 @@ COMMAND(Wield)
 	
 	TempItem = Player->Player.SearchPlayerForItem( Argument );
 
+	if( !TempItem )
+	{
+		WriteToBuffer( Player, "%sYou dont have a %s to wield!%s\n\r",
+			ANSI_BR_RED, Argument, ANSI_WHITE );
+		return;
+	}
+
 	// Make sure it's a wieldable item!
 	if ( TempItem->GetItemType() != ITEM_WEAPON)
 	{
@@ -1621,12 +1628,7 @@ COMMAND(Wield)
 		return;
 	}
 
-	if( !TempItem )
-	{
-		WriteToBuffer( Player, "%sYou dont have a %s to wield!%s\n\r",
-			ANSI_BR_RED, Argument, ANSI_WHITE );
-		return;
-	}
+
 
 	TempRoom = Player->Player.GetRoom();
 
