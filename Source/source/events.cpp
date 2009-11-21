@@ -336,16 +336,6 @@ void meMelee::execEvent(scheduler *eventScheduler)
 		else
 			DisplayMeleeCombat(Player, attackType, Weapon->GetItemName(), Damage, Critical);
 	}
-	//Did we stun him?
-	if ( ToHitRoll == 20 )
-	{	
-		DisplayStunStatus( Victim );
-		SET_PFLAG(Victim->Flags, FLAG_STUN);
-		minionsEvent *RemoveEvent = new meRemoveFlag(Victim, E_FLAG_STUN);
-		eventScheduler->pushWaitStack((time(NULL)+STUN_TIME_INTERVAL), RemoveEvent);
-		StopCombat(Victim);
-
-	}
 
 	// Is the player dead?  If so, kill his ass and close combat
 	if(!Player->Victim->Player.UpdateHitPoints( Damage, false ))
@@ -354,6 +344,17 @@ void meMelee::execEvent(scheduler *eventScheduler)
 		DisplayCombatStatus(Player, false);
 		Player->Player.AddKill();
 		return;
+	}
+
+	// Did we stun him? (do it after death check, we don't want stun dead people)
+	if ( ToHitRoll == 20 )
+	{	
+		DisplayStunStatus( Victim );
+		SET_PFLAG(Victim->Flags, FLAG_STUN);
+		minionsEvent *RemoveEvent = new meRemoveFlag(Victim, E_FLAG_STUN);
+		eventScheduler->pushWaitStack((time(NULL)+STUN_TIME_INTERVAL), RemoveEvent);
+		StopCombat(Victim);
+
 	}
 
 	// Not dead, so keep attacking (add another combat event)

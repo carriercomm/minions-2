@@ -184,7 +184,6 @@ Clears all events that envolved the connection passed.
 ===============================================================*/
 void scheduler::ClearPlayerEvents( Connection *Conn )
 {
-	ServerLog( "Someone died or disconnected, deleting relevent events");
 	if (eMasterStack.size() == 0)
 		eMasterStack = combatStack;
 	Connection *Attacker;

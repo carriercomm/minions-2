@@ -213,7 +213,6 @@ void StopCombat( Connection *Player )
 	// Kill any attack event in the queue!
 	if (Player->Player.GetAttackEvent())
 	{	
-		ServerLog("Arracker %s", Player->Player.GetFirstName());
 		Player->Player.GetAttackEvent()->killEvent(NULL);
 		Player->Player.SetAttackEvent(NULL);
 	}

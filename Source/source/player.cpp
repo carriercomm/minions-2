@@ -48,6 +48,7 @@ Client::Client()
 	Legs                    = NULL;
 	Feet                    = NULL;
 	Finger                  = NULL;
+	Hands                   = NULL;
 	CurrentRoomNumber       = 1;
 	ArmorClass              = 5;
 	THAC0                   = 14;
@@ -340,25 +341,30 @@ void Client::DropAllItems( void )
 	ItemsOnPlayer	*ListPtr_Next = '\0';
 	bool WeightSet;
 
+	// Remove anything and apply it back to the non-worn inventory
+	WearItem( NULL, ITEM_WEAR_HEAD );
+	WearItem( NULL, ITEM_WEAR_ARMS );
+	WearItem( NULL, ITEM_WEAR_TORSO );
+	WearItem( NULL, ITEM_WEAR_LEGS );
+	WearItem( NULL, ITEM_WEAR_FINGER );
+	WearItem( NULL, ITEM_WEAR_FEET );
+	WearItem( NULL, ITEM_WEAR_NECK );
+	WearItem( NULL, ITEM_WEAR_HANDS );
+	WearItem( NULL, ITEM_WIELDED );
+
+	// Begin the dropping all items in inventory
 	ListPtr = FirstItem;
 
-	if( ! FirstItem )
-		return;
-
-	for( ListPtr = FirstItem; ListPtr; ListPtr = ListPtr_Next )
+	if( FirstItem )
 	{
-		ListPtr_Next = ListPtr->Next;
+		for( ListPtr = FirstItem; ListPtr; ListPtr = ListPtr_Next )
+		{
+			ListPtr_Next = ListPtr->Next;	
 
-		if( CurrentRoom )
-			// If player is holding the item adjust stats accordingly when removing.
-			if ( IsWearing(ListPtr->Item->GetWearLocation()) != NULL )
-			{		
-				AdjustPlayerStatsByItem(ListPtr->Item, REMOVE);
-				WearItem(NULL, ListPtr->Item->GetWearLocation());
-			}
-			CurrentRoom->AddItemToRoom( ListPtr->Item );
-
-		delete ListPtr;
+			if( CurrentRoom )
+				CurrentRoom->AddItemToRoom( ListPtr->Item );
+			delete ListPtr;
+		}
 	}
 
 	FirstItem = NULL;
@@ -381,12 +387,7 @@ bool Client::AddItemToPlayer( Item *NewItem )
 		ServerLog( "Error allocating new TempItemsOnPlayer. Out of memory" );
 		return false;
 	}
-	
-	if ( !SetPlayerWeight( NewItem->GetWeight(), ADD) )
-	{
-		WriteToBuffer(MyConnection, "%sYou cannot carry that much weight!\n\r%s", ANSI_CYAN, ANSI_WHITE);
-		return false;
-	}
+
 	if( FirstItem )
 	{
 		PlaceHolder = FirstItem;
@@ -405,7 +406,7 @@ bool Client::AddItemToPlayer( Item *NewItem )
 }
 
 /*=======================================================
-RemoveItemRomPlayer -> Client
+RemoveItemFromPlayer -> Client
 
 Removes item from a player
 =======================================================*/
@@ -434,14 +435,88 @@ bool Client::RemoveItemFromPlayer( Item *ItemToDelete )
 	}
 	
 	delete ToDelete;
-	tmp = SetPlayerWeight( ItemToDelete->GetWeight(), SUBTRACT );
-	AdjustPlayerStatsByItem(ItemToDelete, REMOVE);
-	WearItem(NULL, ItemToDelete->GetWearLocation());
 	
 	return true;
 }
+/*================================================================
+Client::SearchPlayerForItem( char *Name )
+
+Search players linked list for an item to see if the player
+is in posession of it.
+================================================================*/
 
 Item *Client::SearchPlayerForItem( char *Name )
+{
+	ItemsOnPlayer	*ItemList = '\0';
+	int				Len = strlen( Name );	
+
+	// Search player inventory first.
+	for( ItemList = FirstItem; ItemList; ItemList = ItemList->Next )
+	{
+		if( !strnicmp( ItemList->Item->GetItemName(), Name, Len ) )
+		{
+			return ItemList->Item;
+		}
+	}
+	// If not found in inventory, search worn/wielded items 
+	// A loop though a list of some sort would be better, FIX THIS later!
+	if (Wielded != NULL)
+	{
+		if ( !strnicmp( Wielded->GetItemName(), Name, Len ) )
+			return Wielded;
+	}
+	else if (Head != NULL)
+	{
+	 	if ( !strnicmp( Head->GetItemName(), Name, Len ) )
+			return Head;
+	}
+	else if (Neck != NULL)
+	{
+	 	if ( !strnicmp( Neck->GetItemName(), Name, Len ) )
+			return Neck;
+	}
+	else if (Arms != NULL)
+	{
+	 	if ( !strnicmp( Arms->GetItemName(), Name, Len ) )
+			return Arms;
+	}
+	else if (Torso != NULL)
+	{
+	 	if ( !strnicmp( Torso->GetItemName(), Name, Len ) )
+			return Torso;
+	}
+	else if (Legs != NULL)
+	{
+	 	if ( !strnicmp( Legs->GetItemName(), Name, Len ) )
+			return Legs;
+	}
+	else if (Feet != NULL)
+	{
+	 	if ( !strnicmp( Feet->GetItemName(), Name, Len ) )
+			return Feet;
+	}
+	else if ( Finger != NULL)
+	{
+	 	if ( !strnicmp( Finger->GetItemName(), Name, Len ) )
+			return Finger;
+	}
+	else if ( Hands != NULL)
+	{
+	 	if ( !strnicmp( Hands->GetItemName(), Name, Len ) )
+			return Hands;
+	}
+
+	return NULL;
+}
+
+/*================================================================
+Client::SearchPlayerInventoryForItem( char *Name )
+
+Search players linked list for an item to see if the player
+is in posession of it.
+================================================================*/
+
+Item *Client::SearchPlayerInventoryForItem( char *Name )
 {
 	ItemsOnPlayer	*ItemList = '\0';
 	int				Len = strlen( Name );	
@@ -454,15 +529,27 @@ Item *Client::SearchPlayerForItem( char *Name )
 		}
 	}
 
-	return '\0';
+	return NULL;
 }
 
+
+/* ====================================================
+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_
+Client::WieldItem()
+
+This function needs to be removed.  Need to make sure
+it isn't used anywhere first
+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_+_
+=====================================================*/
 bool Client::WieldItem( Item *ToWield )
 {
 	Wielded = ToWield;
 	return true;
 }
 
+/*=====================================================
+Client::~Client() - Player class distructor
+=====================================================*/
 
 Client::~Client()
 {
@@ -675,6 +762,28 @@ Wear the item passed in the position passed.
 
 void Client::WearItem( Item *ItemToWear, int ItemPlacement )
 {
+	// Update any stats modified by item and remove / add item from local non-worn inventory
+	if (ItemToWear != NULL) // Actual item, add stats and subtract and stats and INV
+	{
+		if ( IsWearing(ItemPlacement) )
+		{
+			AdjustPlayerStatsByItem( IsWearing(ItemPlacement), REMOVE );
+			AddItemToPlayer( IsWearing(ItemPlacement) );
+		}
+
+		AdjustPlayerStatsByItem( ItemToWear, ADD );
+		RemoveItemFromPlayer( ItemToWear );
+	}
+	else    // No item subtract what is being worn (IF) something is worn and add back to INV
+	{
+		if ( IsWearing(ItemPlacement) != NULL ) 
+		{
+			AdjustPlayerStatsByItem(IsWearing(ItemPlacement), REMOVE);
+			AddItemToPlayer(IsWearing(ItemPlacement));
+		}
+	}
+
+	// Now, wear the item.
 	switch ( ItemPlacement )
 	{
 	case ITEM_WIELDED:
@@ -697,6 +806,7 @@ void Client::WearItem( Item *ItemToWear, int ItemPlacement )
 		break;
 	case ITEM_WEAR_FINGER:
 		Finger = ItemToWear;
+		break;
 	case ITEM_WEAR_FEET:
 		Feet = ItemToWear;
 		break;

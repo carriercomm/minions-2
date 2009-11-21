@@ -1422,8 +1422,9 @@ COMMAND(GetItem)
 
 
 	
-	if (Player->Player.AddItemToPlayer( TempItem ))
+	if (Player->Player.SetPlayerWeight( TempItem->GetWeight(), ADD))
 	{	
+		Player->Player.AddItemToPlayer( TempItem );
 		TempRoom->RemoveItemFromRoom( TempItem );
 		TempRoom->SelectiveBroadcast( Player, NULL, "%s%s picks up a %s%s\n\r", ANSI_BR_BLUE,
 			Player->Player.GetFirstName(), TempItem->GetItemName(), ANSI_WHITE ); 
@@ -1434,12 +1435,17 @@ COMMAND(GetItem)
 	return;
 }
 
+/*============================================================================
+DropItem
 
+Drop whatever item is ask to be dropped and make any player stat updates
+============================================================================*/
 COMMAND(DropItem)
 {
 	Item			*TempItem = '\0';
 	Room			*TempRoom = '\0';
 	
+	// Was there an item argument passed?
 	if( !Argument )
 	{
 		WriteToBuffer( Player, "%sUsage:%s drop <item>\n\r", ANSI_BR_RED,
@@ -1447,14 +1453,18 @@ COMMAND(DropItem)
 		return;
 	}
 
+	// Get current room
 	TempRoom = Player->Player.GetRoom();
 
+	// We are in a room?
 	if( !TempRoom )
 	{
 		WriteToBuffer( Player, "Error in DropItem()\n\r" );
 		return;
 	}
 
+
+	// Search players inventory (ie not worn, but holding)
 	TempItem = Player->Player.SearchPlayerForItem( Argument );
 
 	if( !TempItem )
@@ -1464,27 +1474,34 @@ COMMAND(DropItem)
 		return;
 	}
 
-	if (TempItem == Player->Player.IsWearing(TempItem->GetWearLocation()) )
+	// If in inventory, drop it.
+	if (TempItem == Player->Player.SearchPlayerInventoryForItem( Argument ) )
+		Player->Player.RemoveItemFromPlayer( TempItem );
+	// If not in inventory, it must be wielded. (also get inventory first)
+	else if (TempItem == Player->Player.IsWearing(TempItem->GetWearLocation()) )
 	{
+		// Remove the item from being worn or wielded
+		Player->Player.WearItem(NULL, TempItem->GetWearLocation());
+		// Update any stats modified by the item
+
+		// Tell everyone you are removing the item
 		WriteToBuffer( Player, "%sYou remove the %s!%s\n\r",
 			ANSI_BR_BLUE, TempItem->GetItemName(), ANSI_WHITE );
-
 		TempRoom->SelectiveBroadcast( Player, NULL, "%s%s removes %s!%s\n\r",
 			ANSI_BR_BLUE, Player->Player.GetFirstName(), TempItem->GetItemName(), ANSI_WHITE );
 	}
-
-	//	if( TempItem == Player->Player.GetWieldedItem() )
-//		Player->Player.WieldItem( '\0' );
-	
+		
+	// Add the item to the room.
 	TempRoom->AddItemToRoom( TempItem );
-	Player->Player.RemoveItemFromPlayer( TempItem );
 	
+	// Again, tell everyone about dropping the item
 	TempRoom->SelectiveBroadcast( Player, NULL, "%s%s drops a %s%s\n\r", ANSI_BR_BLUE,
 		Player->Player.GetFirstName(), TempItem->GetItemName(), ANSI_WHITE ); 
-	
 	WriteToBuffer( Player, "%sYou drop the %s%s\n\r", ANSI_BR_BLUE,
 		TempItem->GetItemName(), ANSI_WHITE );
 
+	// Update players weight without the item
+	Player->Player.SetPlayerWeight( TempItem->GetWeight(), SUBTRACT );
 	return;
 }
 
@@ -1525,6 +1542,12 @@ COMMAND(GiveItem)
 		return;
 	}
 
+	if ( Player == Victim )
+	{
+		WriteToBuffer( Player, "%sWhy would you want to give it to yourself?%s\n\r",
+			ANSI_BR_RED, ANSI_WHITE );
+		return;
+	}
 	/*  have Client object search Itself for the item */
 	TempItem = Player->Player.SearchPlayerForItem( Argument );
 
@@ -1536,25 +1559,35 @@ COMMAND(GiveItem)
 	}
 
 	/* if they are wielding the item then unwield it fer em */
-	if( TempItem == Player->Player.GetWieldedItem() )
-		Player->Player.WieldItem( '\0' );
-
-	/* do the transfer of the item from Player to Victim */
-	if ( Victim->Player.AddItemToPlayer( TempItem ) )
+	if ( Player->Player.SearchPlayerInventoryForItem( Argument ) == NULL )
 	{
+		ServerLog("Says I'm wielding this: %s", Player->Player.SearchPlayerInventoryForItem( Argument2 ) );
+		// Remove the item from being worn or wielded
+		Player->Player.WearItem(NULL, TempItem->GetWearLocation());
+
+		// Tell everyone you are removing the item
+		WriteToBuffer( Player, "%sYou remove the %s!%s\n\r",
+			ANSI_BR_BLUE, TempItem->GetItemName(), ANSI_WHITE );
+		TempRoom->SelectiveBroadcast( Player, NULL, "%s%s removes %s!%s\n\r",
+			ANSI_BR_BLUE, Player->Player.GetFirstName(), TempItem->GetItemName(), ANSI_WHITE );
+	}
+			
+
+	//  Can the player accept the weight of the item?
+	if ( Victim->Player.SetPlayerWeight( TempItem->GetWeight(), ADD ) )
+	{
+		// give and take item
+		Victim->Player.AddItemToPlayer( TempItem );
 		Player->Player.RemoveItemFromPlayer( TempItem );
-	
+		// Adjust givers weight
+		Player->Player.SetPlayerWeight( TempItem->GetWeight(), SUBTRACT );
 	
 		/* tell the room about it */
 		TempRoom->SelectiveBroadcast( Player, Victim, "%s%s gives a %s to %s%s\n\r",
 			ANSI_BR_BLUE, Player->Player.GetFirstName(), TempItem->GetItemName(),
 			Victim->Player.GetFirstName(), ANSI_WHITE ); 
-	
-		/* tell the giver */
 		WriteToBuffer( Player, "%sYou give the %s to %s%s\n\r",
 			ANSI_BR_BLUE, TempItem->GetItemName(), Victim->Player.GetFirstName(), ANSI_WHITE );
-
-		/*  tell the reciever  */
 		WriteToBuffer( Victim, "%s%s gives you a %s%s\n\r",
 			ANSI_BR_BLUE, Player->Player.GetFirstName(),
 			TempItem->GetItemName(), ANSI_WHITE );
@@ -1600,20 +1633,29 @@ COMMAND(Wield)
 	/* If they allready have something wielded remove it */
 	WieldedItem = Player->Player.GetWieldedItem();
 
-	if( WieldedItem )
+	if( WieldedItem ) 
 	{
-		WriteToBuffer( Player, "%sYou remove your %s!%s\n\r",
-			ANSI_BR_BLUE, WieldedItem->GetItemName(), ANSI_WHITE );
+		if (WieldedItem == TempItem)
+		{
+			WriteToBuffer( Player, "%sYou are already wielding a %s%s", ANSI_BR_BLUE, WieldedItem->GetItemName(), ANSI_WHITE );
+			return;
+		}
+		else 
+		{
 
-		TempRoom->SelectiveBroadcast( Player, NULL, "%s%s un-wields a %s!%s\n\r",
-			ANSI_BR_BLUE, Player->Player.GetFirstName(), WieldedItem->GetItemName(),
-			ANSI_WHITE );
+			WriteToBuffer( Player, "%sYou remove your %s!%s\n\r",
+				ANSI_BR_BLUE, WieldedItem->GetItemName(), ANSI_WHITE );
+
+			TempRoom->SelectiveBroadcast( Player, NULL, "%s%s un-wields a %s!%s\n\r",
+				ANSI_BR_BLUE, Player->Player.GetFirstName(), WieldedItem->GetItemName(),
+				ANSI_WHITE );
+		}
 	}
 
 	WriteToBuffer( Player, "%sYou wield the %s!%s\n\r",
 		ANSI_BR_BLUE, TempItem->GetItemName(), ANSI_WHITE );
 
-	Player->Player.WieldItem( TempItem );
+	Player->Player.WearItem( TempItem, TempItem->GetWearLocation() );
 	
 	TempRoom->SelectiveBroadcast( Player, NULL, "%s%s wields a %s!%s\n\r",
 		ANSI_BR_BLUE, Player->Player.GetFirstName(), TempItem->GetItemName(),
@@ -1663,28 +1705,33 @@ COMMAND(Wear)
 	// Where is it worn?
 	WearLocation = TempItem->GetWearLocation();
 
+	WornItem = Player->Player.IsWearing( WearLocation );
+
 	// Is player wearing someting in new item's location already?
-	if ( Player->Player.IsWearing(WearLocation) )
+	if ( WornItem )
 	{
-		WornItem = Player->Player.IsWearing(WearLocation);
-		Player->Player.AdjustPlayerStatsByItem( WornItem, REMOVE );
+		if ( TempItem == WornItem )
+		{
+			WriteToBuffer ( Player, "%sYou are already wearing %s!%s\n\r", ANSI_BR_BLUE, WornItem->GetItemName(), ANSI_WHITE);
+			return;
+		}
+		// Tell everyone you are removing the item
 		WriteToBuffer( Player, "%sYou remove your %s!%s\n\r",
 			ANSI_BR_BLUE, WornItem->GetItemName(), ANSI_WHITE );
-
 		TempRoom->SelectiveBroadcast( Player, NULL, "%s%s removes a %s!%s\n\r",
 			ANSI_BR_BLUE, Player->Player.GetFirstName(), WornItem->GetItemName(),
 			ANSI_WHITE );
 	}
 
+	// Now tell them you are wearing the item!
 	WriteToBuffer( Player, "%sYou put on the %s!%s\n\r",
 		ANSI_BR_BLUE, TempItem->GetItemName(), ANSI_WHITE );
-	Player->Player.WearItem( TempItem, WearLocation );
-	Player->Player.AdjustPlayerStatsByItem( TempItem, ADD );
-	
 	TempRoom->SelectiveBroadcast( Player, NULL, "%s%s wears a %s!%s\n\r",
 		ANSI_BR_BLUE, Player->Player.GetFirstName(), TempItem->GetItemName(),
 		ANSI_WHITE );
 
+	// Wear it!
+	Player->Player.WearItem(TempItem, WearLocation);
 	return;
 
 }
@@ -1717,8 +1764,9 @@ COMMAND(Remove)
 		return;
 	}
 
-
+	// Get plays room so we can broadcast to that room
 	TempRoom = Player->Player.GetRoom();
+
 
 	WriteToBuffer( Player, "%sYou remove the %s!%s\n\r",
 		ANSI_BR_BLUE, TempItem->GetItemName(), ANSI_WHITE );
@@ -1728,7 +1776,6 @@ COMMAND(Remove)
 		ANSI_WHITE );
 	
 	Player->Player.WearItem( NULL, ItemWearLocation );
-	Player->Player.AdjustPlayerStatsByItem( TempItem, REMOVE );
 
 }
 
@@ -1852,15 +1899,20 @@ COMMAND(Spawn)
 	}
 
 	/*  physically add it to thier inventory */
-	if ( Player->Player.AddItemToPlayer( TempItem ) )
+	if ( Player->Player.SetPlayerWeight(TempItem->GetWeight(), ADD ) )
 	{
+		Player->Player.AddItemToPlayer( TempItem );
+
 		/* tell everyone who needs to know  */
 		TempRoom->BroadcastRoom( "%s%s pulls a %s out of thin air!%s\n\r", ANSI_BR_CYAN,
 			Player->Player.GetFirstName(), TempItem->GetItemName(), ANSI_WHITE );
-
 		WriteToBuffer( Player, "%sA %s has been added to your inventory!%s\n\r",
 			ANSI_BR_RED, TempItem->GetItemName(), ANSI_WHITE );
 	}
+	else
+		WriteToBuffer( Player, "%sYou cannot spawn what you cannot carry!%s\n\r",
+			ANSI_BR_RED, ANSI_WHITE );
+
 	return;
 }
 

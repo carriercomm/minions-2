@@ -120,6 +120,7 @@ public:
 	bool RemoveItemFromPlayer( Item *ItemToDelete );
 	ItemsOnPlayer *GetFirstItem( void ) { return FirstItem; };
 	Item *SearchPlayerForItem( char *Name );
+	Item *SearchPlayerInventoryForItem( char *Name );
 	bool WieldItem( Item *ToWield );
 	Item *GetWieldedItem( void ) { return Wielded; };
 	bool Client::UpdateHitPoints( int value, bool add_subtract );
