@@ -282,7 +282,7 @@ void meMelee::execEvent(scheduler *eventScheduler)
 	if (CurRoom != Player->Victim->Player.GetRoom())
 	{
 		DisplayCombatStatus(Player, false);
-		Player->Victim = NULL;
+		StopCombat(Player);
 		return;
 	}
 
