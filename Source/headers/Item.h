@@ -20,7 +20,7 @@ const int ITEM_WEAR				    = 2;
 const int ITEM_OTHER		        = 3;
 
 // Define where item worn
-const int ITEM_WIELDED				= 0;
+const int ITEM_NOT_WIELDABLE		= 0;
 const int ITEM_WEAR_HEAD			= 1;
 const int ITEM_WEAR_ARMS			= 2;
 const int ITEM_WEAR_TORSO           = 3;
@@ -29,6 +29,7 @@ const int ITEM_WEAR_FINGER			= 5;
 const int ITEM_WEAR_FEET			= 6;
 const int ITEM_WEAR_NECK			= 7;
 const int ITEM_WEAR_HANDS           = 8;
+const int ITEM_WIELDED              = 9;
 
 class Item
 {

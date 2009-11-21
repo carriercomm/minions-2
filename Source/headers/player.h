@@ -10,20 +10,21 @@
 #ifndef PLAYER_H_INCLUDED
 #define PLAYER_H_INCLUDED
 
-#define	MAX_STRING_LENGTH				80
-#define MAX_NAME_LENGTH					15
-#define MAX_STATS						6
-#define MAX_LEVEL_ALLOWED				150
-#define MAX_DESCRIPTION_LENGTH			400
-#define MAX_HOST_NAME					80
-const int MAX_STR_MULTIPLIER          = 3;
-#define PLAYER_SAVE_PATH				"players\\"
+const int MAX_STRING_LENGTH			  =  80;
+const int MAX_NAME_LENGTH			  =	 15;
+const int MAX_STATS					  =   6; 
+const int MAX_LEVEL_ALLOWED	          = 150;
+const int MAX_DESCRIPTION_LENGTH	  = 400;
+const int MAX_HOST_NAME				  =  80;
+const int MAX_STR_MULTIPLIER          =  10;
+
+#define PLAYER_SAVE_PATH		 "players\\"
 
 // Sort of booleans for adding or subtracting stats in functions
-const int ADD                         = 1;
-const int SUBTRACT                    = 2;
-const int EXACTLY                     = 3;
-const int REMOVE                      = 4;
+const int ADD                         =   1;
+const int SUBTRACT                    =   2;
+const int EXACTLY                     =   3;
+const int REMOVE                      =   4;
 
 class Room;  //forward declaration
 class Item;  //forward declaration

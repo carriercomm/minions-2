@@ -839,7 +839,7 @@ COMMAND(Look)
 		if (!Temp)
 			return;
 
-		WriteToBuffer( Player, "%sAlso here: ", ANSI_BR_GREEN );
+		WriteToBuffer( Player, "%sAlso here: %s", ANSI_BR_GREEN, ANSI_BR_MAGENTA );
 		
 		for( ; Temp; Temp = Temp->Next )
 		{
