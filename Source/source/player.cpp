@@ -8,6 +8,9 @@
  *		       David Brown	    -	dcbrown73@yahoo.com	       *
  ***************************************************************/
 #include <iostream>
+#include <sstream>
+#include <string>
+#include <iomanip>
 #include <string.h>
 #include <fstream>
 #include <ctype.h>
@@ -51,6 +54,7 @@ Client::Client()
 	Class = Race            = 0;
 	AttackEvent             = NULL;
 	MyConnection            = NULL;
+	Wielded = Head = Neck = Arms = Torso = Legs = Feet = Finger = Hands = NULL; //set these to NULL in constructor
 	
 }
 
@@ -535,12 +539,15 @@ bool Client::SetPlayerWeight( int value, int add_subtract )
 *************************************************************************/
 char* Client::GetDescription( void ) 
 {
-	char TempDesc[MAX_DESCRIPTION_LENGTH];
-	char HealthStatusDesc[20];
-	char WieldedDesc[MAX_STRING_LENGTH];
+	//char				TempDesc[MAX_DESCRIPTION_LENGTH];
+	char				HealthStatusDesc[20];
+	char				WieldedDesc[MAX_STRING_LENGTH];
+	char				StrDesc[40],AgilityDesc[20], HealthDesc[20], LuckDesc[20], WisdomDesc[20];
+	ostringstream		BuildString;
+	string				FormattedString;
 
 	/* get the health status string */
-	if( HitPoints <= ( MaxHits * .95 ) )
+	if( HitPoints <= ( MaxHits * .15 ) )
 		strcpy( HealthStatusDesc, "critically");
 	if( HitPoints <= ( MaxHits * .25 ) )
 		strcpy( HealthStatusDesc, "heavily" );
@@ -551,22 +558,58 @@ char* Client::GetDescription( void )
 	else if( HitPoints <= ( MaxHits * .95 ) )
 		strcpy( HealthStatusDesc, "mildly" );
 	else
-		strcpy( HealthStatusDesc, "not" );
+		strcpy( HealthStatusDesc, "un" );
 
-	/* get the item wielded currently  */
-	if( Wielded )
-		strcpy( WieldedDesc, Wielded->GetItemName() );
+	/* get the strength description string */
+	if( Strength <= ( MaxHits * .15 ) )
+		strcpy( StrDesc, "a sick looking");
+	if( Strength <= ( MaxHits * .25 ) )
+		strcpy( StrDesc, "a weak ass" );
+	else if( Strength <= ( MaxHits * .50 ) )
+		strcpy( StrDesc, "an average built" );
+	else if( Strength <= ( MaxHits * .75 ) )
+		strcpy( StrDesc, "a powerfully built" );
+	else if( Strength <= ( MAX_STR_MULTIPLIER * .95 ) )
+		strcpy( StrDesc, "very powerfully built" );
 	else
-		strcpy( WieldedDesc, "nothing." );
+		strcpy( StrDesc, "extremely powerfully built" );
 
-	/* build it into the TempDesc char array  */	
-	sprintf( TempDesc, "%s%s[ %s %s ] - %s%s %s\n\r%s%s is %s wounded.\n\r%s is wielding: %s\n\r", ANSI_CLR_SOL, ANSI_BR_GREEN, FirstName,
-		LastName, ANSI_BR_WHITE, RaceStr, ClassStr, ANSI_BR_YELLOW, FirstName, HealthStatusDesc, FirstName, WieldedDesc );
+	/*  added STL strings here for formatting  */
+	BuildString<<ANSI_CLR_SOL<<ANSI_BR_GREEN<<'['<<FirstName<<' '<<LastName<<"] - "<<ANSI_BR_WHITE
+		<<RaceStr<<' '<<ClassStr<<"\n\r";
 
-	if( strlen( TempDesc ) >= MAX_DESCRIPTION_LENGTH )
+	/* do general description here  */
+	BuildString<<ANSI_WHITE<<FirstName<<" is "<<StrDesc<<' '<<RaceStr<<' '<<ClassStr<<"\n\r"<<ANSI_BR_YELLOW;
+
+	/* display if they are wielding or wearing things */
+	if( Head )
+		BuildString<<Head->GetItemName()<<" (Head)\n\r";
+	if( Neck )
+		BuildString<<Neck->GetItemName()<<" (Neck)\n\r";
+	if( Arms )
+		BuildString<<Arms->GetItemName()<<" (Arm)\n\r";
+	if( Torso )
+		BuildString<<Torso->GetItemName()<<" (Torso)\n\r";
+	if( Legs )
+		BuildString<<Legs->GetItemName()<<" (Legs)\n\r";
+	if( Feet )
+		BuildString<<Feet->GetItemName()<<" (Feet)\n\r";
+	if( Finger )
+		BuildString<<Finger->GetItemName()<<" (Finger)\n\r";
+	if( Hands )
+		BuildString<<Hands->GetItemName()<<" (Hand)\n\r";
+	if( Wielded )
+		BuildString<<Wielded->GetItemName()<<" (Weapon Hand)\n\r"<<ANSI_BR_GREEN;
+
+	BuildString<<FirstName<<" is "<<HealthStatusDesc<<"-wounded.\n\r"<<ANSI_BR_WHITE;
+
+	/* convert to std::string type */
+	FormattedString = BuildString.str();
+
+	if( strlen( FormattedString.c_str() ) >= MAX_DESCRIPTION_LENGTH )
 		strcpy( Description, "Description Too Long in Client::GetDescription()" );
 	else
-		strcpy( Description, TempDesc );
+		strcpy( Description, FormattedString.c_str() );
 
 	return Description;
 }

@@ -14,7 +14,7 @@ const int MAX_STRING_LENGTH			  =  80;
 const int MAX_NAME_LENGTH			  =	 15;
 const int MAX_STATS					  =   6; 
 const int MAX_LEVEL_ALLOWED	          = 150;
-const int MAX_DESCRIPTION_LENGTH	  = 400;
+const int MAX_DESCRIPTION_LENGTH	  = 2048;
 const int MAX_HOST_NAME				  =  80;
 const int MAX_STR_MULTIPLIER          =  10;
 
@@ -31,6 +31,12 @@ class Item;  //forward declaration
 class minionsEvent;
 struct Connection;
 
+enum Location
+{
+	LOC_WEAPON, LOC_HEAD, LOC_NECK, LOC_ARMS, LOC_TORSO, LOC_LEGS,
+	LOC_FEET,LOC_FINGER, LOC_HANDS
+};
+
 /*  link list of items in this players possesion */
 struct ItemsOnPlayer
 {
@@ -41,8 +47,8 @@ struct ItemsOnPlayer
 /*  Client slash Player class definition */
 class Client
 {
-	char			FirstName[MAX_STRING_LENGTH];
-	char			LastName[MAX_STRING_LENGTH];
+	char			FirstName[MAX_NAME_LENGTH];
+	char			LastName[MAX_NAME_LENGTH];
 	char			IpAddress[MAX_STRING_LENGTH];
 	char			Password[MAX_STRING_LENGTH];
 	char			Description[MAX_DESCRIPTION_LENGTH];

@@ -10,6 +10,9 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include <sstream>
+#include <string>
+#include <iomanip>
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>
@@ -266,9 +269,11 @@ COMMAND(ShutDown)
  **********************************************************/
 COMMAND(Who)
 {
-	Connection *TempConn;
-	time_t UpTime;
-	char TimeString[80];
+	Connection			*TempConn;
+	time_t				UpTime;
+	char				TimeString[80];
+	ostringstream		WhoString;
+	string				FormattedString;
 
 	UpTime = CurrentTime - BootTime;
 
@@ -295,29 +300,44 @@ COMMAND(Who)
 		strcpy( TimeString, "minutes" );
 	}
 
-	WriteToBuffer( Player, "\n\r%sCurrent Players of Minions Mud\n\r", ANSI_BR_GREEN );
-	WriteToBuffer( Player, "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\r%s",
-		ANSI_BR_YELLOW );
+	/* Going to try using a STL ostringstream here  */
+	WhoString<<ANSI_CLR_SCR<<ANSI_BR_WHITE<<"\t\t\tCurrent Players of Minions Mud\n\r"<<ANSI_GREEN
+		<<"=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\r"<<ANSI_BR_RED;
+	
+	WhoString.flags( ios::left );
+	WhoString<<setfill(' ')<<setw(10)<<"Player"<<setfill(' ')<<setw(10)<<' '<<setfill(' ')<<setw(10)<<"Race"
+		<<setfill(' ')<<setw(12)<<"Class"<<setfill(' ')<<setw(18)<<"IP Address"<<setfill(' ')<<setw(5)<<"Kills";
+	
+	WhoString<<"\n\r"<<ANSI_GREEN
+		<<"=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="<<ANSI_BR_YELLOW;
 
 	for( TempConn = PlayerList; TempConn; TempConn = TempConn->Next )
 	{
-		WriteToBuffer( Player, "%s\t%s\t%s\t%s\t\t%s\n\r", TempConn->Player.GetFirstName(), TempConn->Player.GetRaceStr(),
-			TempConn->Player.GetClassStr(), TempConn->Player.GetIpAddress(), TempConn->Player.GetHostName() );
+		WhoString<<"\n\r";
+		WhoString.flags( ios::left );
+		WhoString<<setfill(' ')<<setw(10)<<TempConn->Player.GetFirstName()<<setfill(' ')<<setw(10)<<TempConn->Player.GetLastName()
+			<<setfill(' ')<<setw(10)<<TempConn->Player.GetRaceStr()<<setfill(' ')<<setw(12)<<TempConn->Player.GetClassStr()
+			<<setfill(' ')<<setw(18)<<TempConn->Player.GetIpAddress()<<setfill(' ')<<setw(5)<<TempConn->Player.GetKills();
 	}
-		
-	WriteToBuffer( Player, "%s=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\r",
-		ANSI_BR_GREEN );
 
-	WriteToBuffer( Player, "Server uptime in %s: %i\n\r", TimeString, UpTime );
-	WriteToBuffer( Player, "%s%s[ HP: %i] > %s", ANSI_CLR_SOL, ANSI_BR_CYAN, Player->Player.GetHitPoints(), ANSI_WHITE );
+	WhoString<<ANSI_GREEN<<"\n\r=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\r"
+		<<ANSI_BR_GREEN<<"Server uptime in "<<TimeString<<": "<<UpTime<<"\n\r"<<ANSI_CLR_SOL<<ANSI_BR_CYAN<<"[ HP: "
+		<<Player->Player.GetHitPoints()<<"] >"<<ANSI_WHITE;
+
+	FormattedString = WhoString.str(); //convert to regular string so we can pass to WriteToBuffer with c_str()
+
+	WriteToBuffer( Player, (char*)FormattedString.c_str() );	//write converted string to buffer
+
 	return;
 }
 
 COMMAND(Score)
 {
-	Connection *TempConn;
-	char TimeString[80];
-	time_t UpTime;
+	Connection			*TempConn;
+	char				TimeString[80];
+	time_t				UpTime;
+	ostringstream		WhoString;
+	string				FormattedString;
 
 	UpTime = CurrentTime - BootTime;
 	
@@ -344,22 +364,32 @@ COMMAND(Score)
 		strcpy( TimeString, "minutes" );
 	}
 
-	WriteToBuffer( Player, "\n\r%sCurrent Scores in Minions Mud\n\r",
-		ANSI_BR_GREEN );
-	WriteToBuffer( Player, "=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\r%s",
-		ANSI_BR_YELLOW );
+	/* Going to try using a STL ostringstream here  */
+	WhoString<<ANSI_CLR_SCR<<ANSI_BR_WHITE<<"\t\t\tCurrent Scores in Minions Mud\n\r"<<ANSI_GREEN
+		<<"=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="<<ANSI_BR_RED;
+	
+	WhoString.flags( ios::left );
+	WhoString<<"\n\r"<<setfill(' ')<<setw(10)<<"Player"<<setfill(' ')<<setw(10)<<' '<<setfill(' ')<<setw(10)<<"Kills"
+		<<setfill(' ')<<setw(12)<<"Times Killed";
+	
+	WhoString<<"\n\r"<<ANSI_GREEN
+		<<"=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\r"<<ANSI_BR_YELLOW;
 
 	for( TempConn = PlayerList; TempConn; TempConn = TempConn->Next )
 	{
-		WriteToBuffer( Player, "%s has %d kills and has been killed %d times.\n\r", TempConn->Player.GetFirstName(),
-			TempConn->Player.GetKills(), TempConn->Player.GetBeenKilled() );
+		WhoString<<"\n\r";
+		WhoString.flags( ios::left );
+		WhoString<<setfill(' ')<<setw(10)<<TempConn->Player.GetFirstName()<<setfill(' ')<<setw(10)<<TempConn->Player.GetLastName()
+			<<setfill(' ')<<setw(10)<<TempConn->Player.GetKills()<<setfill(' ')<<setw(10)<<TempConn->Player.GetBeenKilled();
 	}
-		
-	WriteToBuffer( Player, "%s=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\r",
-		ANSI_BR_GREEN );
 
-	WriteToBuffer( Player, "Server uptime in %s: %i\n\r", TimeString, UpTime );
-	WriteToBuffer( Player, "%s%s[ HP: %i] > %s", ANSI_CLR_SOL, ANSI_BR_CYAN, Player->Player.GetHitPoints(), ANSI_WHITE );
+	WhoString<<ANSI_GREEN<<"\n\r=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\r"
+		<<"Server uptime in "<<TimeString<<": "<<UpTime<<"\n\r"<<ANSI_CLR_SOL<<ANSI_BR_CYAN<<"[ HP: "<<Player->Player.GetHitPoints()
+		<<"] >"<<ANSI_WHITE;
+
+	FormattedString = WhoString.str(); //convert to regular string so we can pass to WriteToBuffer with c_str()
+
+	WriteToBuffer( Player, (char*)FormattedString.c_str() );	//write converted string to buffer
 	return;
 }
 

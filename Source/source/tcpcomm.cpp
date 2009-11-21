@@ -373,7 +373,7 @@ bool ReadFromBuffer( Connection *Conn )
 bool WriteToBuffer( Connection *Conn, char *format, ... )
 {
 	va_list		argument_list;
-	char		TempString[512];
+	char		TempString[8096]; //TODO this could overflow if any call to this function passes data that exceeds 8096 chars
 	int			Length;
 
 
