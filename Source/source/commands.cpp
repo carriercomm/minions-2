@@ -1705,7 +1705,12 @@ COMMAND(Wield)
 		return;
 	}
 
-
+	// Can't switch weapons while fighting!
+	if ( Player->Victim != NULL )
+	{
+		DisplayCombatStatus( Player, false );
+		StopCombat( Player );
+	}
 
 	TempRoom = Player->Player.GetRoom();
 
@@ -1779,6 +1784,13 @@ COMMAND(Wear)
 		return;
 	}
 
+	// Can't fight while dressing!
+	if ( Player->Victim != NULL )
+	{
+		DisplayCombatStatus( Player, false );
+		StopCombat( Player );
+	}
+
 	TempRoom = Player->Player.GetRoom();
 
 	// Where is it worn?
@@ -1846,6 +1858,12 @@ COMMAND(Remove)
 	// Get plays room so we can broadcast to that room
 	TempRoom = Player->Player.GetRoom();
 
+	// You can't remove things while in combat
+	if ( Player->Victim != NULL )
+	{
+		DisplayCombatStatus( Player, false );
+		StopCombat( Player );
+	}
 
 	WriteToBuffer( Player, "%sYou remove the %s!%s\n\r",
 		ANSI_BR_BLUE, TempItem->GetItemName(), ANSI_WHITE );

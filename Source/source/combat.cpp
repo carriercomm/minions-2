@@ -96,7 +96,7 @@ void DisplayCombatStatus(Connection *Player, bool Status)
 	Room *CurRoom = Player->Player.GetRoom();
 	Connection *Victim = Player->Victim;
 
-	if (Player->Victim == '\0')
+	if (Player->Victim == NULL)
 	{
 		ServerLog( "DisplayCombatStatus: Player had no victim! ...bailing out of function!");
 		return;
