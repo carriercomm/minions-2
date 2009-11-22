@@ -31,17 +31,12 @@ class Item;  //forward declaration
 class minionsEvent;
 struct Connection;
 
-enum Location
-{
-	LOC_WEAPON, LOC_HEAD, LOC_NECK, LOC_ARMS, LOC_TORSO, LOC_LEGS,
-	LOC_FEET,LOC_FINGER, LOC_HANDS
-};
-
 /*  link list of items in this players possesion */
 struct ItemsOnPlayer
 {
 	ItemsOnPlayer	*Next;
 	Item			*Item;
+	unsigned int	ItemCount;	//how many of this item are you in posession of
 };
 
 /*  Client slash Player class definition */

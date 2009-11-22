@@ -30,6 +30,7 @@ const int ITEM_WEAR_FEET			= 6;
 const int ITEM_WEAR_NECK			= 7;
 const int ITEM_WEAR_HANDS           = 8;
 const int ITEM_WIELDED              = 9;
+const int MAX_WEAR_LOCATIONS		= 9;
 
 // Which bonus
 const int STRENGTH_BONUS            = 1;

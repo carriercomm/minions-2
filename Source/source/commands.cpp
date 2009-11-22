@@ -365,15 +365,15 @@ COMMAND(Score)
 	}
 
 	/* Going to try using a STL ostringstream here  */
-	WhoString<<ANSI_CLR_SCR<<ANSI_BR_WHITE<<"\t\t\tCurrent Scores in Minions Mud\n\r"<<ANSI_GREEN
+	WhoString<<ANSI_CLR_SCR<<ANSI_BR_WHITE<<"\t\t\tCurrent Minions Leader Board\n\r"<<ANSI_GREEN
 		<<"=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="<<ANSI_BR_RED;
 	
 	WhoString.flags( ios::left );
 	WhoString<<"\n\r"<<setfill(' ')<<setw(10)<<"Player"<<setfill(' ')<<setw(10)<<' '<<setfill(' ')<<setw(10)<<"Kills"
-		<<setfill(' ')<<setw(12)<<"Times Killed";
+		<<setfill(' ')<<setw(12)<<"Deaths";
 	
 	WhoString<<"\n\r"<<ANSI_GREEN
-		<<"=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\r"<<ANSI_BR_YELLOW;
+		<<"=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="<<ANSI_BR_YELLOW;
 
 	for( TempConn = PlayerList; TempConn; TempConn = TempConn->Next )
 	{
@@ -411,12 +411,12 @@ COMMAND(Help)
 
 		/* If its an administrative command flag it as so  */
 		if( CommandTable[loop].AdminOnly == true )
-			WriteToBuffer( Player, "%s%s%s ", ANSI_BR_YELLOW, CommandTable[loop].Padded, ANSI_BR_CYAN );
+			WriteToBuffer( Player, "%s%s%s  ", ANSI_BR_YELLOW, CommandTable[loop].Padded, ANSI_BR_CYAN );
 		else
 			WriteToBuffer( Player, "%s  ", CommandTable[loop].Padded );
 	}
 	
-	WriteToBuffer( Player, "%s%s[ HP: %i] > %s", ANSI_CLR_SOL, ANSI_BR_CYAN, Player->Player.GetHitPoints(), ANSI_WHITE );
+	WriteToBuffer( Player, "\n\r%s%s[ HP: %i] > %s", ANSI_CLR_SOL, ANSI_BR_CYAN, Player->Player.GetHitPoints(), ANSI_WHITE );
 
 	return;
 }
@@ -1418,29 +1418,79 @@ COMMAND(Teleport)
 COMMAND(Inventory)
 {
 	ItemsOnPlayer	*ListPtr = '\0';
+	ostringstream		BuildString;
+	string				FormattedString;
+	Item				*Temp = NULL;
 
 	ListPtr = Player->Player.GetFirstItem();
 
 	if( !ListPtr )
 	{
-		WriteToBuffer( Player, "%sYou have nothing in your inventory!%s\n\r",
+		WriteToBuffer( Player, "\n\r%sYou have nothing in your inventory!%s\n\r",
 			ANSI_BR_RED, ANSI_WHITE);
 		return;
 	}
 
-	WriteToBuffer( Player, "%s\tYour Inventory\n\r=-=-=-=-=-=-=-=-=-=-=-=-=-=-=%s\n\r",
-		ANSI_BR_CYAN, ANSI_WHITE);
+	BuildString<<ANSI_BR_CYAN<<"\n\r\tCurrent Inventory\n\r=-=-=-=-=-=-=-=-=-=-=-=-=-=-=";
+	BuildString.flags( ios::left );	//left justify
+
+	/* do any items worn first */
+	for( int loop = 1; loop <= MAX_WEAR_LOCATIONS; loop++ )
+	{
+		Temp = Player->Player.IsWearing(loop);
+		if(Temp)
+		{
+			BuildString<<"\n\r"<<ANSI_WHITE<<setfill(' ')<<setw(25)<<Temp->GetItemName();
+
+			switch(loop)
+			{
+			case ITEM_WEAR_HEAD:
+				BuildString<<ANSI_RED<<setfill(' ')<<setw(20)<<"Worn on Head";
+				break;
+			case ITEM_WEAR_ARMS:
+				BuildString<<ANSI_RED<<setfill(' ')<<setw(20)<<"Worn on Arms";
+				break;
+			case ITEM_WEAR_TORSO:
+				BuildString<<ANSI_RED<<setfill(' ')<<setw(20)<<"Worn on Torso";
+				break;
+			case ITEM_WEAR_LEGS:
+				BuildString<<ANSI_RED<<setfill(' ')<<setw(20)<<"Worn on Legs";
+				break;
+			case ITEM_WEAR_FINGER:
+				BuildString<<ANSI_RED<<setfill(' ')<<setw(20)<<"Worn on Finger";
+				break;
+			case ITEM_WEAR_FEET:
+				BuildString<<ANSI_RED<<setfill(' ')<<setw(20)<<"Worn on Feet";
+				break;
+			case ITEM_WEAR_NECK:
+				BuildString<<ANSI_RED<<setfill(' ')<<setw(20)<<"Worn on Neck";
+				break;
+			case ITEM_WEAR_HANDS:
+				BuildString<<ANSI_RED<<setfill(' ')<<setw(20)<<"Worn on Hands";
+				break;
+			case ITEM_WIELDED:
+				BuildString<<ANSI_RED<<setfill(' ')<<setw(20)<<"Wielded";
+				break;
+			default:
+				ServerLog( "Hit default int file: %s Line: %s - Function CmdInventory()", __FILE__,__LINE__ );
+				break;
+			}
+		}
+		continue;
+	}
+
+	/* now do non-worn or wielded items  */
 
 	for( ; ListPtr; ListPtr = ListPtr->Next )
 	{
-		WriteToBuffer( Player, "%s", ListPtr->Item->GetItemName() );
-		
-		if( ListPtr->Item == Player->Player.GetWieldedItem() )
-			WriteToBuffer( Player, " ( Weapon Hand )\n\r" ); //TODO: Fix this bug (multiple items wielded)
-		else
-			WriteToBuffer( Player, "\n\r" );
+		BuildString<<"\n\r"<<ANSI_WHITE<<setfill(' ')<<setw(25)<<ListPtr->Item->GetItemName();
+		if( ListPtr->ItemCount > 1 )
+			BuildString<<ANSI_RED<<setfill(' ')<<setw(10)<<ListPtr->ItemCount;
 	}
 
+	BuildString<<"\n\r";
+	FormattedString = BuildString.str(); //convert to regular string so we can pass to WriteToBuffer with c_str()
+	WriteToBuffer( Player, (char*)FormattedString.c_str() );	//write converted string to buffer
 	return;
 }
 

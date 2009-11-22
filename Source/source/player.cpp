@@ -362,7 +362,10 @@ void Client::DropAllItems( void )
 			ListPtr_Next = ListPtr->Next;	
 
 			if( CurrentRoom )
-				CurrentRoom->AddItemToRoom( ListPtr->Item );
+			{
+				for( int loop = 1; loop <= ListPtr->ItemCount; loop++ )//if they have multiple items drop them all
+					CurrentRoom->AddItemToRoom( ListPtr->Item );
+			}
 			delete ListPtr;
 		}
 	}
@@ -380,6 +383,19 @@ bool Client::AddItemToPlayer( Item *NewItem )
 	ItemsOnPlayer	*PlaceHolder;
 	Connection      *Player;
 	
+	if( FirstItem )	//if they have at least one item in posession
+	{
+		for( TempItemsOnPlayer = FirstItem; TempItemsOnPlayer; TempItemsOnPlayer = TempItemsOnPlayer->Next )
+		{
+			if( TempItemsOnPlayer->Item == NewItem )
+			{
+				TempItemsOnPlayer->ItemCount++;
+				return true;
+			}
+			else continue;
+		}
+	}
+
 	TempItemsOnPlayer = new ItemsOnPlayer;
 
 	if( !TempItemsOnPlayer )
@@ -394,12 +410,14 @@ bool Client::AddItemToPlayer( Item *NewItem )
 		FirstItem = TempItemsOnPlayer;
 		FirstItem->Next = PlaceHolder;
 		FirstItem->Item = NewItem;
+		FirstItem->ItemCount = 1;
 		return true;
 	}
 	
 	FirstItem = TempItemsOnPlayer;
 	FirstItem->Next = '\0';
 	FirstItem->Item = NewItem;
+	FirstItem->ItemCount = 1;
 	
 	return true;
 
@@ -418,6 +436,12 @@ bool Client::RemoveItemFromPlayer( Item *ItemToDelete )
 
 	if( FirstItem->Item == ItemToDelete ) 
 	{
+		if( FirstItem->ItemCount > 1 )	//if they have more than one just decrement the count.
+		{
+			FirstItem->ItemCount--;	//decrement the item counter rather than delete anything
+			return true;
+		}
+
 		ToDelete = FirstItem;
 		FirstItem = FirstItem->Next;
 	}
@@ -427,6 +451,12 @@ bool Client::RemoveItemFromPlayer( Item *ItemToDelete )
 		for( Temp = FirstItem; Temp; Temp = Temp->Next )
 		{
 			if( Temp->Next->Item == ItemToDelete )
+				if( Temp->Next->ItemCount > 1 )	//if they have more than one just decrement counter
+				{
+					Temp->Next->ItemCount--;
+					return true;
+				}
+				
 				break;
 		}
 
@@ -645,7 +675,7 @@ char* Client::GetDescription( void )
 	else if( HitPoints <= ( MaxHits * .95 ) )
 		strcpy( HealthStatusDesc, "mildly" );
 	else
-		strcpy( HealthStatusDesc, "un" );
+		strcpy( HealthStatusDesc, "not" );
 
 	/* get the strength description string */
 	if( Strength <= ( MaxHits * .15 ) )
@@ -666,29 +696,30 @@ char* Client::GetDescription( void )
 		<<RaceStr<<' '<<ClassStr<<"\n\r";
 
 	/* do general description here  */
-	BuildString<<ANSI_WHITE<<FirstName<<" is "<<StrDesc<<' '<<RaceStr<<' '<<ClassStr<<"\n\r"<<ANSI_BR_YELLOW;
+	BuildString<<ANSI_WHITE<<FirstName<<" is "<<StrDesc<<' '<<RaceStr<<' '<<ClassStr<<"\n\r";
 
 	/* display if they are wielding or wearing things */
+	BuildString.flags( ios::left );	//left pad
 	if( Head )
-		BuildString<<Head->GetItemName()<<" (Head)\n\r";
+		BuildString<<ANSI_BR_YELLOW<<setfill(' ')<<setw(25)<<Head->GetItemName()<<ANSI_RED<<setfill(' ')<<setw(20)<<"(Head)"<<"\n\r";
 	if( Neck )
-		BuildString<<Neck->GetItemName()<<" (Neck)\n\r";
+		BuildString<<ANSI_BR_YELLOW<<setfill(' ')<<setw(25)<<Neck->GetItemName()<<ANSI_RED<<setfill(' ')<<setw(20)<<"(Neck)"<<"\n\r";
 	if( Arms )
-		BuildString<<Arms->GetItemName()<<" (Arm)\n\r";
+		BuildString<<ANSI_BR_YELLOW<<setfill(' ')<<setw(25)<<Arms->GetItemName()<<ANSI_RED<<setfill(' ')<<setw(20)<<"(Arm)"<<"\n\r";
 	if( Torso )
-		BuildString<<Torso->GetItemName()<<" (Torso)\n\r";
+		BuildString<<ANSI_BR_YELLOW<<setfill(' ')<<setw(25)<<Torso->GetItemName()<<ANSI_RED<<setfill(' ')<<setw(20)<<"(Torso)"<<"\n\r";
 	if( Legs )
-		BuildString<<Legs->GetItemName()<<" (Legs)\n\r";
+		BuildString<<ANSI_BR_YELLOW<<setfill(' ')<<setw(25)<<Legs->GetItemName()<<ANSI_RED<<setfill(' ')<<setw(20)<<"(Legs)"<<"\n\r";
 	if( Feet )
-		BuildString<<Feet->GetItemName()<<" (Feet)\n\r";
+		BuildString<<ANSI_BR_YELLOW<<setfill(' ')<<setw(25)<<Feet->GetItemName()<<ANSI_RED<<setfill(' ')<<setw(20)<<"(Feet)"<<"\n\r";
 	if( Finger )
-		BuildString<<Finger->GetItemName()<<" (Finger)\n\r";
+		BuildString<<ANSI_BR_YELLOW<<setfill(' ')<<setw(25)<<Finger->GetItemName()<<ANSI_RED<<setfill(' ')<<setw(20)<<"(Finger)"<<"\n\r";
 	if( Hands )
-		BuildString<<Hands->GetItemName()<<" (Hand)\n\r";
+		BuildString<<ANSI_BR_YELLOW<<setfill(' ')<<setw(25)<<Hands->GetItemName()<<ANSI_RED<<setfill(' ')<<setw(20)<<"(Hand)"<<"\n\r";
 	if( Wielded )
-		BuildString<<Wielded->GetItemName()<<" (Weapon Hand)\n\r"<<ANSI_BR_GREEN;
+		BuildString<<ANSI_BR_YELLOW<<setfill(' ')<<setw(25)<<Wielded->GetItemName()<<ANSI_RED<<setfill(' ')<<setw(20)<<"(Weapon Hand)"<<"\n\r";
 
-	BuildString<<FirstName<<" is "<<HealthStatusDesc<<"-wounded.\n\r"<<ANSI_BR_WHITE;
+	BuildString<<ANSI_BR_GREEN<<FirstName<<" is: "<<HealthStatusDesc<<" wounded.\n\r"<<ANSI_BR_WHITE;
 
 	/* convert to std::string type */
 	FormattedString = BuildString.str();
