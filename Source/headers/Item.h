@@ -31,6 +31,16 @@ const int ITEM_WEAR_NECK			= 7;
 const int ITEM_WEAR_HANDS           = 8;
 const int ITEM_WIELDED              = 9;
 
+// Which bonus
+const int STRENGTH_BONUS            = 1;
+const int AGILITY_BONUS             = 2;
+const int HEALTH_BONUS              = 3;
+const int LUCK_BONUS                = 4;
+const int WISDOM_BONUS				= 5;
+const int HITPOINTS_BONUS            = 6;
+const int MANA_BONUS                = 7;
+
+
 class Item
 {
 	unsigned int		ItemNumber;
@@ -45,6 +55,13 @@ class Item
 	int					Speed;
 	int					ArmorValue;
 	int					MinDamage;
+	int					StrengthBonus;
+	int					AgilityBonus;
+	int					HealthBonus;
+	int					LuckBonus;
+	int					WisdomBonus;
+	int					HitPointsBonus;
+	int					ManaBonus;
 	int                 WearLocation;
 
 public:
@@ -75,6 +92,8 @@ public:
 	char *GetAttackType( void ) { return AttackType; };
 	void SetWearLocation( int location ) { WearLocation = location; };
 	int GetWearLocation( void ) { return WearLocation; };
+	void SetBonus( int Bonus, int which_bonus );
+	int GetBonus( int which_bonus );
 
 };
 

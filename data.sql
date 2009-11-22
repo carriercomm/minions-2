@@ -25,11 +25,11 @@ INSERT INTO classes VALUES( 5, "Paladin", "Physical Combat is thier holy calling
 INSERT INTO classes VALUES( 6, "Priest", "Physical Combat is thier holy calling, and healing thier forte.");
 INSERT INTO classes VALUES( 7, "Night Owl", "Physical Combat is thier holy calling, and healing thier forte.");
 
-INSERT INTO items VALUES( 1, 30, 1, 25, "turd-tipped crozier", "This fine crozier is of a high quality. An immensely sharpened, pertrified turd forms a deady tip.", 75, 5, 3, 10, "penetrate", 10, 9);
-INSERT INTO items VALUES( 2, 30, 1, 25, "flappy titties", "These appear to be discarded breast implants of very low quality.", 75, 5, 3, 10, "flap", 10, 9);
-INSERT INTO items VALUES( 3, 30, 1, 25, "cowflop", "This steaming flop is a humiliating deathblow.", 75, 5, 3, 10, "slop", 10, 9);
-INSERT INTO items VALUES( 4, 30, 1, 25, "holy avenger", "This fine golden sword is intricately carved, and enchanted to deal trememdous damage!", 560, 8, 3, 10, "penetrate", 65, 9);
-INSERT INTO items VALUES( 5, 30, 2, 25, "rusty chainmail armor", "This rusty chainmail looks like it had been stripped off of a dead goblin. The wearer is better off dead.", 0, 0, 0, 5, "None", 0, 3);
-INSERT INTO items VALUES( 6, 10, 3, 500, "black cauldron", "This gigantic black cauldron was once used by trolls to cook great feasts made up of humans caught in the night!", 0, 0, 0, 0, "None", 0, 0);
-INSERT INTO items VALUES( 7, 10, 2, 15, "combat boots", "These nasty mud covered combat boots stink like nobody's bussiness, but they are better than nothing!", 0, 0, 0, 2, "None", 0, 6);
-INSERT INTO items VALUES( 8, 10, 2, 2, "polished black ring", "This black ring is made of lava glass. It is not known who made it or where it is from.", 0, 0, 0, 1, "None", 0, 5);
+INSERT INTO items VALUES( 1, 30, 1, 25, "turd-tipped crozier", "This fine crozier is of a high quality. An immensely sharpened, pertrified turd forms a deady tip.", 75, 5, 3, 10, "penetrate", 10, 0, 0, 0, 0, 0, 0, 0, 9);
+INSERT INTO items VALUES( 2, 30, 1, 25, "flappy titties", "These appear to be discarded breast implants of very low quality.", 75, 5, 3, 10, "flap", 10, 0, 0, 0, 0, 0, 0, 0, 9);
+INSERT INTO items VALUES( 3, 30, 1, 25, "cowflop", "This steaming flop is a humiliating deathblow.", 75, 5, 3, 10, "slop", 10, 0, 0, 0, 0, 0, 0, 0, 9);
+INSERT INTO items VALUES( 4, 30, 1, 25, "holy avenger", "This fine golden sword is intricately carved, and enchanted to deal trememdous damage!", 560, 8, 3, 10, "penetrate", 65, 0, 0, 0, 0, 0, 0, 0, 9);
+INSERT INTO items VALUES( 5, 30, 2, 25, "rusty chainmail armor", "This rusty chainmail looks like it had been stripped off of a dead goblin. The wearer is better off dead.", 0, 0, 0, 5, "None", 0, 0, 0, 0, 0, 0, 0, 0, 3);
+INSERT INTO items VALUES( 6, 10, 3, 500, "black cauldron", "This gigantic black cauldron was once used by trolls to cook great feasts made up of humans caught in the night!", 0, 0, 0, 0, "None", 0, 0, 0, 0, 0, 0, 0, 0, 0);
+INSERT INTO items VALUES( 7, 10, 2, 15, "combat boots", "These nasty mud covered combat boots stink like nobody's bussiness, but they are better than nothing!", 0, 0, 0, 2, "None", 0, 0, 0, 0, 0, 0, 0, 0, 6);
+INSERT INTO items VALUES( 8, 10, 2, 2, "polished black ring", "This black ring is made of lava glass. It is not known who made it or where it is from.", 0, 0, 0, 1, "None", 0, 50, 0, 0, 0, 0, 0, 0, 5);

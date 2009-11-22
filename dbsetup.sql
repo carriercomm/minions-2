@@ -1,4 +1,4 @@
-CREATE TABLE rooms( 
+CREATE TABLE rooms(
        RoomNumber bigint PRIMARY KEY,
        ShortDesc VARCHAR(82) NOT NULL,
        LongDesc VARCHAR(322) NOT NULL,
@@ -42,6 +42,13 @@ CREATE TABLE items(
 	ArmorValue int NOT NULL,
 	AttackType VARCHAR(21) NOT NULL,
 	MinDamage int NOT NULL,
+	StrBonus int NOT NULL,
+	AgilBonus int NOT NULL,
+        HealthBonus int NOT NULL,
+        LuckBonus int NOT NULL,
+        WisdomBonus int NOT NULL,
+        HitPointsBonus int NOT NULL,
+        ManaBonus int NOT NULL,
 	WearLocation int NOT NULL
 );
 

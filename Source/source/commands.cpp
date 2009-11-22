@@ -1431,6 +1431,10 @@ COMMAND(GetItem)
 		WriteToBuffer( Player, "%sYou pick up a %s%s\n\r", ANSI_BR_BLUE,
 			TempItem->GetItemName(), ANSI_WHITE );
 	}
+	else
+		WriteToBuffer( Player, "%sYou can't carry that much weight!%s\n\r",
+			ANSI_BR_BLUE, ANSI_WHITE );
+
 
 	return;
 }
@@ -1561,7 +1565,6 @@ COMMAND(GiveItem)
 	/* if they are wielding the item then unwield it fer em */
 	if ( Player->Player.SearchPlayerInventoryForItem( Argument ) == NULL )
 	{
-		ServerLog("Says I'm wielding this: %s", Player->Player.SearchPlayerInventoryForItem( Argument2 ) );
 		// Remove the item from being worn or wielded
 		Player->Player.WearItem(NULL, TempItem->GetWearLocation());
 

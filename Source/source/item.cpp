@@ -60,6 +60,69 @@ bool Item::SetAttackType( char *String )
 	return true;
 }
 
+/*=======================================================
+Item::SetBonus( int Bonus, int which_bonus ) 
+
+Sets bonus value of item pulled from the database
+based on which bonus stat specified.
+=======================================================*/
+void Item::SetBonus( int Bonus, int which_bonus )
+{
+	switch ( which_bonus )
+	{
+	case STRENGTH_BONUS:
+		StrengthBonus = Bonus;
+		break;
+	case AGILITY_BONUS:
+		AgilityBonus = Bonus;
+		break;
+	case HEALTH_BONUS:
+		HealthBonus = Bonus;
+		break;
+	case LUCK_BONUS:
+		LuckBonus = Bonus;
+		break;
+	case WISDOM_BONUS:
+		WisdomBonus = Bonus;
+		break;
+	case HITPOINTS_BONUS:
+		HitPointsBonus = Bonus;
+		break;
+	case MANA_BONUS:
+		ManaBonus = Bonus;
+		break;
+	default:
+		ServerLog("Item::SetBonus() hit default with value: %d", which_bonus);
+	}
+}
+
+/*=======================================================
+Item::GetBonus( int which_bonus )
+
+Returns the items bonus modifier for said item
+=======================================================*/
+int Item::GetBonus( int which_bonus )
+{
+	switch ( which_bonus )
+	{
+	case STRENGTH_BONUS:
+		return StrengthBonus;
+	case AGILITY_BONUS:
+		return AgilityBonus;
+	case HEALTH_BONUS:
+		return HealthBonus;
+	case LUCK_BONUS:
+		return LuckBonus;
+	case WISDOM_BONUS:
+		return WisdomBonus;
+	case HITPOINTS_BONUS:
+		return HitPointsBonus;
+	case MANA_BONUS:
+		return ManaBonus;
+	default:
+		ServerLog("Item::SetBonus() hit default with value: %d", which_bonus);
+	}
+}
 /**********************************************************
 	Load the Item Database exepcts the following schema:
 	ItemNumber int,
@@ -145,7 +208,16 @@ bool LoadItemDatabase( void )
 			ItemPtr->Value->SetArmorValue( sqlite3_column_int( SqlStatement, 9) );
 			ItemPtr->Value->SetAttackType( (char *)sqlite3_column_text( SqlStatement, 10) );
 			ItemPtr->Value->SetMinDamage( sqlite3_column_int( SqlStatement, 11) );
-			ItemPtr->Value->SetWearLocation( sqlite3_column_int( SqlStatement, 12) );
+
+			ItemPtr->Value->SetBonus( sqlite3_column_int( SqlStatement, 12), STRENGTH_BONUS );
+			ItemPtr->Value->SetBonus( sqlite3_column_int( SqlStatement, 13), AGILITY_BONUS );
+			ItemPtr->Value->SetBonus( sqlite3_column_int( SqlStatement, 14), HEALTH_BONUS );
+			ItemPtr->Value->SetBonus( sqlite3_column_int( SqlStatement, 15), LUCK_BONUS );
+			ItemPtr->Value->SetBonus( sqlite3_column_int( SqlStatement, 16), WISDOM_BONUS );
+			ItemPtr->Value->SetBonus( sqlite3_column_int( SqlStatement, 17), HITPOINTS_BONUS  );
+			ItemPtr->Value->SetBonus( sqlite3_column_int( SqlStatement, 18), MANA_BONUS );
+
+			ItemPtr->Value->SetWearLocation( sqlite3_column_int( SqlStatement, 19) );
 
 			RowCount++;		//dont forget to increment the row count.
 			

@@ -833,11 +833,25 @@ void Client::AdjustPlayerStatsByItem( Item *CurItem, int add_remove )
 	case ADD:
 		ArmorClass     += CurItem->GetArmorValue();
 		THAC0          += CurItem->GetToHitBonus();
+		Strength       += CurItem->GetBonus(STRENGTH_BONUS);
+		Agility        += CurItem->GetBonus(AGILITY_BONUS);
+		Health         += CurItem->GetBonus(HEALTH_BONUS);
+		Luck	       += CurItem->GetBonus(LUCK_BONUS);
+		Wisdom         += CurItem->GetBonus(WISDOM_BONUS);
+		HitPoints      += CurItem->GetBonus(HITPOINTS_BONUS);
+		Mana           += CurItem->GetBonus(MANA_BONUS);
 		// Add other stats as items stat modifiers get added to the Items class
 		break;
 	case REMOVE:
 		ArmorClass     -= CurItem->GetArmorValue();
 		THAC0          -= CurItem->GetToHitBonus();
+		Strength       -= CurItem->GetBonus(STRENGTH_BONUS);
+		Agility        -= CurItem->GetBonus(AGILITY_BONUS);
+		Health         -= CurItem->GetBonus(HEALTH_BONUS);
+		Luck	       -= CurItem->GetBonus(LUCK_BONUS);
+		Wisdom         -= CurItem->GetBonus(WISDOM_BONUS);
+		HitPoints      -= CurItem->GetBonus(HITPOINTS_BONUS);
+		Mana           -= CurItem->GetBonus(MANA_BONUS);
 		// add matching stats as added to above
 		break;
 	default:
