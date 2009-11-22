@@ -438,6 +438,12 @@ COMMAND(Attack)
 		return;
 	}
 
+	if (Player->Player.GetPlayerWeight() > (Player->Player.GetStrength() *  MAX_STR_MULTIPLIER) )
+	{
+		WriteToBuffer( Player, "%sYou are to heavy to attack anyone!\n\r%s", ANSI_BR_BLUE, ANSI_WHITE);
+		return;
+	}
+
 	Victim = SearchForPlayer( Argument );
 
 	if( !Victim )
@@ -912,6 +918,12 @@ COMMAND(MoveNorth)
 		WriteToBuffer( Player, "There was an error\n\r" );
 		return;
 	}
+	// Are you to heavy to move?
+	if (Player->Player.GetPlayerWeight() > (Player->Player.GetStrength() *  MAX_STR_MULTIPLIER) )
+	{
+		WriteToBuffer( Player, "%sYou are to heavy to move!\n\r%s", ANSI_BR_BLUE, ANSI_WHITE);
+		return;
+	}
 
 	//Can't rest if you're trying to move
 	Player->Player.SetRestingStatus(NOT_RESTING);
@@ -951,6 +963,12 @@ COMMAND(MoveSouth)
 	if( !RoomPtr )
 	{
 		WriteToBuffer( Player, "There was an error\n\r" );
+		return;
+	}
+	// to heavy to move?
+	if (Player->Player.GetPlayerWeight() > (Player->Player.GetStrength() *  MAX_STR_MULTIPLIER) )
+	{
+		WriteToBuffer( Player, "%sYou are to heavy to move!\n\r%s", ANSI_BR_BLUE, ANSI_WHITE);
 		return;
 	}
 
@@ -996,6 +1014,13 @@ COMMAND(MoveUp)
 		return;
 	}
 
+	// to heavy to move?
+	if (Player->Player.GetPlayerWeight() > (Player->Player.GetStrength() *  MAX_STR_MULTIPLIER) )
+	{
+		WriteToBuffer( Player, "%sYou are to heavy to move!\n\r%s", ANSI_BR_BLUE, ANSI_WHITE);
+		return;
+	}
+
 	//Can't rest if you're trying to move
 	Player->Player.SetRestingStatus(NOT_RESTING);
 
@@ -1034,6 +1059,13 @@ COMMAND(MoveDown)
 	if( !RoomPtr )
 	{
 		WriteToBuffer( Player, "There was an error\n\r" );
+		return;
+	}
+
+	// to heavy to move?
+	if (Player->Player.GetPlayerWeight() > (Player->Player.GetStrength() *  MAX_STR_MULTIPLIER) )
+	{
+		WriteToBuffer( Player, "%sYou are to heavy to move!\n\r%s", ANSI_BR_BLUE, ANSI_WHITE);
 		return;
 	}
 
@@ -1078,6 +1110,13 @@ COMMAND(MoveEast)
 		return;
 	}
 
+	// to heavy to move?
+	if (Player->Player.GetPlayerWeight() > (Player->Player.GetStrength() *  MAX_STR_MULTIPLIER) )
+	{
+		WriteToBuffer( Player, "%sYou are to heavy to move!\n\r%s", ANSI_BR_BLUE, ANSI_WHITE);
+		return;
+	}
+
 	//Can't rest if you're trying to move
 	Player->Player.SetRestingStatus(NOT_RESTING);
 
@@ -1115,6 +1154,13 @@ COMMAND(MoveWest)
 	if( !RoomPtr )
 	{
 		WriteToBuffer( Player, "There was an error\n\r" );
+		return;
+	}
+
+	// to heavy to move?
+	if (Player->Player.GetPlayerWeight() > (Player->Player.GetStrength() *  MAX_STR_MULTIPLIER) )
+	{
+		WriteToBuffer( Player, "%sYou are to heavy to move!\n\r%s", ANSI_BR_BLUE, ANSI_WHITE);
 		return;
 	}
 
@@ -1158,6 +1204,13 @@ COMMAND(MoveNE)
 		return;
 	}
 
+	// to heavy to move?
+	if (Player->Player.GetPlayerWeight() > (Player->Player.GetStrength() *  MAX_STR_MULTIPLIER) )
+	{
+		WriteToBuffer( Player, "%sYou are to heavy to move!\n\r%s", ANSI_BR_BLUE, ANSI_WHITE);
+		return;
+	}
+
 	//Can't rest if you're trying to move
 	Player->Player.SetRestingStatus(NOT_RESTING);
 
@@ -1194,6 +1247,13 @@ COMMAND(MoveSE)
 	if( !RoomPtr )
 	{
 		WriteToBuffer( Player, "There was an error\n\r" );
+		return;
+	}
+
+	// to heavy to move?
+	if (Player->Player.GetPlayerWeight() > (Player->Player.GetStrength() *  MAX_STR_MULTIPLIER) )
+	{
+		WriteToBuffer( Player, "%sYou are to heavy to move!\n\r%s", ANSI_BR_BLUE, ANSI_WHITE);
 		return;
 	}
 
@@ -1236,6 +1296,13 @@ COMMAND(MoveSW)
 		return;
 	}
 
+	// to heavy to move?
+	if (Player->Player.GetPlayerWeight() > (Player->Player.GetStrength() *  MAX_STR_MULTIPLIER) )
+	{
+		WriteToBuffer( Player, "%sYou are to heavy to move!\n\r%s", ANSI_BR_BLUE, ANSI_WHITE);
+		return;
+	}
+
 	//Can't rest if you're trying to move
 	Player->Player.SetRestingStatus(NOT_RESTING);
 
@@ -1272,6 +1339,13 @@ COMMAND(MoveNW)
 	if( !RoomPtr )
 	{
 		WriteToBuffer( Player, "There was an error\n\r" );
+		return;
+	}
+
+	// to heavy to move?
+	if (Player->Player.GetPlayerWeight() > (Player->Player.GetStrength() *  MAX_STR_MULTIPLIER) )
+	{
+		WriteToBuffer( Player, "%sYou are to heavy to move!\n\r%s", ANSI_BR_BLUE, ANSI_WHITE);
 		return;
 	}
 
