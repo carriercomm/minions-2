@@ -383,7 +383,7 @@ COMMAND(Score)
 			<<setfill(' ')<<setw(10)<<TempConn->Player.GetKills()<<setfill(' ')<<setw(10)<<TempConn->Player.GetBeenKilled();
 	}
 
-	WhoString<<ANSI_GREEN<<"\n\r=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\r"
+	WhoString<<ANSI_GREEN<<"\n\r=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\r"<<ANSI_BR_GREEN
 		<<"Server uptime in "<<TimeString<<": "<<UpTime<<"\n\r"<<ANSI_CLR_SOL<<ANSI_BR_CYAN<<"[ HP: "<<Player->Player.GetHitPoints()
 		<<"] >"<<ANSI_WHITE;
 
@@ -1421,11 +1421,12 @@ COMMAND(Inventory)
 	ostringstream		BuildString;
 	string				FormattedString;
 	Item				*Temp = NULL;
+	bool				WornOrWielded = false;	//true if you have an item worn or wielded
 
 	ListPtr = Player->Player.GetFirstItem();
 
 
-	BuildString<<ANSI_BR_CYAN<<"\n\r\tCurrent Inventory\n\r=-=-=-=-=-=-=-=-=-=-=-=-=-=-=";
+	BuildString<<ANSI_BR_YELLOW<<"\n\r\tCurrent Inventory\n\r"<<ANSI_GREEN<<"=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=";
 	BuildString.flags( ios::left );	//left justify
 
 	/* do any items worn first */
@@ -1434,7 +1435,8 @@ COMMAND(Inventory)
 		Temp = Player->Player.IsWearing(loop);
 		if(Temp)
 		{
-			BuildString<<"\n\r"<<ANSI_WHITE<<setfill(' ')<<setw(25)<<Temp->GetItemName();
+			WornOrWielded = true;
+			BuildString<<"\n\r"<<ANSI_BR_YELLOW<<setfill(' ')<<setw(25)<<Temp->GetItemName();
 
 			switch(loop)
 			{
@@ -1476,10 +1478,10 @@ COMMAND(Inventory)
 	// Now check items not worn (ie in inventory)
 	if( !ListPtr )
 	{
-		BuildString<<ANSI_RED<<"\n\rYou have nothing in your inventory!\n\r";
-		//WriteToBuffer( Player, "\n\r%sYou have nothing in your inventory!%s\n\r",
-		//	ANSI_BR_RED, ANSI_WHITE);
-	//	return;
+		if( WornOrWielded )
+			BuildString<<ANSI_WHITE<<"\n\rYou have nothing else in your inventory.";
+		else
+			BuildString<<ANSI_WHITE<<"\n\rYou have nothing in your inventory.";
 	}
 
 	/* now do non-worn or wielded items  */
@@ -1488,10 +1490,10 @@ COMMAND(Inventory)
 	{
 		BuildString<<"\n\r"<<ANSI_WHITE<<setfill(' ')<<setw(25)<<ListPtr->Item->GetItemName();
 		if( ListPtr->ItemCount > 1 )
-			BuildString<<ANSI_RED<<setfill(' ')<<setw(10)<<ListPtr->ItemCount;
+			BuildString<<ANSI_RED<<"Qty: "<<setfill(' ')<<setw(10)<<ListPtr->ItemCount;
 	}
 
-	BuildString<<"\n\r";
+	BuildString<<ANSI_GREEN<<"\n\r=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\r";
 	FormattedString = BuildString.str(); //convert to regular string so we can pass to WriteToBuffer with c_str()
 	WriteToBuffer( Player, (char*)FormattedString.c_str() );	//write converted string to buffer
 	return;

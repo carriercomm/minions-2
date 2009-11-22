@@ -678,18 +678,18 @@ char* Client::GetDescription( void )
 		strcpy( HealthStatusDesc, "not" );
 
 	/* get the strength description string */
-	if( Strength <= ( MaxHits * .15 ) )
+	if( Strength <= ( MAX_STAT_VALUE * .15 ) )
 		strcpy( StrDesc, "a sick looking");
-	if( Strength <= ( MaxHits * .25 ) )
+	if( Strength <= ( MAX_STAT_VALUE * .25 ) )
 		strcpy( StrDesc, "a weak ass" );
-	else if( Strength <= ( MaxHits * .50 ) )
+	else if( Strength <= ( MAX_STAT_VALUE * .50 ) )
 		strcpy( StrDesc, "an average built" );
-	else if( Strength <= ( MaxHits * .75 ) )
+	else if( Strength <= ( MAX_STAT_VALUE * .75 ) )
 		strcpy( StrDesc, "a powerfully built" );
-	else if( Strength <= ( MAX_STR_MULTIPLIER * .95 ) )
-		strcpy( StrDesc, "very powerfully built" );
+	else if( Strength <= ( MAX_STAT_VALUE * .95 ) )
+		strcpy( StrDesc, "a very powerfully built" );
 	else
-		strcpy( StrDesc, "extremely powerfully built" );
+		strcpy( StrDesc, "an extremely powerfully built" );
 
 	/*  added STL strings here for formatting  */
 	BuildString<<ANSI_CLR_SOL<<ANSI_BR_GREEN<<'['<<FirstName<<' '<<LastName<<"] - "<<ANSI_BR_WHITE

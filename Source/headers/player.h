@@ -17,6 +17,7 @@ const int MAX_LEVEL_ALLOWED	          = 150;
 const int MAX_DESCRIPTION_LENGTH	  = 2048;
 const int MAX_HOST_NAME				  =  80;
 const int MAX_STR_MULTIPLIER          =  10;
+const int MAX_STAT_VALUE			  = 150;
 
 #define PLAYER_SAVE_PATH		 "players\\"
 
