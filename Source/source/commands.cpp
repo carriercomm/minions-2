@@ -1417,19 +1417,13 @@ COMMAND(Teleport)
 
 COMMAND(Inventory)
 {
-	ItemsOnPlayer	*ListPtr = '\0';
+	ItemsOnPlayer	    *ListPtr = '\0';
 	ostringstream		BuildString;
 	string				FormattedString;
 	Item				*Temp = NULL;
 
 	ListPtr = Player->Player.GetFirstItem();
 
-	if( !ListPtr )
-	{
-		WriteToBuffer( Player, "\n\r%sYou have nothing in your inventory!%s\n\r",
-			ANSI_BR_RED, ANSI_WHITE);
-		return;
-	}
 
 	BuildString<<ANSI_BR_CYAN<<"\n\r\tCurrent Inventory\n\r=-=-=-=-=-=-=-=-=-=-=-=-=-=-=";
 	BuildString.flags( ios::left );	//left justify
@@ -1477,6 +1471,15 @@ COMMAND(Inventory)
 			}
 		}
 		continue;
+	}
+
+	// Now check items not worn (ie in inventory)
+	if( !ListPtr )
+	{
+		BuildString<<ANSI_RED<<"\n\rYou have nothing in your inventory!\n\r";
+		//WriteToBuffer( Player, "\n\r%sYou have nothing in your inventory!%s\n\r",
+		//	ANSI_BR_RED, ANSI_WHITE);
+	//	return;
 	}
 
 	/* now do non-worn or wielded items  */
@@ -1595,30 +1598,32 @@ COMMAND(DropItem)
 	// Search players inventory (ie not worn, but holding)
 	TempItem = Player->Player.SearchPlayerForItem( Argument );
 
+
 	if( !TempItem )
 	{
 		WriteToBuffer( Player, "%sYou dont have a %s to drop!%s\n\r",
 			ANSI_BR_RED, Argument, ANSI_WHITE );
 		return;
 	}
+	ServerLog("Wear Location: %d, Item name: ", TempItem->GetWearLocation(), TempItem->GetItemName() );
 
 	// If in inventory, drop it.
 	if (TempItem == Player->Player.SearchPlayerInventoryForItem( Argument ) )
-		Player->Player.RemoveItemFromPlayer( TempItem );
+		Player->Player.RemoveItemFromPlayer( TempItem );	
 	// If not in inventory, it must be wielded. (also get inventory first)
 	else if (TempItem == Player->Player.IsWearing(TempItem->GetWearLocation()) )
 	{
 		// Remove the item from being worn or wielded
 		Player->Player.WearItem(NULL, TempItem->GetWearLocation());
-		// Update any stats modified by the item
-
+		// Now drop the item
+		Player->Player.RemoveItemFromPlayer( TempItem );	
 		// Tell everyone you are removing the item
 		WriteToBuffer( Player, "%sYou remove the %s!%s\n\r",
 			ANSI_BR_BLUE, TempItem->GetItemName(), ANSI_WHITE );
 		TempRoom->SelectiveBroadcast( Player, NULL, "%s%s removes %s!%s\n\r",
 			ANSI_BR_BLUE, Player->Player.GetFirstName(), TempItem->GetItemName(), ANSI_WHITE );
 	}
-		
+	
 	// Add the item to the room.
 	TempRoom->AddItemToRoom( TempItem );
 	

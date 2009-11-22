@@ -495,42 +495,42 @@ Item *Client::SearchPlayerForItem( char *Name )
 		if ( !strnicmp( Wielded->GetItemName(), Name, Len ) )
 			return Wielded;
 	}
-	else if (Head != NULL)
+	if (Head != NULL)
 	{
 	 	if ( !strnicmp( Head->GetItemName(), Name, Len ) )
 			return Head;
 	}
-	else if (Neck != NULL)
+	if (Neck != NULL)
 	{
 	 	if ( !strnicmp( Neck->GetItemName(), Name, Len ) )
 			return Neck;
 	}
-	else if (Arms != NULL)
+	if (Arms != NULL)
 	{
 	 	if ( !strnicmp( Arms->GetItemName(), Name, Len ) )
 			return Arms;
 	}
-	else if (Torso != NULL)
+	if (Torso != NULL)
 	{
 	 	if ( !strnicmp( Torso->GetItemName(), Name, Len ) )
 			return Torso;
 	}
-	else if (Legs != NULL)
+	if (Legs != NULL)
 	{
 	 	if ( !strnicmp( Legs->GetItemName(), Name, Len ) )
 			return Legs;
 	}
-	else if (Feet != NULL)
+	if (Feet != NULL)
 	{
 	 	if ( !strnicmp( Feet->GetItemName(), Name, Len ) )
 			return Feet;
 	}
-	else if ( Finger != NULL)
+	if ( Finger != NULL)
 	{
 	 	if ( !strnicmp( Finger->GetItemName(), Name, Len ) )
 			return Finger;
 	}
-	else if ( Hands != NULL)
+	if ( Hands != NULL)
 	{
 	 	if ( !strnicmp( Hands->GetItemName(), Name, Len ) )
 			return Hands;
