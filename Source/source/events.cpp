@@ -89,6 +89,8 @@ meCombat::meCombat()
 	eventType = ME_COMBAT;
 	eventTime = (time(NULL) + COMBAT_TIME_INTERVAL);
 	deadEvent = false;
+	Player    = NULL;
+	Victim    = NULL;
 }
 
 // meCombat class Destructor
@@ -135,6 +137,8 @@ meHeal::meHeal()
 	eventType = ME_HEAL;
 	eventTime = (time(NULL) + HEAL_TIME_INTERVAL);
 	deadEvent = false;
+	Player    = NULL;
+	Victim    = NULL;
 }
 
 // meCombat class Destructor
@@ -270,6 +274,7 @@ void meMelee::execEvent(scheduler *eventScheduler)
 	Room        *CurRoom = Player->Player.GetRoom();
 	Item        *Weapon = Player->Player.GetWieldedItem();
 
+	int         TotalAC;
 	// Is this a dead event?  If so, skip it!
 	if (deadEvent == true) {
 		return;
@@ -288,10 +293,11 @@ void meMelee::execEvent(scheduler *eventScheduler)
 
 	// All appears good, lets kill a mofo!
     CurRoom = Player->Player.GetRoom();
-	AC = Player->Player.GetArmorClass();
+	AC = Player->Victim->Player.GetArmorClass();
 	Thac0 = Player->Player.GetTHAC0();
-	ToHitValue = Thac0 - AC;
-	ToHitRoll = rand() % 20 + 1;
+	//ToHitValue = Thac0 - AC;
+	ToHitRoll = rand() % 100 + 1;
+	TotalAC = AC + 20;
 
 	
 	// Set attack type (could be punch)
@@ -305,20 +311,20 @@ void meMelee::execEvent(scheduler *eventScheduler)
 	
 
 	// Did the player HIT and CRIT?
-	if ((ToHitRoll > ToHitValue) && (ToHitRoll > CRITICAL))
+	if ( ToHitRoll > CRITICAL )
 	{
 		Critical = true;
 		if (!Weapon) // Does he have a weapon or is he punching?
-			Damage = (rand() % MAX_PUNCH_DAMAGE) + (MAX_PUNCH_DAMAGE + 1);
+			Damage = (rand() % ( (MAX_PUNCH_DAMAGE - MIN_PUNCH_DAMAGE) + MIN_PUNCH_DAMAGE ) + MAX_PUNCH_DAMAGE );
 		else 
-			Damage = ( rand() % Weapon->GetMaxDamage() ) + (Weapon->GetMaxDamage() + 1);
+			Damage = ( rand() % ( (Weapon->GetMaxDamage() - Weapon->GetMaxDamage()) +  Weapon->GetMinDamage() ) + Weapon->GetMaxDamage() );
 	}
-	else if (ToHitRoll > ToHitValue) // Ok, did he at least hit the player?
+	else if ( ToHitRoll > TotalAC ) // Ok, did he at least hit the player?
 	{
 		if (!Weapon)
-			Damage = (rand() % MAX_PUNCH_DAMAGE);
+			Damage = (rand() % (MAX_PUNCH_DAMAGE - MIN_PUNCH_DAMAGE) + MIN_PUNCH_DAMAGE);
 		else
-			Damage = (rand() % Weapon->GetMaxDamage());
+			Damage = (rand() % (Weapon->GetMaxDamage() - Weapon->GetMinDamage()) + Weapon->GetMinDamage());
 	}
 
 	// If damage is greater than 0 and a critical, that means someone got punked!
@@ -422,3 +428,27 @@ void meRemoveFlag::execEvent(scheduler *eventScheduler)
 		break;
 	}
 }
+
+
+
+/*==============================================================
+ meSpellEffect class -> Derived from minionsEvent class
+
+ Constructor:
+
+Spell event. This is for all over-time effects.
+This event is applied to the waitStack and re-applies itself
+if need be.
+===============================================================*/
+/*
+meSpellEvent::meSpellEvent(Connection *Attacker, Connection *Attacked)
+{
+	eventType          = ME_SPELL_EFFECT;
+	eventTime          = (time(NULL));
+	deadEvent          = false;
+	Player             = Attacker;
+	Victim             = Attacked;
+    
+	Player->Victim     = Attacked;
+};
+*/

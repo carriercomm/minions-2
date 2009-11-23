@@ -20,11 +20,13 @@ const int ME_COMBAT                  =  1;
 const int ME_HEAL                    =  2; 
 const int ME_MELEE_COMBAT            =  3;
 const int ME_REMOVE_FLAG             =  4;
+const int ME_SPELL_EFFECT            =  5;
 
 // Combat stuff 
 
-const int CRITICAL                   = 16;
-const int MAX_PUNCH_DAMAGE           =  3;
+const int CRITICAL                   = 89;
+const int MAX_PUNCH_DAMAGE           =  7;
+const int MIN_PUNCH_DAMAGE           =  4;
 
 // Rates
 const int HEAL_RATE                  =  3;
@@ -72,6 +74,8 @@ protected:
 	int eventType;
 	time_t eventTime;
 	bool deadEvent;
+	Connection *Player;
+	Connection *Victim;
 
 public:
 
@@ -92,8 +96,8 @@ public:
 ===============================================================*/
 class meCombat : public minionsEvent
 {
-	Connection *Player;
-	Connection *Victim;
+//	Connection *Player;
+//	Connection *Victim;
 public:
     meCombat();
 	~meCombat();
@@ -111,8 +115,8 @@ public:
 ===============================================================*/
 class meHeal : public minionsEvent
 {
-	Connection *Player;
-	Connection *Victim;
+//	Connection *Player;
+//	Connection *Victim;
 public:
     meHeal();
 	~meHeal();
@@ -133,8 +137,8 @@ public:
 
 class meMelee : public minionsEvent
 {
-	Connection *Player;
-	Connection *Victim;
+//	Connection *Player;
+//	Connection *Victim;
 	Item *Weapon;
 
 public:
@@ -158,8 +162,8 @@ Removes any flags set when time runs out
 ===========================================================*/
 class meRemoveFlag : public minionsEvent
 {
-	Connection *Player;
-	Connection *Victim;
+//	Connection *Player;
+//	Connection *Victim;
 	int Flag;
 
 public:
@@ -170,3 +174,26 @@ public:
 	Connection *getAttacker() { return Player; };
 	Connection *getVictim() { return Victim; };
 };
+
+
+
+/*==========================================================
+ meSpellEvent class -> Derived from minionsEvent class
+
+Spell events class.  Spell objects are applied to this event
+===========================================================*/
+/*
+class meSpellEvent : public minionsEvent
+{
+	Spell SpellCasted;
+
+public:
+
+	meSpellEvent(Connection *Attacker, Connection *Attacked);
+	~meSpellEvent();
+	void execEvent(scheduler *eventScheduler);
+	void killEvent(Connection *Conn);
+	Connection *getAttacker() { return Player; };
+	Connection *getVictim() { return Victim; };
+};
+*/

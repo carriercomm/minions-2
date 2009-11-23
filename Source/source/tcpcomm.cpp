@@ -489,7 +489,7 @@ void Disconnect( Connection *Conn )
 		TempRoom = Conn->Player.GetRoom();
 		Conn->Player.SetCurrentRoomNumber( TempRoom->GetRoomNumber() );
 		TempRoom->RemovePlayerFromRoom( Conn );
-		Conn->Player.SavePlayer();
+		//Conn->Player.SavePlayer();
 	}
 
 	/*  Hangup on them an free the resources they were hogging */
