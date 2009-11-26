@@ -38,6 +38,8 @@ void doCombatMath(Connection *Player, int CombatType);
 void DisplayMeleeCombat(Connection *Player, char *attackType, char *Weapon, int Damage, bool Critical);
 void DisplayStunStatus(Connection *Player);
 void StopCombat(Connection *Player);
+void SlipAndFall( Connection *Player );
+void LoseWeapon( Connection *Player );
 
 
 #endif //_COMBAT_H_INCLUDED

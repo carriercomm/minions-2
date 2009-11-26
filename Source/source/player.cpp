@@ -890,3 +890,16 @@ void Client::AdjustPlayerStatsByItem( Item *CurItem, int add_remove )
 		break;
 	}
 }
+
+/*=========================================================
+Client::LuckRoll( void )
+
+A roll against a players luck.  If the roll is above the
+players luck, the player fails the luck roll
+=========================================================*/
+
+bool Client::LuckRoll( void )
+{
+	if ( (rand() % 100 + 1) > Luck )
+		return FAIL;
+}

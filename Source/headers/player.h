@@ -27,6 +27,9 @@ const int SUBTRACT                    =   2;
 const int EXACTLY                     =   3;
 const int REMOVE                      =   4;
 
+const bool FAIL                       =   false;
+const bool SUCCESS                    =   true;
+
 class Room;  //forward declaration
 class Item;  //forward declaration
 class minionsEvent;
@@ -143,6 +146,7 @@ public:
 	Item *IsWearing( int wearing );
 	void WearItem( Item *ItemToWear, int ItemPlacement);
 	void AdjustPlayerStatsByItem(Item *CurItem, int add_remove );
+	bool Client::LuckRoll( void );
 	~Client();
 };
 

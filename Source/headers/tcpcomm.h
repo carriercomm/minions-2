@@ -34,7 +34,7 @@
 /* macros to manipulate the Flags using above defines */
 #define FLAG_IS_SET(Flags, Bit)		( (Flags) & (Bit) )
 #define SET_PFLAG(Flags, Bit)		( (Flags) |= (Bit) )
-#define REMOVE_PFLAG(Flags, Bit)		( (Flags) &= ~(Bit) )
+#define REMOVE_PFLAG(Flags, Bit)	( (Flags) &= ~(Bit) )
 
 /* Player Flags Bit vectors 32bits worth */
 #define FLAG_HIDDEN			(1 <<  0)

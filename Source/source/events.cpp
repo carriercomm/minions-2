@@ -299,6 +299,32 @@ void meMelee::execEvent(scheduler *eventScheduler)
 	ToHitRoll = rand() % 100 + 1;
 	TotalAC = AC + 20;
 
+
+	// Does the player make a luck savings throw?
+	if ( (rand() % 100 + 1) > LUCK_ROLL )
+	{   // Player makes a saving throw vs his luck stat
+		if ( Player->Player.LuckRoll() == FAIL )
+		{   // Failed luck roll, pick the poison
+			switch ( rand() % 2 + 1 )
+			{
+			case 1:  // player slips and falls
+				SlipAndFall( Player );
+				return;
+			case 2:  // Weapon slips out of hand
+				if ( Weapon )
+				{
+					LoseWeapon( Player );
+					return;
+				} 
+				else // If no weapon, weapon can't slip out saving the player humilation!
+					break;
+			}
+
+		}
+	}
+
+
+
 	
 	// Set attack type (could be punch)
 	if (!Weapon)
@@ -353,15 +379,15 @@ void meMelee::execEvent(scheduler *eventScheduler)
 	}
 
 	// Did we stun him? (do it after death check, we don't want stun dead people)
-	if ( ToHitRoll == 20 )
-	{	
-		DisplayStunStatus( Victim );
-		SET_PFLAG(Victim->Flags, FLAG_STUN);
-		minionsEvent *RemoveEvent = new meRemoveFlag(Victim, E_FLAG_STUN);
-		eventScheduler->pushWaitStack((time(NULL)+STUN_TIME_INTERVAL), RemoveEvent);
-		StopCombat(Victim);
+//	if ( ToHitRoll == 20 )
+//	{	
+//		DisplayStunStatus( Victim );
+//		SET_PFLAG(Victim->Flags, FLAG_STUN);
+//		minionsEvent *RemoveEvent = new meRemoveFlag(Victim, E_FLAG_STUN);
+//		eventScheduler->pushWaitStack((time(NULL)+STUN_TIME_INTERVAL), RemoveEvent);
+//		StopCombat(Victim);
 
-	}
+//	}
 
 	// Not dead, so keep attacking (add another combat event)
 	minionsEvent *meleeEvent = new meMelee(Player, Victim);

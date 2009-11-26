@@ -218,3 +218,64 @@ void StopCombat( Connection *Player )
 	}
 }
 
+
+/*======================================================================
+SlipAndFall()
+
+Player slips and false. (breaks combat)
+
+======================================================================*/
+
+void SlipAndFall( Connection *Player )
+{
+	Room *CurRoom = Player->Player.GetRoom();
+
+	// Tell the attacker
+	WriteToBuffer( Player, "%sYou lunge wildly at %s, but miss losing your balance crashing to the floor!%s\n\r",
+		ANSI_BR_YELLOW, Player->Victim->Player.GetFirstName(), ANSI_WHITE );
+
+	// Tell the victim
+	WriteToBuffer( Player->Victim, "%s%s lunges wildly at you, but misses losing his balance and crashing to the floor!%s\n\r",
+		ANSI_BR_YELLOW, Player->Player.GetFirstName(), ANSI_WHITE );
+
+	// Let everyone else in the room know the victim got punked!
+	CurRoom->SelectiveBroadcast( Player, Player->Victim, "%s%s lunges wildly at %s, but misses losing his balance and crashing to the floor!%s\n\r",
+		ANSI_BR_YELLOW, Player->Player.GetFirstName(),	Player->Victim->Player.GetFirstName(), ANSI_WHITE );
+	
+	// Can't attack attack while on the ground!
+	DisplayCombatStatus( Player, false );
+	StopCombat( Player );
+	
+}
+
+
+/*======================================================================
+LoseWeapon()
+
+Player's weapon slips out of his hand during attack
+
+======================================================================*/
+
+void LoseWeapon( Connection *Player )
+{
+	Room *CurRoom = Player->Player.GetRoom();
+
+	// Tell the attacker
+	WriteToBuffer( Player, "%sYou lose control of your %s as it flies out of your hand!%s\n\r",
+		ANSI_BR_YELLOW, Player->Player.GetWieldedItem()->GetItemName(), ANSI_WHITE );
+
+	// Tell the victim
+//	WriteToBuffer( Player->Victim, "%s%s loses control of his weapon as it flies out hif his hand!s's %s flies!%s\n\r",
+//		ANSI_BR_YELLOW, Player->Player.GetFirstName(), ANSI_WHITE );
+
+	// Let everyone else in the room know the victim got punked!
+	CurRoom->SelectiveBroadcast( Player, Player, "%s%s loses control of his %s as it flies out his his hand!%s\n\r",
+		ANSI_BR_YELLOW, Player->Player.GetFirstName(), Player->Player.GetWieldedItem()->GetItemName(), ANSI_WHITE );
+	
+	// Can't attack attack while on the ground!
+	CurRoom->AddItemToRoom( Player->Player.GetWieldedItem() );
+	Player->Player.WearItem( NULL, Player->Player.GetWieldedItem()->GetWearLocation() );
+	DisplayCombatStatus( Player, false );
+	StopCombat( Player );
+	
+}
