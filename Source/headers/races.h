@@ -10,19 +10,30 @@
 #if !defined RACES_H_INCLUDED
 #define RACES_H_INCLUDED
 
-#define MAX_RACE_NAME           21
-#define MAX_CLASS_NAME          21
-#define MAX_RACE_DESC			321
-#define MAX_CLASS_DESC			321
+#define MAX_RACE_NAME                21
+#define MAX_CLASS_NAME               21
+#define MAX_RACE_DESC			    321
+#define MAX_CLASS_DESC  		 	321
+
+const int HP_MULTIPLIER          =    2;
+const int MANA_MULTIPLIER        =    2;
+
 #define ROOM_DATABASE			"minions.db"
 #define CLASS_DATABASE			"minions.db"
 #define RACE_DATABASE			"minions.db"
+
 
 struct RaceTable
 {
 	char		RaceName[MAX_RACE_NAME];
 	int			RaceNumber;
 	char		RaceDesc[MAX_RACE_DESC];
+	int         RaceStrength;
+	int         RaceAgility;
+	int         RaceWisdom;
+	int         RaceHealth;
+	int         RaceMaxHP;
+	int         RaceMaxMana;
 	RaceTable  *Next;
 };
 
@@ -39,6 +50,7 @@ bool LoadRaceTables( void );
 bool LoadClassTables( void );
 char *LookupRaceStr( int RaceNum );
 char *LookupClassStr( int ClassNum );
+
 
 #endif  //RACES_H_INCLUDED
 

@@ -14,20 +14,21 @@ CREATE TABLE rooms(
        down INTEGER NOT NULL
 );
 
-
 CREATE TABLE races(
        RaceNumber int PRIMARY KEY,
        RaceName VARCHAR(32) NOT NULL,
-       RaceDesc VARCHAR(322) NOT NULL
+       RaceDesc VARCHAR(322) NOT NULL,
+       Strength int NOT NULL,
+       Agility int NOT NULL,
+       Wisdom int NOT NULL,
+       Health int NOT NULL
 );
-
-
 
 CREATE TABLE classes(
        ClassNumber int PRIMARY KEY,
        ClassName VARCHAR(32) NOT NULL,
        ClassDesc VARCHAR(322) NOT NULL
-);
+ );
 
 CREATE TABLE items(
 	ItemNumber int PRIMARY KEY,

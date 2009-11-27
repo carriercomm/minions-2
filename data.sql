@@ -9,12 +9,11 @@ INSERT INTO rooms VALUES( 8, "Blue Tower - Ground Floor", "This strange blue tow
 INSERT INTO rooms VALUES( 9, "Blue Tower - Ground Floor", "An erry glow eminates from the room above.",0,0,0,0,0,0,8,0,10,0);
 INSERT INTO rooms VALUES( 10, "Halls of the Dead", "The stale air and dank stone make it difficult to breathe. Bones lay piled, who knows how deep they are. Many have died here and more come each day.",0,0,0,0,0,0,0,0,0,9);
 
-INSERT INTO races VALUES( 1, "Human", "The Human is the most balanced race at this time.");
-INSERT INTO races VALUES( 2, "Dark-Elf", "The Dark-Elves are a darker relative of the Elf.");
-INSERT INTO races VALUES( 3, "Dwarf", "The Dwarves are a stout and healthy race, what they lack in height they make up for with sturdiness and brawn.");
-INSERT INTO races VALUES( 4, "Coward", "These sonzo bitches run like a mofo.");
-INSERT INTO races VALUES( 5, "Feline", "This race doesnt give a shit about anything but themselves.");
-INSERT INTO races VALUES( 6, "Crap Lord", "These race really stinks.");
+INSERT INTO races VALUES( 1, "Human", "The Human is the most balanced race at this time.", 50, 50, 50, 50);
+INSERT INTO races VALUES( 2, "Dark-Elf", "The Dark-Elves are a darker relative of the Elf.", 40, 60, 60, 40);
+INSERT INTO races VALUES( 3, "Dwarf", "The Dwarves are a stout and healthy race, what they lack in height they make up for with sturdiness and brawn.", 75, 35, 60, 60);
+INSERT INTO races VALUES( 4, "Catman", "This race doesnt give a shit about anything but themselves.", 40, 75, 35, 40);
+INSERT INTO races VALUES( 6, "Pixie", "These tiny really stinks.", 20, 75, 70, 30);
 
 
 INSERT INTO classes VALUES( 1, "Fighter", "Physical Combat is thier forte.");
@@ -32,4 +31,4 @@ INSERT INTO items VALUES( 4, 30, 1, 25, "holy avenger", "This fine golden sword 
 INSERT INTO items VALUES( 5, 30, 2, 25, "rusty chainmail armor", "This rusty chainmail looks like it had been stripped off of a dead goblin. The wearer is better off dead.", 0, 0, 0, 5, "None", 0, 0, 0, 0, 0, 0, 0, 0, 3);
 INSERT INTO items VALUES( 6, 10, 3, 500, "black cauldron", "This gigantic black cauldron was once used by trolls to cook great feasts made up of humans caught in the night!", 0, 0, 0, 0, "None", 0, 0, 0, 0, 0, 0, 0, 0, 0);
 INSERT INTO items VALUES( 7, 10, 2, 15, "combat boots", "These nasty mud covered combat boots stink like nobody's bussiness, but they are better than nothing!", 0, 0, 0, 2, "None", 0, 0, 0, 0, 0, 0, 0, 0, 6);
-INSERT INTO items VALUES( 8, 10, 2, 2, "polished black ring", "This black ring is made of lava glass. It is not known who made it or where it is from.", 0, 0, 0, 1, "None", 0, 50, 0, 0, 0, 0, 0, 0, 5);
+INSERT INTO items VALUES( 8, 10, 2, 2, "polished black ring", "This black ring is made of lava glass. It is not known who made it or where it is from.", 0, 0, 0, 1, "None", 0, 50, 50, 0, 0, 0, 0, 0, 5);

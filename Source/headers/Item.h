@@ -38,7 +38,7 @@ const int AGILITY_BONUS             = 2;
 const int HEALTH_BONUS              = 3;
 const int LUCK_BONUS                = 4;
 const int WISDOM_BONUS				= 5;
-const int HITPOINTS_BONUS            = 6;
+const int HITPOINTS_BONUS           = 6;
 const int MANA_BONUS                = 7;
 
 

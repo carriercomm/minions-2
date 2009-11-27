@@ -264,6 +264,7 @@ void meMelee::execEvent(scheduler *eventScheduler)
 	int			Damage = 0;
 	int			ToHitRoll = 0;
 	int			ToHitValue = 0;
+	int         DamageBonus = 0;
 	int			AC = 0;
 	int			Thac0 = 0;
 	char        *attackType;
@@ -293,11 +294,10 @@ void meMelee::execEvent(scheduler *eventScheduler)
 
 	// All appears good, lets kill a mofo!
     CurRoom = Player->Player.GetRoom();
-	AC = Player->Victim->Player.GetArmorClass();
-	Thac0 = Player->Player.GetTHAC0();
-	//ToHitValue = Thac0 - AC;
+	AC = Player->Victim->Player.GetModifiedAC();
+	DamageBonus = Player->Player.GetDamageBonus();
 	ToHitRoll = rand() % 100 + 1;
-	TotalAC = AC + 20;
+	TotalAC = AC;
 
 
 	// Does the player make a luck savings throw?
@@ -356,6 +356,7 @@ void meMelee::execEvent(scheduler *eventScheduler)
 	// If damage is greater than 0 and a critical, that means someone got punked!
 	if (Damage > 0)
 	{
+		Damage += DamageBonus;
 		if(!Weapon)
 			DisplayMeleeCombat(Player, attackType, theWeapon, Damage, Critical);
 		else

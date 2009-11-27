@@ -709,6 +709,16 @@ bool Logon( Connection *Conn, char *Cmd )
 					TempPtr->RaceName );
 				Conn->Player.SetRaceStr( TempPtr->RaceName );
 				Conn->Player.SetRace( TempPtr->RaceNumber );
+				Conn->Player.SetPlayerStat( TempPtr->RaceStrength, STRENGTH );
+				Conn->Player.SetPlayerStat( TempPtr->RaceAgility, AGILITY );
+				Conn->Player.SetPlayerStat( TempPtr->RaceWisdom, WISDOM );
+				Conn->Player.SetPlayerStat( TempPtr->RaceHealth, HEALTH );
+				Conn->Player.SetPlayerStat( TempPtr->RaceMaxHP, HP );
+				Conn->Player.SetPlayerStat( TempPtr->RaceMaxHP, MAX_HP );
+				Conn->Player.SetPlayerStat( TempPtr->RaceMaxMana, MANA );
+				Conn->Player.SetPlayerStat( TempPtr->RaceMaxMana, MAX_MANA );
+				Conn->Player.UpdateModifiedStats();
+
 				Conn->Status = STATUS_CHOOSE_CLASS;
 				WriteToBuffer( Conn, "%s%sClass Selection\n\r+-------------+%s\n\r",
 					ANSI_CLR_SCR, ANSI_BR_YELLOW, ANSI_BR_GREEN );

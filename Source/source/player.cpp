@@ -24,6 +24,8 @@
 
 using namespace std;
 
+extern RaceTable    *MasterRaceTable;
+
 Client::Client()
 {
 	FirstName[0] = LastName[0] = IpAddress[0] = Password[0] = HostName[0] = RaceStr[0] = ClassStr[0] = NULL;
@@ -32,8 +34,9 @@ Client::Client()
 	strcpy( LastName, "In Progress -" );
 	strcpy( Description, "Constructor Default Description" );
 	Stealth = MaxDamage = DamageBonus = 25;
-	Strength = Agility = Health = Luck = Wisdom = 32; 
-	HitPoints = MaxHits = Mana = MaxMana = 120;
+	Strength = Agility = Health = Wisdom = 0; 
+	HitPoints = MaxHits = Mana = MaxMana = 0;
+	Luck                    = 50;
 	Level = Sex             = 1;
 	Exp = Kills             = 0;
 	Weight                  = 0;
@@ -50,7 +53,8 @@ Client::Client()
 	Finger                  = NULL;
 	Hands                   = NULL;
 	CurrentRoomNumber       = 1;
-	ArmorClass              = 5;
+	ArmorClass              = 20;
+	ModifiedAC              = 0;
 	THAC0                   = 14;
 	Class = Race            = 0;
 	AttackEvent             = NULL;
@@ -67,6 +71,40 @@ bool Client::SetRoom( Room *NewRoom )
 	CurrentRoom = NewRoom;
 
 	return true;
+}
+
+
+void Client::SetPlayerStat ( int value, int which_stat )
+{
+	switch ( which_stat )
+	{
+	case STRENGTH:
+		Strength = value;
+		break;
+	case AGILITY:
+		Agility = value;
+		break;
+	case WISDOM:
+		Wisdom = value;
+		break;
+	case HEALTH:
+		Health = value;
+		break;
+	case HP:
+		HitPoints = value;
+		break;
+	case MAX_HP:
+		MaxHits = value;
+		break;
+	case MANA:
+		Mana = value;
+		break;
+	case MAX_MANA:
+		MaxMana = value;
+		break;
+	default:
+		ServerLog("Error: SetPlayerStat() hit default!");
+	}
 }
 
 bool Client::SetFirstName( char *new_name )
@@ -243,10 +281,7 @@ bool Client::SavePlayer(void) {
 		return false;
 	}
 
-	out<<FirstName<<' '<<LastName<<' '<<Password<<' '<<Sex<<' ';
-	out<<ArmorClass<<' '<<Stealth<<' '<<MaxDamage<<' '<<DamageBonus<<' ';
-	out<<Strength<<' '<<Agility<<' '<<Health<<' '<<Luck<<' '<<Wisdom<<' '; 
-	out<<HitPoints<<' '<<MaxHits<<' '<<Mana<<' '<<MaxMana;
+	out<<FirstName<<' '<<LastName<<' '<<Password<<' '<<Sex;
 	out<<' '<<CurrentRoomNumber<<' '<<Exp<<' '<<Race<<' '<<Class;
 
 	out.close();
@@ -257,6 +292,7 @@ bool Client::SavePlayer(void) {
 bool Client::LoadPlayer(char *name) {
 	ifstream	in;
 	char		filename[80] = PLAYER_SAVE_PATH;
+	RaceTable   *TempPtr = NULL;
 	
 	strcat( filename, name );
 	strcat( filename, ".txt" );
@@ -266,14 +302,29 @@ bool Client::LoadPlayer(char *name) {
 		return false;
 	
 	in>>FirstName>>LastName>>Password>>Sex;
-	in>>ArmorClass>>Stealth>>MaxDamage>>DamageBonus;
-	in>>Strength>>Agility>>Health>>Luck>>Wisdom; 
-	in>>HitPoints>>MaxHits>>Mana>>MaxMana>>CurrentRoomNumber;
-	in>>Exp>>Race>>Class;
+	in>>CurrentRoomNumber>>Exp>>Race>>Class;
+
 
 	SetRaceStr( LookupRaceStr( Race ) );
 	SetClassStr( LookupClassStr( Class ) );
+
+	// Set race base stats
+	for( TempPtr = MasterRaceTable; TempPtr; TempPtr = TempPtr->Next )
+	{
+		if( Race == TempPtr->RaceNumber )
+		{
+				SetPlayerStat( TempPtr->RaceStrength, STRENGTH );
+				SetPlayerStat( TempPtr->RaceAgility, AGILITY );
+				SetPlayerStat( TempPtr->RaceWisdom, WISDOM );
+				SetPlayerStat( TempPtr->RaceHealth, HEALTH );
+				SetPlayerStat( TempPtr->RaceMaxHP, HP );
+				SetPlayerStat( TempPtr->RaceMaxHP, MAX_HP );
+				SetPlayerStat( TempPtr->RaceMaxMana, MANA );
+				SetPlayerStat( TempPtr->RaceMaxMana, MAX_MANA );
+		}
+	}
 	in.close();
+	UpdateModifiedStats();
 	return true;
 	
 }
@@ -872,6 +923,7 @@ void Client::AdjustPlayerStatsByItem( Item *CurItem, int add_remove )
 		HitPoints      += CurItem->GetBonus(HITPOINTS_BONUS);
 		Mana           += CurItem->GetBonus(MANA_BONUS);
 		// Add other stats as items stat modifiers get added to the Items class
+		UpdateModifiedStats();
 		break;
 	case REMOVE:
 		ArmorClass     -= CurItem->GetArmorValue();
@@ -884,6 +936,7 @@ void Client::AdjustPlayerStatsByItem( Item *CurItem, int add_remove )
 		HitPoints      -= CurItem->GetBonus(HITPOINTS_BONUS);
 		Mana           -= CurItem->GetBonus(MANA_BONUS);
 		// add matching stats as added to above
+		UpdateModifiedStats();
 		break;
 	default:
 		ServerLog( "AdjustPlayerStatsByItem(): Cannot adjust player stats by item if case is %d", add_remove );
@@ -902,4 +955,17 @@ bool Client::LuckRoll( void )
 {
 	if ( (rand() % 100 + 1) > Luck )
 		return FAIL;
+}
+
+/*========================================================
+Client::UpdateModifiedStats()
+
+Updates any stats that are modified by stat bonuses. (agil = AC)
+=========================================================*/
+
+void Client::UpdateModifiedStats( void )
+{
+	if ( ( ArmorClass + (Agility / 5) ) <= MAXIMUM_STATS )
+		ModifiedAC = ArmorClass + (Agility / AGILITY_AC_MODIFIER );
+	DamageBonus = (Strength / STRENGTH_DAMAGE_MODIFIER );
 }

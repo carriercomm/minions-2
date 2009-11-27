@@ -19,6 +19,8 @@ const int MAX_HOST_NAME				  =  80;
 const int MAX_STR_MULTIPLIER          =  10;
 const int MAX_STAT_VALUE			  = 150;
 
+const int MAXIMUM_STATS               = 100;
+
 #define PLAYER_SAVE_PATH		 "players\\"
 
 // Sort of booleans for adding or subtracting stats in functions
@@ -35,6 +37,19 @@ class Item;  //forward declaration
 class minionsEvent;
 struct Connection;
 
+// Stats that can be set with SetPlayerStat()
+const int STRENGTH                    =   1;
+const int AGILITY                     =   2;
+const int WISDOM                      =   3;
+const int HEALTH                      =   4;
+const int HP                          =   5;
+const int MANA                        =   6;
+const int MAX_HP                      =   7;
+const int MAX_MANA                    =   8;
+
+
+const int STRENGTH_DAMAGE_MODIFIER    =  10;
+const int AGILITY_AC_MODIFIER         =   5;
 /*  link list of items in this players possesion */
 struct ItemsOnPlayer
 {
@@ -58,6 +73,7 @@ class Client
 	unsigned int	Strength, Agility, Health, Luck, Wisdom, Sex; 
 	int				HitPoints, MaxHits, Mana, MaxMana, Level, Race, THAC0, Class, Resting, Weight;
 	unsigned int	Exp, Kills, BeenKilled;
+	int             ModifiedAC;
 	Room			*CurrentRoom;
     unsigned int	CurrentRoomNumber;
 	ItemsOnPlayer	*FirstItem;
@@ -125,6 +141,7 @@ public:
 	bool Client::UpdateHitPoints( int value, bool add_subtract );
 	int GetTHAC0( void ) { return THAC0; };
 	int GetArmorClass( void ) { return ArmorClass; };
+	int GetModifiedAC( void ) { return ModifiedAC; };
 	void DropAllItems( void );
 	unsigned int GetStrength( void ) { return Strength; };
 	unsigned int GetExp( void ) { return Exp; };
@@ -146,7 +163,10 @@ public:
 	Item *IsWearing( int wearing );
 	void WearItem( Item *ItemToWear, int ItemPlacement);
 	void AdjustPlayerStatsByItem(Item *CurItem, int add_remove );
-	bool Client::LuckRoll( void );
+	bool LuckRoll( void );
+	void SetPlayerStat ( int value, int which_stat );
+	void UpdateModifiedStats( void );
+	int GetDamageBonus ( void ) { return DamageBonus; };
 	~Client();
 };
 

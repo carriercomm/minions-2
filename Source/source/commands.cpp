@@ -524,7 +524,7 @@ COMMAND(Status)
 		ANSI_BR_GREEN, ANSI_WHITE, Player->Player.GetMana(), Player->Player.GetMaxMana() );
 
 	WriteToBuffer( Player, "%sArmor Class: %s%d          %sTHAC0: %s%d\n\r",
-		ANSI_BR_GREEN, ANSI_WHITE, Player->Player.GetArmorClass(), ANSI_BR_GREEN,
+		ANSI_BR_GREEN, ANSI_WHITE, Player->Player.GetModifiedAC(), ANSI_BR_GREEN,
 		ANSI_WHITE, Player->Player.GetTHAC0() );
 	
 	WriteToBuffer( Player, "%sStrength: %s%d          %sHealth: %s%d\n\r%sAgility:  %s%d          %sLuck:   %s%d\n\r%sWisdom:   %s%d          %sWeight:   %s%d\n\r",

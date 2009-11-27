@@ -25,8 +25,8 @@ const int ME_SPELL_EFFECT           =   5;
 // Combat stuff 
 
 const int CRITICAL                  =  89;
-const int MAX_PUNCH_DAMAGE          =   7;
-const int MIN_PUNCH_DAMAGE          =   4;
+const int MAX_PUNCH_DAMAGE          =   5;
+const int MIN_PUNCH_DAMAGE          =   1;
 const int LUCK_ROLL                 =  97;
 
 // Rates

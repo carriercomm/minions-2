@@ -4,6 +4,7 @@
 #include "tcpcomm.h"
 #include "sqlite3.h"
 
+
 RaceTable   *MasterRaceTable = NULL;
 ClassTable  *MasterClassTable = NULL;
 
@@ -64,9 +65,18 @@ bool LoadRaceTables( void )
 			RTable->Next = NULL;		//make sure the list is terminated before allocating the next node.
 			
 			/* Load the result row into the RaceTable entry  */
-			RTable->RaceNumber = sqlite3_column_int( SqlStatement, 0 );
-			strcpy( RTable->RaceName, (char*)sqlite3_column_text( SqlStatement, 1 ) );
-			strcpy( RTable->RaceDesc, (char*)sqlite3_column_text( SqlStatement, 2 ) );
+			RTable->RaceNumber             = sqlite3_column_int( SqlStatement, 0 );
+			strcpy( RTable->RaceName,      (char*)sqlite3_column_text( SqlStatement, 1 ) );
+			strcpy( RTable->RaceDesc,      (char*)sqlite3_column_text( SqlStatement, 2 ) );
+			RTable->RaceStrength           = sqlite3_column_int( SqlStatement, 3 );
+			RTable->RaceAgility            = sqlite3_column_int( SqlStatement, 4 );
+			RTable->RaceWisdom             = sqlite3_column_int( SqlStatement, 5 );
+			RTable->RaceHealth             = sqlite3_column_int( SqlStatement, 6 );
+
+			// HP and Mana are health and wisdom times respective multiplier 
+			RTable->RaceMaxHP              = ( RTable->RaceHealth * HP_MULTIPLIER );
+			RTable->RaceMaxMana            = ( RTable->RaceWisdom * MANA_MULTIPLIER ); 
+
 
 			RowCount++;		//dont forget to increment the row count.
 			break;
