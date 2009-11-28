@@ -10,14 +10,15 @@
 #ifndef PLAYER_H_INCLUDED
 #define PLAYER_H_INCLUDED
 
-const int MAX_STRING_LENGTH			  =  80;
-const int MAX_NAME_LENGTH			  =	 15;
-const int MAX_STATS					  =   6; 
-const int MAX_LEVEL_ALLOWED	          = 150;
-const int MAX_DESCRIPTION_LENGTH	  = 2048;
-const int MAX_HOST_NAME				  =  80;
-const int MAX_STR_MULTIPLIER          =  10;
-const int MAX_STAT_VALUE			  = 150;
+const int MAX_STRING_LENGTH				= 80;
+const int MAX_FNAME_LENGTH				= 11; //10 with one for terminating NULL
+const int MAX_LNAME_LENGTH				= 15; //14 with one for terminating NULL 
+const int MAX_STATS						= 6; 
+const int MAX_LEVEL_ALLOWED				= 150;
+const int MAX_DESCRIPTION_LENGTH		= 2048;
+const int MAX_HOST_NAME					= 80;
+const int MAX_STR_MULTIPLIER			= 10;
+const int MAX_STAT_VALUE				= 150;
 
 const int MAXIMUM_STATS               = 100;
 
@@ -61,8 +62,8 @@ struct ItemsOnPlayer
 /*  Client slash Player class definition */
 class Client
 {
-	char			FirstName[MAX_NAME_LENGTH];
-	char			LastName[MAX_NAME_LENGTH];
+	char			FirstName[MAX_FNAME_LENGTH];
+	char			LastName[MAX_LNAME_LENGTH];
 	char			IpAddress[MAX_STRING_LENGTH];
 	char			Password[MAX_STRING_LENGTH];
 	char			Description[MAX_DESCRIPTION_LENGTH];
@@ -97,7 +98,7 @@ public:
 	void SetConnection( Connection *Conn ) { MyConnection = Conn; };	
 	void AddKill( void ) { Kills++; };
 	int GetKills( void ) {return Kills; };
-	void SubtractKill( void ) { Kills--; };
+	void SubtractKill( void ) { Kills--; BeenKilled++; };
 	char *GetFirstName( void ) { return FirstName; };
 	bool SetFirstName( char *new_name );
 	char *GetLastName( void ) { return LastName; };

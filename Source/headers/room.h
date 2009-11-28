@@ -55,6 +55,7 @@ struct ItemsInRoom
 {
 	ItemsInRoom	*Next;
 	Item		*Item;
+	int			ItemCount;
 };
 
 

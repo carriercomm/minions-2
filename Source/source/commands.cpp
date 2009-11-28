@@ -305,7 +305,7 @@ COMMAND(Who)
 		<<"=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\r"<<ANSI_BR_RED;
 	
 	WhoString.flags( ios::left );
-	WhoString<<setfill(' ')<<setw(10)<<"Player"<<setfill(' ')<<setw(10)<<' '<<setfill(' ')<<setw(10)<<"Race"
+	WhoString<<setfill(' ')<<setw(MAX_FNAME_LENGTH)<<"Player"<<setfill(' ')<<setw(MAX_LNAME_LENGTH)<<' '<<setfill(' ')<<setw(10)<<"Race"
 		<<setfill(' ')<<setw(12)<<"Class"<<setfill(' ')<<setw(18)<<"IP Address"<<setfill(' ')<<setw(5)<<"Kills";
 	
 	WhoString<<"\n\r"<<ANSI_GREEN
@@ -315,9 +315,10 @@ COMMAND(Who)
 	{
 		WhoString<<"\n\r";
 		WhoString.flags( ios::left );
-		WhoString<<setfill(' ')<<setw(10)<<TempConn->Player.GetFirstName()<<setfill(' ')<<setw(10)<<TempConn->Player.GetLastName()
-			<<setfill(' ')<<setw(10)<<TempConn->Player.GetRaceStr()<<setfill(' ')<<setw(12)<<TempConn->Player.GetClassStr()
-			<<setfill(' ')<<setw(18)<<TempConn->Player.GetIpAddress()<<setfill(' ')<<setw(5)<<TempConn->Player.GetKills();
+		WhoString<<setfill(' ')<<setw(MAX_FNAME_LENGTH)<<TempConn->Player.GetFirstName()<<setfill(' ')<<setw(MAX_LNAME_LENGTH)
+			<<TempConn->Player.GetLastName()<<setfill(' ')<<setw(10)<<TempConn->Player.GetRaceStr()<<setfill(' ')<<setw(12)
+			<<TempConn->Player.GetClassStr()<<setfill(' ')<<setw(18)<<TempConn->Player.GetIpAddress()<<setfill(' ')
+			<<setw(5)<<TempConn->Player.GetKills();
 	}
 
 	WhoString<<ANSI_GREEN<<"\n\r=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\r"
@@ -369,8 +370,8 @@ COMMAND(Score)
 		<<"=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="<<ANSI_BR_RED;
 	
 	WhoString.flags( ios::left );
-	WhoString<<"\n\r"<<setfill(' ')<<setw(10)<<"Player"<<setfill(' ')<<setw(10)<<' '<<setfill(' ')<<setw(10)<<"Kills"
-		<<setfill(' ')<<setw(12)<<"Deaths";
+	WhoString<<"\n\r"<<setfill(' ')<<setw(MAX_FNAME_LENGTH)<<"Player"<<setfill(' ')<<setw(MAX_LNAME_LENGTH)<<' '<<setfill(' ')
+		<<setw(10)<<"Kills"<<setfill(' ')<<setw(10)<<"Deaths";
 	
 	WhoString<<"\n\r"<<ANSI_GREEN
 		<<"=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="<<ANSI_BR_YELLOW;
@@ -379,8 +380,9 @@ COMMAND(Score)
 	{
 		WhoString<<"\n\r";
 		WhoString.flags( ios::left );
-		WhoString<<setfill(' ')<<setw(10)<<TempConn->Player.GetFirstName()<<setfill(' ')<<setw(10)<<TempConn->Player.GetLastName()
-			<<setfill(' ')<<setw(10)<<TempConn->Player.GetKills()<<setfill(' ')<<setw(10)<<TempConn->Player.GetBeenKilled();
+		WhoString<<setfill(' ')<<setw(MAX_FNAME_LENGTH)<<TempConn->Player.GetFirstName()<<setfill(' ')<<setw(MAX_LNAME_LENGTH)
+			<<TempConn->Player.GetLastName()<<setfill(' ')<<setw(10)<<TempConn->Player.GetKills()<<setfill(' ')
+			<<setw(10)<<TempConn->Player.GetBeenKilled();
 	}
 
 	WhoString<<ANSI_GREEN<<"\n\r=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\r"<<ANSI_BR_GREEN
@@ -683,7 +685,7 @@ COMMAND(Look)
 
 	if( !TempRom )
 	{
-		WriteToBuffer( Player, "NULL Room pointer in CmdLook()\n\r" );
+		ServerLog( "NULL Room pointer in CmdLook() FILE: %s  Line: %s\n\r", __FILE__, __LINE__ );
 		return;
 	}
 
@@ -846,21 +848,32 @@ COMMAND(Look)
 		
 		if( !ItemList )
 		{
-			WriteToBuffer( Player, "Getting items on floor messed up!\n\r" );
+			ServerLog( "Getting items on floor messed up! File: %s  Line %i\n\r", __FILE__, __LINE__ );
 			return;
 		}
 		
 		WriteToBuffer( Player, "%sYou notice: ", ANSI_BR_CYAN );
-		
-		for(int Count = 0 ; ItemList; ItemList = ItemList->Next )
+
+		for( int Count = 0; ItemList; ItemList = ItemList->Next )
 		{
 			if( Count == 0 )
-				WriteToBuffer( Player, "%s", ItemList->Item->GetItemName() );
+			{
+				if( ItemList->ItemCount < 2 )
+					WriteToBuffer( Player, "%s", ItemList->Item->GetItemName() );
+				else
+					WriteToBuffer( Player, "%s[%i]", ItemList->Item->GetItemName(), ItemList->ItemCount );
+			}
 			else
-				WriteToBuffer( Player, ", %s", ItemList->Item->GetItemName() );
-			
+			{
+				if( ItemList->ItemCount < 2 )
+					WriteToBuffer( Player, ", %s", ItemList->Item->GetItemName() );
+				else
+					WriteToBuffer( Player, ", %s[%i]", ItemList->Item->GetItemName(), ItemList->ItemCount );
+			}
+						
 			Count++;
 		}
+		
 
 		WriteToBuffer( Player, "%s\n\r", ANSI_WHITE );
 	}
@@ -1972,10 +1985,20 @@ void WalkingLook( Connection *Conn, Room *Rom )
 		for( int Count = 0; ItemList; ItemList = ItemList->Next )
 		{
 			if( Count == 0 )
-				WriteToBuffer( Conn, "%s", ItemList->Item->GetItemName() );
+			{
+				if( ItemList->ItemCount < 2 )
+					WriteToBuffer( Conn, "%s", ItemList->Item->GetItemName() );
+				else
+					WriteToBuffer( Conn, "%s[%i]", ItemList->Item->GetItemName(), ItemList->ItemCount );
+			}
 			else
-				WriteToBuffer( Conn, ", %s", ItemList->Item->GetItemName() );
-			
+			{
+				if( ItemList->ItemCount < 2 )
+					WriteToBuffer( Conn, ", %s", ItemList->Item->GetItemName() );
+				else
+					WriteToBuffer( Conn, ", %s[%i]", ItemList->Item->GetItemName(), ItemList->ItemCount );
+			}
+						
 			Count++;
 		}
 	

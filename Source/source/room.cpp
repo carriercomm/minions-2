@@ -178,9 +178,21 @@ bool Room::RemovePlayerFromRoom( Connection *Conn )
  **********************************************************/
 bool Room::AddItemToRoom( Item *ItemToAdd )
 {
-	ItemsInRoom		*TempItemsInRoom;
-	ItemsInRoom		*PlaceHolder;
+	ItemsInRoom		*TempItemsInRoom, *PlaceHolder;
 	
+	if( FirstItem )	//if they have at least one item in posession
+	{
+		for( TempItemsInRoom = FirstItem; TempItemsInRoom; TempItemsInRoom = TempItemsInRoom->Next )
+		{
+			if( TempItemsInRoom->Item == ItemToAdd )
+			{
+				TempItemsInRoom->ItemCount++;	//dont allocate another list entry just increment the count
+				return true;
+			}
+			else continue;
+		}
+	}
+
 	TempItemsInRoom = new ItemsInRoom;
 
 	if( !TempItemsInRoom )
@@ -195,6 +207,7 @@ bool Room::AddItemToRoom( Item *ItemToAdd )
 		FirstItem = TempItemsInRoom;
 		FirstItem->Next = PlaceHolder;
 		FirstItem->Item = ItemToAdd;
+		FirstItem->ItemCount = 1;
 		ItemCount++;
 		return true;
 	}
@@ -202,6 +215,7 @@ bool Room::AddItemToRoom( Item *ItemToAdd )
 	FirstItem = TempItemsInRoom;
 	FirstItem->Next = '\0';
 	FirstItem->Item = ItemToAdd;
+	FirstItem->ItemCount = 1;
 
 	ItemCount++;
 
@@ -213,28 +227,54 @@ bool Room::RemoveItemFromRoom( Item *ItemToRemove )
 {
 	ItemsInRoom	*Temp, *ToDelete;
 
-	if( FirstItem->Item == ItemToRemove ) 
+	if( FirstItem->Item == ItemToRemove ) //if item to be deleted is first node of link list
 	{
-		ToDelete = FirstItem;
-		FirstItem = FirstItem->Next;
-	}
-
-	else
-	{
-		for( Temp = FirstItem; Temp; Temp = Temp->Next )
+		if( FirstItem->ItemCount > 1 )	//if they have more than one just decrement the count.
 		{
-			if( Temp->Next->Item == ItemToRemove )
-				break;
+			FirstItem->ItemCount--;	//decrement the item counter rather than delete list entry
+			return true;
 		}
 
-		ToDelete = Temp->Next;
-		Temp->Next = Temp->Next->Next;
+		if( FirstItem->Next )	//if there is a node after FirstItem make it the First Item
+		{
+			ToDelete = FirstItem;	//set pointer of node to be deleted
+			FirstItem = FirstItem->Next;	//make FirstItem point to the next node
+			delete ToDelete;	//delete the node of ItemToDelete
+			ItemCount--;
+			return true;
+		}
+		else
+		{
+			delete FirstItem;	//this is the only node so delete it
+			FirstItem = NULL;	//set pointer to null
+			ItemCount = 0;
+			return true;
+		}
 	}
 
-	delete ToDelete;
-	
-	ItemCount--;
+	/*     item is not first node so find it   */
+	for( Temp = FirstItem; Temp; Temp = Temp->Next )
+	{
+		if( Temp->Next->Item == ItemToRemove )
+		{
+			ToDelete = Temp->Next; //the next node in the list is what we're looking for, mark it with pointer
 
+			if( Temp->Next->ItemCount > 1 )	//if they have more than one just decrement counter
+			{
+				Temp->Next->ItemCount--;
+				return true;
+			}
+			else
+			{
+				Temp->Next = Temp->Next->Next;	//link this node with the node past the next one
+				delete ToDelete;	//now delete the next node
+				ItemCount--;
+				return true;
+			}
+		}
+	}
+	/* should not get here in the function if we do log it for debug purposes */
+	ServerLog( "%s got to line: %d in module: %s - probably a bug to fix\n\r", __FUNCTION__, __LINE__, __FILE__ );
 	return true;
 }
 

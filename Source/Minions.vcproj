@@ -17,7 +17,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="C:\Builds\Minions"
+			OutputDirectory="..\..\..\Builds\Minions"
 			IntermediateDirectory="Debug"
 			ConfigurationType="1"
 			>
@@ -93,7 +93,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="..\..\Minions"
+			OutputDirectory="..\..\..\Builds\Minions"
 			IntermediateDirectory="Release"
 			ConfigurationType="1"
 			>
@@ -220,10 +220,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\headers\spells.h"
-				>
-			</File>
-			<File
 				RelativePath=".\headers\sqlite3.h"
 				>
 			</File>
@@ -277,10 +273,6 @@
 			</File>
 			<File
 				RelativePath=".\source\scheduler.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\source\spells.cpp"
 				>
 			</File>
 			<File

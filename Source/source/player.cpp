@@ -109,6 +109,9 @@ void Client::SetPlayerStat ( int value, int which_stat )
 
 bool Client::SetFirstName( char *new_name )
 {
+	if( strlen( new_name ) >= MAX_FNAME_LENGTH || strlen( new_name ) <= 2 )
+		return false;
+
 	char *temp = new_name;
 
 	while( *temp )
@@ -122,9 +125,6 @@ bool Client::SetFirstName( char *new_name )
 		temp++;
 	}
 
-	if( strlen( new_name ) >= MAX_NAME_LENGTH )
-		return false;
-
 	if( strlen( new_name ) <= 2 )
 		return false;
 
@@ -137,6 +137,9 @@ bool Client::SetFirstName( char *new_name )
 
 bool Client::SetLastName( char *new_name )
 {
+	if( strlen( new_name ) >= MAX_LNAME_LENGTH || strlen( new_name ) <= 2 )
+		return false;
+
 	char *temp = new_name;
 
 	while( *temp )
@@ -149,9 +152,6 @@ bool Client::SetLastName( char *new_name )
 
 		*temp++;
 	}
-
-	if( strlen( new_name ) >= MAX_NAME_LENGTH )
-		return false;
 
 	if( strlen( new_name ) <= 2 )
 		return false;
@@ -440,7 +440,7 @@ bool Client::AddItemToPlayer( Item *NewItem )
 		{
 			if( TempItemsOnPlayer->Item == NewItem )
 			{
-				TempItemsOnPlayer->ItemCount++;
+				TempItemsOnPlayer->ItemCount++;	//dont allocate another list entry just increment the count
 				return true;
 			}
 			else continue;
@@ -485,38 +485,51 @@ bool Client::RemoveItemFromPlayer( Item *ItemToDelete )
 	ItemsOnPlayer	*Temp, *ToDelete;
 	bool tmp;
 
-	if( FirstItem->Item == ItemToDelete ) 
+	if( FirstItem->Item == ItemToDelete ) //if item to be deleted is first node of link list
 	{
 		if( FirstItem->ItemCount > 1 )	//if they have more than one just decrement the count.
 		{
-			FirstItem->ItemCount--;	//decrement the item counter rather than delete anything
+			FirstItem->ItemCount--;	//decrement the item counter rather than delete list entry
 			return true;
 		}
 
-		ToDelete = FirstItem;
-		FirstItem = FirstItem->Next;
-	}
-
-	else
-	{
-		for( Temp = FirstItem; Temp; Temp = Temp->Next )
+		if( FirstItem->Next )	//if there is a node after FirstItem make it the First Item
 		{
-			if( Temp->Next->Item == ItemToDelete )
-				if( Temp->Next->ItemCount > 1 )	//if they have more than one just decrement counter
-				{
-					Temp->Next->ItemCount--;
-					return true;
-				}
-				
-				break;
+			ToDelete = FirstItem;	//set pointer of node to be deleted
+			FirstItem = FirstItem->Next;	//make FirstItem point to the next node
+			delete ToDelete;	//delete the node of ItemToDelete
+			return true;
 		}
-
-		ToDelete = Temp->Next;
-		Temp->Next = Temp->Next->Next;
+		else
+		{
+			delete FirstItem;	//this is the only node so delete it
+			FirstItem = NULL;	//set pointer to null
+			return true;
+		}
 	}
-	
-	delete ToDelete;
-	
+
+	/*     item is not first node so find it   */
+	for( Temp = FirstItem; Temp; Temp = Temp->Next )
+	{
+		if( Temp->Next->Item == ItemToDelete )
+		{
+			ToDelete = Temp->Next; //the next node in the list is what we're looking for, mark it with pointer
+
+			if( Temp->Next->ItemCount > 1 )	//if they have more than one just decrement counter
+			{
+				Temp->Next->ItemCount--;
+				return true;
+			}
+			else
+			{
+				Temp->Next = Temp->Next->Next;	//link this node with the node past the next one
+				delete ToDelete;	//now delete the next node
+				return true;
+			}
+		}
+	}
+	/* should not get here in the function if we do log it for debug purposes */
+	ServerLog( "%s got to line: %d in module: %s - probably a bug to fix\n\r", __FUNCTION__, __LINE__, __FILE__ );
 	return true;
 }
 /*================================================================
@@ -743,8 +756,11 @@ char* Client::GetDescription( void )
 		strcpy( StrDesc, "an extremely powerfully built" );
 
 	/*  added STL strings here for formatting  */
+	BuildString<<ANSI_GREEN<<"=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\r";
 	BuildString<<ANSI_CLR_SOL<<ANSI_BR_GREEN<<'['<<FirstName<<' '<<LastName<<"] - "<<ANSI_BR_WHITE
 		<<RaceStr<<' '<<ClassStr<<"\n\r";
+
+	BuildString<<ANSI_GREEN<<"=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\r";
 
 	/* do general description here  */
 	BuildString<<ANSI_WHITE<<FirstName<<" is "<<StrDesc<<' '<<RaceStr<<' '<<ClassStr<<"\n\r";
@@ -770,7 +786,8 @@ char* Client::GetDescription( void )
 	if( Wielded )
 		BuildString<<ANSI_BR_YELLOW<<setfill(' ')<<setw(25)<<Wielded->GetItemName()<<ANSI_RED<<setfill(' ')<<setw(20)<<"(Weapon Hand)"<<"\n\r";
 
-	BuildString<<ANSI_BR_GREEN<<FirstName<<" is: "<<HealthStatusDesc<<" wounded.\n\r"<<ANSI_BR_WHITE;
+	BuildString<<ANSI_BR_GREEN<<FirstName<<" is: "<<HealthStatusDesc<<" wounded.\n\r";
+	BuildString<<ANSI_GREEN<<"=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\r"<<ANSI_BR_WHITE;
 
 	/* convert to std::string type */
 	FormattedString = BuildString.str();
