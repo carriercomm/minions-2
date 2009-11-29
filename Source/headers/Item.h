@@ -10,27 +10,50 @@
 #ifndef _ITEM_H_INCLUDED
 #define _ITEM_H_INCLUDED
 
-const int MAX_ITEM_STRING			= 35;
-const int MAX_DESC_LENGTH		    = 200;
-const char ITEM_DATABASE[]	    	= "minions.db";
+const int MAX_ITEM_STRING			=    35;
+const int MAX_DESC_LENGTH		    =   200;
+const char ITEM_DATABASE[]	    	=    "minions.db";
 
 // Define item types
-const int ITEM_WEAPON				= 1;
-const int ITEM_WEAR				    = 2;
-const int ITEM_OTHER		        = 3;
+const int ITEM_WEAPON				=     1;
+const int ITEM_WEAR				    =     2;
+const int ITEM_OTHER		        =     3;
 
 // Define where item worn
-const int ITEM_NOT_WIELDABLE		= 0;
-const int ITEM_WEAR_HEAD			= 1;
-const int ITEM_WEAR_ARMS			= 2;
-const int ITEM_WEAR_TORSO           = 3;
-const int ITEM_WEAR_LEGS			= 4;
-const int ITEM_WEAR_FINGER			= 5;
-const int ITEM_WEAR_FEET			= 6;
-const int ITEM_WEAR_NECK			= 7;
-const int ITEM_WEAR_HANDS           = 8;
-const int ITEM_WIELDED              = 9;
-const int MAX_WEAR_LOCATIONS		= 9;
+const int ITEM_NOT_WIELDABLE		=     0;
+const int ITEM_WEAR_HEAD			=     1;
+const int ITEM_WEAR_ARMS			=     2;
+const int ITEM_WEAR_TORSO           =     3;
+const int ITEM_WEAR_LEGS			=     4;
+const int ITEM_WEAR_FINGER			=     5;
+const int ITEM_WEAR_FEET			=     6;
+const int ITEM_WEAR_NECK			=     7;
+const int ITEM_WEAR_HANDS           =     8;
+const int ITEM_WIELDED              =     9;
+const int MAX_WEAR_LOCATIONS		=     9;
+
+//Wearable types
+//All and Class based
+const int WEARABLE_ALL              =     1;
+const int WEARABLE_WARRIOR          =     2;
+const int WEARABLE_RANGER           =     3;
+const int WEARABLE_CLERIC           =     4;
+const int WEARABLE_MAGE             =     5;
+const int WEARABLE_PALADIN          =     6;
+const int WEARABLE_PRIEST           =     7;
+const int WEARABLE_NINJA            =     8;
+//Wearable type (like above, but of usable type)       
+const int ONEHANDED_BLADE           =   101;
+const int ONEHANDED_BLUNT           =   102;
+const int TWOHANDED_BLADE           =   103;
+const int TWOHANDED_BLUNT           =   104;
+const int POLEARM                   =   105;
+const int STAFF                     =   106;
+//Wearabke Armor types       
+const int PLATE_ARMOR_WEARABLE      =   201;
+const int CHAIN_ARMOR_WEARABLE      =   202;
+const int LEATHER_ARMOR_WEARABLE    =   203;
+const int CLOTH_ARMOR_WEARABLE      =   204;
 
 // Which bonus
 const int STRENGTH_BONUS            = 1;
@@ -51,6 +74,7 @@ class Item
 	char				Name[MAX_ITEM_STRING];
 	char				Description[MAX_DESC_LENGTH];
 	char				AttackType[MAX_ITEM_STRING];
+	int                 WearableType;
 	int					MaxDamage;
 	int					ToHitBonus;
 	int					Speed;
@@ -95,6 +119,8 @@ public:
 	int GetWearLocation( void ) { return WearLocation; };
 	void SetBonus( int Bonus, int which_bonus );
 	int GetBonus( int which_bonus );
+	void SetWearableType( int wType ) { WearableType = wType; };
+	int GetWearableType( void ) { return WearableType; };
 
 };
 

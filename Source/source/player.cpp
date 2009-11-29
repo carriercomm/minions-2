@@ -10,8 +10,10 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <cstdlib>
 #include <iomanip>
-#include <string.h>
+#include <vector>
+#include <set>
 #include <fstream>
 #include <ctype.h>
 #include "player.h"
@@ -25,6 +27,7 @@
 using namespace std;
 
 extern RaceTable    *MasterRaceTable;
+extern ClassTable   *MasterClassTable;
 
 Client::Client()
 {
@@ -59,7 +62,7 @@ Client::Client()
 	Class = Race            = 0;
 	AttackEvent             = NULL;
 	MyConnection            = NULL;
-	Wielded = Head = Neck = Arms = Torso = Legs = Feet = Finger = Hands = NULL; //set these to NULL in constructor
+//	WearableTypes           = NULL;
 	
 }
 
@@ -293,6 +296,7 @@ bool Client::LoadPlayer(char *name) {
 	ifstream	in;
 	char		filename[80] = PLAYER_SAVE_PATH;
 	RaceTable   *TempPtr = NULL;
+	ClassTable  *ClassPtr = NULL;
 	
 	strcat( filename, name );
 	strcat( filename, ".txt" );
@@ -324,6 +328,14 @@ bool Client::LoadPlayer(char *name) {
 		}
 	}
 	in.close();
+	
+	// Get list of wearable items for this players class
+	for(ClassPtr = MasterClassTable; ClassPtr; ClassPtr = ClassPtr->Next )
+	{
+			if( Class == ClassPtr->ClassNumber )
+				AssignWearable( ClassPtr->WearableTypes );
+	}
+	
 	UpdateModifiedStats();
 	return true;
 	
@@ -982,7 +994,21 @@ Updates any stats that are modified by stat bonuses. (agil = AC)
 
 void Client::UpdateModifiedStats( void )
 {
-	if ( ( ArmorClass + (Agility / 5) ) <= MAXIMUM_STATS )
-		ModifiedAC = ArmorClass + (Agility / AGILITY_AC_MODIFIER );
+	ModifiedAC = ArmorClass + (Agility / AGILITY_AC_MODIFIER );
 	DamageBonus = (Strength / STRENGTH_DAMAGE_MODIFIER );
+}
+
+/*=========================================================
+Client::CanWear()
+
+Can the player wear this type of item?
+=========================================================*/
+bool Client::CanWear( int WType )
+{
+	set<int>::iterator it;
+
+	it = WearableTypes.find( WType );
+	if ( it != WearableTypes.end() )
+		return true;
+	return false;
 }

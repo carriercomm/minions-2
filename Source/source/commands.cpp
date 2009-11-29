@@ -1706,6 +1706,7 @@ COMMAND(GiveItem)
 		return;
 	}
 
+
 	/* if they are wielding the item then unwield it fer em */
 	if ( Player->Player.SearchPlayerInventoryForItem( Argument ) == NULL )
 	{
@@ -1772,6 +1773,14 @@ COMMAND(Wield)
 	{
 		WriteToBuffer( Player, "%sYou cannot wield a %s!%s\n\r",
 			ANSI_BR_RED, Argument, ANSI_WHITE );
+		return;
+	}
+
+	// Is this item wieldable by this player?
+	if ( Player->Player.CanWear( TempItem->GetWearableType() ) == false )
+	{
+		WriteToBuffer( Player, "%sYou cannot wield that item!%s\n\r",
+			ANSI_BR_RED, ANSI_WHITE );
 		return;
 	}
 
@@ -1851,6 +1860,14 @@ COMMAND(Wear)
 	{
 		WriteToBuffer( Player, "%sYou cannot wear a %s!%s\n\r",
 			ANSI_BR_RED, Argument, ANSI_WHITE );
+		return;
+	}
+
+	// Is the item wearable by this player?
+	if ( Player->Player.CanWear( TempItem->GetWearableType() ) == false )
+	{
+		WriteToBuffer( Player, "%sYou cannot wear that item!%s\n\r",
+			ANSI_BR_RED, ANSI_WHITE );
 		return;
 	}
 

@@ -7,20 +7,24 @@
  *			 Mark Richardson	-	sinbaud@hotmail.com	       *
  *		       David Brown	    -	dcbrown73@yahoo.com	       *
  ***************************************************************/
+#include <set>
+
+using namespace std;
+
 #ifndef PLAYER_H_INCLUDED
 #define PLAYER_H_INCLUDED
 
-const int MAX_STRING_LENGTH				= 80;
-const int MAX_FNAME_LENGTH				= 11; //10 with one for terminating NULL
-const int MAX_LNAME_LENGTH				= 15; //14 with one for terminating NULL 
-const int MAX_STATS						= 6; 
-const int MAX_LEVEL_ALLOWED				= 150;
+const int MAX_STRING_LENGTH				=   80;
+const int MAX_FNAME_LENGTH				=   11; //10 with one for terminating NULL
+const int MAX_LNAME_LENGTH				=   15; //14 with one for terminating NULL 
+const int MAX_STATS						=    6; 
+const int MAX_LEVEL_ALLOWED				=  150;
 const int MAX_DESCRIPTION_LENGTH		= 2048;
-const int MAX_HOST_NAME					= 80;
-const int MAX_STR_MULTIPLIER			= 10;
-const int MAX_STAT_VALUE				= 150;
+const int MAX_HOST_NAME					=   80;
+const int MAX_STR_MULTIPLIER			=    3;
+const int MAX_STAT_VALUE				=  150;
 
-const int MAXIMUM_STATS               = 100;
+const int MAXIMUM_STATS                 =  100;
 
 #define PLAYER_SAVE_PATH		 "players\\"
 
@@ -51,6 +55,7 @@ const int MAX_MANA                    =   8;
 
 const int STRENGTH_DAMAGE_MODIFIER    =  10;
 const int AGILITY_AC_MODIFIER         =   5;
+
 /*  link list of items in this players possesion */
 struct ItemsOnPlayer
 {
@@ -90,6 +95,7 @@ class Client
 	Item			*Feet;
 	Item			*Finger;
 	Item            *Hands;
+	set<int>        WearableTypes;
 
 
 
@@ -168,6 +174,8 @@ public:
 	void SetPlayerStat ( int value, int which_stat );
 	void UpdateModifiedStats( void );
 	int GetDamageBonus ( void ) { return DamageBonus; };
+	bool CanWear( int WType );
+	void AssignWearable( set<int> Wearable ) { WearableTypes = Wearable; };
 	~Client();
 };
 

@@ -1,9 +1,15 @@
 #include <winsock.h>
-#include <string.h>
+#include <string>
+#include <set>
+#include <vector>
+#include <cstdlib>
+#include <sstream>
+#include <iostream>
 #include "races.h"
 #include "tcpcomm.h"
 #include "sqlite3.h"
 
+using namespace std;
 
 RaceTable   *MasterRaceTable = NULL;
 ClassTable  *MasterClassTable = NULL;
@@ -104,6 +110,11 @@ bool LoadClassTables( void )
 	int				SqliteReturnCode, RowCount = 0; //set RowCount to Zero
 	sqlite3_stmt	*SqlStatement = 0;
 	bool			Finished = false;
+	string          WTypes;
+	string          buff;
+	istringstream   TmpString;
+	int             strpos;
+
 
 	SqliteReturnCode = sqlite3_open( CLASS_DATABASE, &DatabaseHandle);
 	
@@ -156,6 +167,19 @@ bool LoadClassTables( void )
 			CTable->ClassNumber = sqlite3_column_int( SqlStatement, 0 );
 			strcpy( CTable->ClassName, (char*)sqlite3_column_text( SqlStatement, 1 ) );
 			strcpy( CTable->ClassDesc, (char*)sqlite3_column_text( SqlStatement, 2 ) );
+
+			// Get string of WearableTypes split, then convert to integers and load in vector
+			WTypes = (char *)sqlite3_column_text( SqlStatement, 3 );
+			
+			while ( (strpos = WTypes.find_first_of(" ") ) != WTypes.npos )
+			{
+				if ( strpos > 0 )
+				{
+					CTable->WearableTypes.insert( atoi( WTypes.substr( 0, strpos ).c_str() ) );
+					WTypes = WTypes.substr( strpos + 1 );
+				}
+			}
+			CTable->WearableTypes.insert( atoi ( WTypes.c_str() ) );
 
 			RowCount++;		//dont forget to increment the row count.
 			break;

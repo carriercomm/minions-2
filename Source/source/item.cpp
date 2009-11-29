@@ -23,6 +23,7 @@ Item::Item()
 	Name[0] = Description[0] = AttackType[0] = '\0';
 	MaxDamage = ToHitBonus = Speed = ArmorValue = 0;
 	WearLocation = ItemType = 0;
+	WearableType = NULL;
 }
 
 
@@ -218,6 +219,7 @@ bool LoadItemDatabase( void )
 			ItemPtr->Value->SetBonus( sqlite3_column_int( SqlStatement, 18), MANA_BONUS );
 
 			ItemPtr->Value->SetWearLocation( sqlite3_column_int( SqlStatement, 19) );
+			ItemPtr->Value->SetWearableType( sqlite3_column_int( SqlStatement, 20) );
 
 			RowCount++;		//dont forget to increment the row count.
 			

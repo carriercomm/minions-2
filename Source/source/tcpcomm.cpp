@@ -761,6 +761,7 @@ bool Logon( Connection *Conn, char *Cmd )
 					TempCPtr->ClassName );
 				Conn->Player.SetClassStr( TempCPtr->ClassName );
 				Conn->Player.SetClass( TempCPtr->ClassNumber );
+				Conn->Player.AssignWearable( TempCPtr->WearableTypes );
 				
 				WriteToBuffer( Conn, "%s%sWelcome to Minions!\n\r",
 					ANSI_CLR_SCR, ANSI_BR_RED );

@@ -27,7 +27,8 @@ CREATE TABLE races(
 CREATE TABLE classes(
        ClassNumber int PRIMARY KEY,
        ClassName VARCHAR(32) NOT NULL,
-       ClassDesc VARCHAR(322) NOT NULL
+       ClassDesc VARCHAR(322) NOT NULL,
+       WearableTypes  VARCHAR(100) NOT NULL
  );
 
 CREATE TABLE items(
@@ -50,6 +51,7 @@ CREATE TABLE items(
         WisdomBonus int NOT NULL,
         HitPointsBonus int NOT NULL,
         ManaBonus int NOT NULL,
-	WearLocation int NOT NULL
+	WearLocation int NOT NULL,
+	WearableType int NOT NULL
 );
 

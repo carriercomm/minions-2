@@ -173,7 +173,7 @@ void meHeal::naturalHeal()
 	Connection  *TempConn = '\0';
 	int curHP;
 	int maxHP;
-	int healRate = HEAL_RATE;
+	int healRate; // = HEAL_RATE;
 /*
    If a player is resting, he heals at 2x rest rate.
    For now, I'm using player level as his heal rate.  1st level heals at 1hp per tick. 
@@ -185,8 +185,10 @@ void meHeal::naturalHeal()
 	{
 		curHP=TempConn->Player.GetHitPoints();
 		maxHP=TempConn->Player.GetMaxHitPoints();
-		// Setting heal rate to the players level. (probably should look into this later)
+	
 		
+		// Setting heal rate to 1/20th of MAX HPs.
+		healRate = TempConn->Player.GetMaxHitPoints() / 20;
 
 		if (TempConn->Player.GetRestingStatus() == RESTING)
 		{

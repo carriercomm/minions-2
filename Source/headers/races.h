@@ -7,8 +7,12 @@
  *			 Mark Richardson	-	sinbaud@hotmail.com	       *
  *		       David Brown	    -	dbrown@centliq.com	       *
  ***************************************************************/
+#include <set>
+
 #if !defined RACES_H_INCLUDED
 #define RACES_H_INCLUDED
+
+using namespace std;
 
 #define MAX_RACE_NAME                21
 #define MAX_CLASS_NAME               21
@@ -22,6 +26,8 @@ const int MANA_MULTIPLIER        =    2;
 #define CLASS_DATABASE			"minions.db"
 #define RACE_DATABASE			"minions.db"
 
+//Define wearable list type. (vector of integers)
+typedef     std::set<int> WearableList;
 
 struct RaceTable
 {
@@ -39,10 +45,11 @@ struct RaceTable
 
 struct ClassTable
 {
-	char		ClassName[MAX_CLASS_NAME];
-	int			ClassNumber;
-	char		ClassDesc[MAX_CLASS_DESC];
-	ClassTable	*Next;
+	char		   ClassName[MAX_CLASS_NAME];
+	int			   ClassNumber;
+	char		   ClassDesc[MAX_CLASS_DESC];
+	set<int>       WearableTypes;
+	ClassTable	   *Next;
 };
 
 

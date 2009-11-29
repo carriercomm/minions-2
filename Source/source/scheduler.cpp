@@ -16,10 +16,9 @@
 #include "scheduler.h"
 #include "tcpcomm.h"
 #include "combat.h"
-//#include "erase.h"
 
 using namespace std;
-//using namespace detail;
+
 
 
 /*==============================================================
