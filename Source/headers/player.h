@@ -77,7 +77,7 @@ class Client
 	char			HostName[MAX_STRING_LENGTH];
 	unsigned int	ArmorClass, Stealth, MaxDamage, DamageBonus;
 	unsigned int	Strength, Agility, Health, Luck, Wisdom, Sex; 
-	int				HitPoints, MaxHits, Mana, MaxMana, Level, Race, THAC0, Class, Resting, Weight;
+	int				HitPoints, MaxHits, Mana, MaxMana, Level, Race, THAC0, Class, Resting, Weight, MagicRes;
 	unsigned int	Exp, Kills, BeenKilled;
 	int             ModifiedAC;
 	Room			*CurrentRoom;
@@ -96,6 +96,7 @@ class Client
 	Item			*Finger;
 	Item            *Hands;
 	set<int>        WearableTypes;
+	set<int>        SpellTypes;
 
 
 
@@ -176,6 +177,10 @@ public:
 	int GetDamageBonus ( void ) { return DamageBonus; };
 	bool CanWear( int WType );
 	void AssignWearable( set<int> Wearable ) { WearableTypes = Wearable; };
+	bool CanCast( int sType );
+	void AssignSpellTypes( set<int> sTypes ) { SpellTypes = sTypes; };
+	int GetMagicResistence( void ) { return MagicRes; };
+	void SetMagicResistence( int res ) { MagicRes = res; };
 	~Client();
 };
 

@@ -13,6 +13,7 @@
 struct Connection; //forward declaration
 class Room;			//forward declaration
 class scheduler;
+class MeleeSpell;
 
 /*  Different types of possible attacks  */
 enum AttackType
@@ -40,6 +41,7 @@ void DisplayStunStatus(Connection *Player);
 void StopCombat(Connection *Player);
 void SlipAndFall( Connection *Player );
 void LoseWeapon( Connection *Player );
+void DisplaySpellMeleeCombat( Connection *Player, MeleeSpell *Spell, int Damage );
 
 
 #endif //_COMBAT_H_INCLUDED

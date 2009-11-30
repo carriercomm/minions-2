@@ -60,6 +60,7 @@ Client::Client()
 	ModifiedAC              = 0;
 	THAC0                   = 14;
 	Class = Race            = 0;
+	MagicRes                = 50;
 	AttackEvent             = NULL;
 	MyConnection            = NULL;
 //	WearableTypes           = NULL;
@@ -333,7 +334,11 @@ bool Client::LoadPlayer(char *name) {
 	for(ClassPtr = MasterClassTable; ClassPtr; ClassPtr = ClassPtr->Next )
 	{
 			if( Class == ClassPtr->ClassNumber )
+			{			
 				AssignWearable( ClassPtr->WearableTypes );
+				AssignSpellTypes( ClassPtr->SpellTypes );
+			}
+
 	}
 	
 	UpdateModifiedStats();
@@ -444,7 +449,6 @@ bool Client::AddItemToPlayer( Item *NewItem )
 {
 	ItemsOnPlayer	*TempItemsOnPlayer;
 	ItemsOnPlayer	*PlaceHolder;
-	Connection      *Player;
 	
 	if( FirstItem )	//if they have at least one item in posession
 	{
@@ -495,7 +499,6 @@ Removes item from a player
 bool Client::RemoveItemFromPlayer( Item *ItemToDelete )
 {
 	ItemsOnPlayer	*Temp, *ToDelete;
-	bool tmp;
 
 	if( FirstItem->Item == ItemToDelete ) //if item to be deleted is first node of link list
 	{
@@ -984,6 +987,7 @@ bool Client::LuckRoll( void )
 {
 	if ( (rand() % 100 + 1) > Luck )
 		return FAIL;
+	return false;
 }
 
 /*========================================================
@@ -1009,6 +1013,21 @@ bool Client::CanWear( int WType )
 
 	it = WearableTypes.find( WType );
 	if ( it != WearableTypes.end() )
+		return true;
+	return false;
+}
+
+/*=========================================================
+Client::CanCast()
+
+Can the player cast this type of spell?
+=========================================================*/
+bool Client::CanCast( int sType )
+{
+	set<int>::iterator it;
+
+	it = SpellTypes.find( sType );
+	if ( it != SpellTypes.end() )
 		return true;
 	return false;
 }

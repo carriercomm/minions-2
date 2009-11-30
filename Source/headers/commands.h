@@ -10,6 +10,8 @@
 #ifndef COMMANDS_H_INCLUDED
 #define COMMANDS_H_INCLUDED
 
+const int PEEKING                   =   0;
+const int NOT_PEEKING               =   1;
 
 const int MAX_COMMAND_LENGTH    	= 256;
 #define COMMAND(name) void Cmd##name##( Connection *Player, char *FullCmd, char *Argument, char *Argument2 )
@@ -36,7 +38,7 @@ struct Command_Table
 /*  Commands we have so far */
 void ParseCommand( Connection *Player, char *CmdLine );
 void Say( Connection *Conn, char *Text );
-void WalkingLook( Connection *Conn, Room *Rom );
+void WalkingLook( Connection *Conn, Room *Rom, int Peeking );
 
 /*  Commands in the command table  */
 COMMAND(Quit);
@@ -73,4 +75,5 @@ COMMAND(Emote);
 COMMAND(Spawn);
 COMMAND(Score);
 COMMAND(Rest);
+COMMAND(David);
 #endif //COMMANDS_H_INCLUDED

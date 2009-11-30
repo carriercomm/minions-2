@@ -20,6 +20,7 @@
 #include "commands.h"
 #include "ansicolor.h"
 #include "room.h"
+#include "spells.h"
 #include "item.h"
 #include "scheduler.h"
 #include "events.h"
@@ -34,6 +35,7 @@ extern scheduler eventScheduler;
 extern bool ServerDown;
 extern time_t CurrentTime, BootTime;
 extern char HelpScreen[MAX_OUTPUT_BUFFER], TitleScreen[MAX_OUTPUT_BUFFER];
+extern MeleeSpellList MeleeSpells;
 
 
 /**********************************************************
@@ -88,6 +90,9 @@ Command_Table CommandTable[] =
  **********************************************************/
 void ParseCommand( Connection *Player, char *CmdLine )
 {
+
+	// Iterator for the spell list
+	MeleeSpellList::iterator it;
 	// If stun, you can't do anything
 	if (FLAG_IS_SET(Player->Flags, FLAG_STUN))
 	{
@@ -98,7 +103,7 @@ void ParseCommand( Connection *Player, char *CmdLine )
 	/* this is David parse function from the original minions -circa 1998 */
 	if( *CmdLine == ' ' || *CmdLine + 1 == '\0' )
 	{
-		WalkingLook( Player, NULL );
+		WalkingLook( Player, NULL, NOT_PEEKING );
 		return;
 	}
 
@@ -138,6 +143,22 @@ void ParseCommand( Connection *Player, char *CmdLine )
 	}
 	/* end David's parse code from original minions */
 	len = strlen( cmdList[0] );
+
+	// Did they attempt to cast a melee spell?  IF so can they cast that spell? if so fire away!
+	if (len == 4)
+	{
+		it = MeleeSpells.find( cmdList[0] );
+		if ( it != MeleeSpells.end() )
+		{		
+			if ( Player->Player.CanCast( it->second->GetSpellClass() ) )
+			{		
+				CastMeleeSpell( Player, cmdList[1], it->second );
+				return;
+			}
+		}
+	}
+
+
 	
 	for( int loop = 0; CommandTable[loop].Command != NULL; loop++ )
 	{
@@ -817,7 +838,7 @@ COMMAND(Look)
 
 		if( LookIntoRoom )
 		{
-			WalkingLook( Player, LookIntoRoom );
+			WalkingLook( Player, LookIntoRoom, PEEKING );
 			
 			/* tell the room your in that your looking */
 			TempRom->SelectiveBroadcast( Player, NULL, "%s%s looks %s.%s\n\r",
@@ -842,7 +863,7 @@ COMMAND(Look)
 	WriteToBuffer( Player, "\n\r%s%s\n\r%s%s\n\r", ANSI_BR_GREEN, TempRom->GetShortDesc(),
 		ANSI_WHITE, TempRom->GetLongDesc() );
 
-	if( TempRom->GetItemCount() > 0 )
+	if( TempRom->GetItemCount() > 1 )
 	{
 		ItemList = TempRom->GetFirstItem();
 		
@@ -861,14 +882,14 @@ COMMAND(Look)
 				if( ItemList->ItemCount < 2 )
 					WriteToBuffer( Player, "%s", ItemList->Item->GetItemName() );
 				else
-					WriteToBuffer( Player, "%s[%i]", ItemList->Item->GetItemName(), ItemList->ItemCount );
+					WriteToBuffer( Player, "%s%i %s", ANSI_BR_CYAN , ItemList->ItemCount, ItemList->Item->GetItemName() );
 			}
 			else
 			{
 				if( ItemList->ItemCount < 2 )
 					WriteToBuffer( Player, ", %s", ItemList->Item->GetItemName() );
 				else
-					WriteToBuffer( Player, ", %s[%i]", ItemList->Item->GetItemName(), ItemList->ItemCount );
+					WriteToBuffer( Player, "%s, %i %s", ANSI_BR_CYAN , ItemList->ItemCount, ItemList->Item->GetItemName() );
 			}
 						
 			Count++;
@@ -878,10 +899,10 @@ COMMAND(Look)
 		WriteToBuffer( Player, "%s\n\r", ANSI_WHITE );
 	}
 
-	if( TempRom->GetPlayerCount() > 1 )
+	if( TempRom->GetPlayerCount() > 0 )
 	{
 		int Count = 0;
-		PlayersInRoom	*Temp = '\0';
+		PlayersInRoom	*Temp = NULL;
 
 		Temp = TempRom->GetFirstPlayer();
 
@@ -959,7 +980,7 @@ COMMAND(MoveNorth)
 	NewRoom->BroadcastRoom( "%s%s walks in from the south%s\n\r", ANSI_BR_GREEN, Player->Player.GetFirstName(), ANSI_WHITE );
 	NewRoom->AddPlayerToRoom( Player );
 	Player->Player.SetRoom( NewRoom );
-	WalkingLook( Player, NewRoom );
+	WalkingLook( Player, NewRoom, NOT_PEEKING );
 	
 	return;
 }
@@ -1008,7 +1029,7 @@ COMMAND(MoveSouth)
 		ANSI_BR_GREEN, Player->Player.GetFirstName(), ANSI_WHITE );
 	NewRoom->AddPlayerToRoom( Player );
 	Player->Player.SetRoom( NewRoom );
-	WalkingLook( Player, NewRoom );
+	WalkingLook( Player, NewRoom, NOT_PEEKING );
 	
 	return;
 
@@ -1057,7 +1078,7 @@ COMMAND(MoveUp)
 		ANSI_BR_GREEN, Player->Player.GetFirstName(), ANSI_WHITE );
 	NewRoom->AddPlayerToRoom( Player );
 	Player->Player.SetRoom( NewRoom );
-	WalkingLook( Player, NewRoom );
+	WalkingLook( Player, NewRoom, NOT_PEEKING );
 	return;
 
 }
@@ -1105,7 +1126,7 @@ COMMAND(MoveDown)
 		ANSI_BR_GREEN, Player->Player.GetFirstName(), ANSI_WHITE );
 	NewRoom->AddPlayerToRoom( Player );
 	Player->Player.SetRoom( NewRoom );
-	WalkingLook( Player, NewRoom );
+	WalkingLook( Player, NewRoom, NOT_PEEKING );
 	return;
 
 }
@@ -1151,7 +1172,7 @@ COMMAND(MoveEast)
 	NewRoom->BroadcastRoom( "%s%s walks in from the west%s\n\r", ANSI_BR_GREEN, Player->Player.GetFirstName(), ANSI_WHITE );
 	NewRoom->AddPlayerToRoom( Player );
 	Player->Player.SetRoom( NewRoom );
-	WalkingLook( Player, NewRoom );
+	WalkingLook( Player, NewRoom, NOT_PEEKING );
 	
 	return;
 }
@@ -1198,7 +1219,7 @@ COMMAND(MoveWest)
 	NewRoom->BroadcastRoom( "%s%s walks in from the east%s\n\r", ANSI_BR_GREEN, Player->Player.GetFirstName(), ANSI_WHITE );
 	NewRoom->AddPlayerToRoom( Player );
 	Player->Player.SetRoom( NewRoom );
-	WalkingLook( Player, NewRoom );
+	WalkingLook( Player, NewRoom, NOT_PEEKING );
 	
 	return;
 }
@@ -1245,7 +1266,7 @@ COMMAND(MoveNE)
 	NewRoom->BroadcastRoom( "%s%s walks in from the southwest%s\n\r", ANSI_BR_GREEN, Player->Player.GetFirstName(), ANSI_WHITE );
 	NewRoom->AddPlayerToRoom( Player );
 	Player->Player.SetRoom( NewRoom );
-	WalkingLook( Player, NewRoom );
+	WalkingLook( Player, NewRoom, NOT_PEEKING );
 	
 	return;
 }
@@ -1291,7 +1312,7 @@ COMMAND(MoveSE)
 	NewRoom->BroadcastRoom( "%s%s walks in from the northwest%s\n\r", ANSI_BR_GREEN, Player->Player.GetFirstName(), ANSI_WHITE );
 	NewRoom->AddPlayerToRoom( Player );
 	Player->Player.SetRoom( NewRoom );
-	WalkingLook( Player, NewRoom );
+	WalkingLook( Player, NewRoom, NOT_PEEKING );
 	
 	return;
 }
@@ -1337,7 +1358,7 @@ COMMAND(MoveSW)
 	NewRoom->BroadcastRoom( "%s%s walks in from the northeast%s\n\r", ANSI_BR_GREEN, Player->Player.GetFirstName(), ANSI_WHITE );
 	NewRoom->AddPlayerToRoom( Player );
 	Player->Player.SetRoom( NewRoom );
-	WalkingLook( Player, NewRoom );
+	WalkingLook( Player, NewRoom, NOT_PEEKING );
 	
 	return;
 }
@@ -1383,7 +1404,7 @@ COMMAND(MoveNW)
 	NewRoom->BroadcastRoom( "%s%s walks in from the southeast%s\n\r", ANSI_BR_GREEN, Player->Player.GetFirstName(), ANSI_WHITE );
 	NewRoom->AddPlayerToRoom( Player );
 	Player->Player.SetRoom( NewRoom );
-	WalkingLook( Player, NewRoom );
+	WalkingLook( Player, NewRoom, NOT_PEEKING );
 	
 	return;
 }
@@ -1423,7 +1444,7 @@ COMMAND(Teleport)
 	WriteToBuffer( Player, "%s\t*** You have been transported to Room: %d. ***%s\n\r", 
 		ANSI_BR_CYAN, RoomNum, ANSI_WHITE );
 	
-	WalkingLook( Player, Rom );	
+	WalkingLook( Player, Rom, NOT_PEEKING );	
 	
 	return;
 }
@@ -1967,7 +1988,7 @@ COMMAND(Remove)
  *  This is the look when ya dont wanna say               *
  *  this player has looked around the room                *
  **********************************************************/
-void WalkingLook( Connection *Conn, Room *Rom )
+void WalkingLook( Connection *Conn, Room *Rom, int Peeking )
 {
 	if ( !Conn )
 		return;
@@ -1997,23 +2018,23 @@ void WalkingLook( Connection *Conn, Room *Rom )
 			return;
 		}
 		
-		WriteToBuffer( Conn, "%sYou notice: ", ANSI_BR_CYAN );
+		WriteToBuffer( Conn, "%sYou notice: ", ANSI_BR_GREEN );
 		
 		for( int Count = 0; ItemList; ItemList = ItemList->Next )
 		{
 			if( Count == 0 )
 			{
 				if( ItemList->ItemCount < 2 )
-					WriteToBuffer( Conn, "%s", ItemList->Item->GetItemName() );
+					WriteToBuffer( Conn, "%s%s", ANSI_BR_CYAN, ItemList->Item->GetItemName() );
 				else
-					WriteToBuffer( Conn, "%s[%i]", ItemList->Item->GetItemName(), ItemList->ItemCount );
+					WriteToBuffer( Conn, "%s%i %s", ANSI_BR_CYAN, ItemList->Item->GetItemName(), ItemList->ItemCount );
 			}
 			else
 			{
 				if( ItemList->ItemCount < 2 )
-					WriteToBuffer( Conn, ", %s", ItemList->Item->GetItemName() );
+					WriteToBuffer( Conn, "%s, %s", ANSI_BR_CYAN, ItemList->Item->GetItemName() );
 				else
-					WriteToBuffer( Conn, ", %s[%i]", ItemList->Item->GetItemName(), ItemList->ItemCount );
+					WriteToBuffer( Conn, "%s, %d %s", ANSI_BR_CYAN, ItemList->Item->GetItemName(), ItemList->ItemCount );
 			}
 						
 			Count++;
@@ -2022,7 +2043,7 @@ void WalkingLook( Connection *Conn, Room *Rom )
 		WriteToBuffer( Conn, "%s\n\r", ANSI_WHITE );
 	}
 
-	if( Rom->GetPlayerCount() > 1 )
+	if( Rom->GetPlayerCount() > Peeking )
 	WriteToBuffer( Conn, "%sAlso here: %s%s%s\n\r", ANSI_BR_GREEN, ANSI_BR_MAGENTA, Rom->GetAlsoHereString( Conn ), ANSI_WHITE );
 
 	WriteToBuffer( Conn, "%sObvious exits: %s%s\n\r", ANSI_BR_YELLOW,

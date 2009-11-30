@@ -17,6 +17,7 @@
 #include <winsock2.h>
 #include "tcpcomm.h"
 #include "scheduler.h"
+#include "spells.h"
 #include "events.h"
 #include "combat.h"
 #include "room.h"
@@ -25,9 +26,12 @@
 
 using namespace std;
 
+
 bool	ServerDown;
 time_t	CurrentTime, LastTime, BootTime;
 scheduler eventScheduler;
+
+MeleeSpellList MeleeSpells;
 
 
 extern ofstream		LogFile;
@@ -38,6 +42,7 @@ void main( void )
 	ServerDown = false;
 	Room		*TempRoom ='\0';
 	Item		*TempItem = '\0';
+
 
 	/*  throw some credits up on the screen */
 	cout<<"\t     *-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*\n";
@@ -89,6 +94,13 @@ void main( void )
 		ServerLog( "Error loading classes from database." );
 		ServerShutDown( true );
 	}
+	// Load MeleeSpells
+	cout<<"Loading melee spells table..."<<endl;
+	if( !LoadMeleeSpells() )
+	{
+		ServerLog( "Error loading classes from database." );
+		ServerShutDown( true );
+	}
 
 	// Load scheduler and add the inital combat event
 	minionsEvent *minionsCombat = new meCombat();
@@ -134,12 +146,6 @@ void main( void )
 		/*  Get the current time */
 		time( &CurrentTime );
 		
-//		if( (CurrentTime - LastTime) > 4 )
-//		{
-//			LastTime = CurrentTime;
-//			DoCombatRound();
-//		}
-
 		eventScheduler.checkEventsStatus();
 		eventScheduler.doEvents(&eventScheduler);
 

@@ -11,6 +11,7 @@
 #include <vector>
 #include <map>
 #include "combat.h"
+#include "spells.h"
 #include "events.h"
 #include "scheduler.h"
 #include "room.h"
@@ -278,4 +279,51 @@ void LoseWeapon( Connection *Player )
 	DisplayCombatStatus( Player, false );
 	StopCombat( Player );
 	
+}
+
+
+/*======================================================================
+DisplaySpellMelleCombat()
+
+Simple way to display combat attacks
+
+======================================================================*/
+
+void DisplaySpellMeleeCombat( Connection *Player, MeleeSpell *Spell, int Damage )
+{
+	Room *CurRoom = Player->Player.GetRoom();
+	if (Player->Victim == '\0')
+		ServerLog( "DisplayCombat: Player had no victim! ...bailing out of function!");
+
+	if (Damage == 0) {
+		// Tell the attacker
+		WriteToBuffer( Player, "%sYou attempt to cast %s at %s, but fail!%s\n\r", ANSI_WHITE,
+			Spell->GetSpellName().c_str(), Player->Victim->Player.GetFirstName(), ANSI_WHITE );
+
+		// Tell the victim
+		WriteToBuffer( Player->Victim, "%s%s attempts to cast %s at you, but failed!%s\n\r", ANSI_WHITE, 
+			Player->Player.GetFirstName(), Spell->GetSpellName().c_str(), ANSI_WHITE );
+
+		// Let everyone else in the room know that the attacker is blind as a bat!
+		CurRoom->SelectiveBroadcast( Player, Player->Victim, "%s%s attempts to cast %s at %s, but failed!%s\n\r", 
+			ANSI_WHITE, Player->Player.GetFirstName(), Spell->GetSpellName().c_str(), Player->Victim->Player.GetFirstName(), ANSI_WHITE );
+	}
+	else
+	{
+		// Tell the attacker
+		WriteToBuffer( Player, "%sYou cast %s at %s for %d damage!%s\n\r",
+			ANSI_BR_RED, Spell->GetSpellName().c_str(), Player->Victim->Player.GetFirstName(),
+		    Damage, ANSI_WHITE );
+
+		// Tell the victim
+		WriteToBuffer( Player->Victim, "%s%s cast %s at you for %d damage!%s\n\r",
+			ANSI_BR_RED, Player->Player.GetFirstName(), Spell->GetSpellName().c_str(), Damage, ANSI_WHITE );
+
+		// Let everyone else in the room know the victim got punked!
+		CurRoom->SelectiveBroadcast( Player, Player->Victim, "%s%s cast %s at %s for %d damage!%s\n\r",
+			ANSI_BR_RED, Player->Player.GetFirstName(), Spell->GetSpellName().c_str(), 
+			Player->Victim->Player.GetFirstName(), Damage, ANSI_WHITE );
+	}
+
+
 }

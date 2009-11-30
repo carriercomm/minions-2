@@ -7,8 +7,7 @@
  *			 Mark Richardson	-	sinbaud@hotmail.com	       *
  *		       David Brown	    -	dcbrown73@yahoo.com	       *
  ***************************************************************/
-
-
+#include <vector>
 
 class minionsEvent;
 

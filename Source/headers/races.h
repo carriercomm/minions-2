@@ -49,6 +49,7 @@ struct ClassTable
 	int			   ClassNumber;
 	char		   ClassDesc[MAX_CLASS_DESC];
 	set<int>       WearableTypes;
+	set<int>       SpellTypes;
 	ClassTable	   *Next;
 };
 

@@ -180,6 +180,21 @@ bool LoadClassTables( void )
 				}
 			}
 			CTable->WearableTypes.insert( atoi ( WTypes.c_str() ) );
+			//======================================================
+			// GET SPELL TYPES and load them
+			//======================================================
+			WTypes = (char *)sqlite3_column_text( SqlStatement, 4 );
+			
+			while ( (strpos = WTypes.find_first_of(" ") ) != WTypes.npos )
+			{
+				if ( strpos > 0 )
+				{
+					CTable->SpellTypes.insert( atoi( WTypes.substr( 0, strpos ).c_str() ) );
+					WTypes = WTypes.substr( strpos + 1 );
+				}
+			}
+			CTable->SpellTypes.insert( atoi ( WTypes.c_str() ) );
+
 
 			RowCount++;		//dont forget to increment the row count.
 			break;

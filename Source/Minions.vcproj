@@ -220,6 +220,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\headers\spells.h"
+				>
+			</File>
+			<File
 				RelativePath=".\headers\sqlite3.h"
 				>
 			</File>
@@ -273,6 +277,10 @@
 			</File>
 			<File
 				RelativePath=".\source\scheduler.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\source\spells.cpp"
 				>
 			</File>
 			<File

@@ -21,6 +21,7 @@ const int ME_HEAL                   =   2;
 const int ME_MELEE_COMBAT           =   3;
 const int ME_REMOVE_FLAG            =   4;
 const int ME_SPELL_EFFECT           =   5;
+const int ME_COMBAT_SPELL           =   6;
 
 // Combat stuff 
 
@@ -50,6 +51,7 @@ struct Connection;
 class  Room;
 class  Client;
 class  Item;
+class  MeleeSpell;
 
 /*==============================================================
 minionsEvent class
@@ -179,22 +181,21 @@ public:
 
 
 /*==========================================================
- meSpellEvent class -> Derived from minionsEvent class
+ meCombatSpell class -> Derived from minionsEvent class
 
 Spell events class.  Spell objects are applied to this event
 ===========================================================*/
-/*
-class meSpellEvent : public minionsEvent
+
+class meCombatSpell : public minionsEvent
 {
-	Spell SpellCasted;
+	MeleeSpell *SpellCasted;
 
 public:
 
-	meSpellEvent(Connection *Attacker, Connection *Attacked);
-	~meSpellEvent();
+	meCombatSpell(Connection *Attacker, Connection *Attacked, MeleeSpell *Spell);
+	~meCombatSpell();
 	void execEvent(scheduler *eventScheduler);
 	void killEvent(Connection *Conn);
 	Connection *getAttacker() { return Player; };
 	Connection *getVictim() { return Victim; };
 };
-*/
