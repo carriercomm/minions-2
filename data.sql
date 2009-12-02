@@ -16,13 +16,13 @@ INSERT INTO races VALUES( 4, "Catman", "This race doesnt give a shit about anyth
 INSERT INTO races VALUES( 6, "Pixie", "These tiny really stinks.", 20, 75, 70, 30);
 
 
-INSERT INTO classes VALUES( 1, "Fighter", "Physical Combat is thier forte.", "0 1 2 101 102 103 104 105 106 201 202 203 204", "0");
-INSERT INTO classes VALUES( 2, "Ranger", "Drawn to the woodlands and thier protection, Rangers gain special powers from Nature.", "0 1 3 101 102 103 104 105 106 202 203 204", "7 8");
-INSERT INTO classes VALUES( 3, "Cleric", "Physical Combat is thier holy calling, and healing thier forte.", "0 1 4 102 106 201 202 203 204", "4 5");
-INSERT INTO classes VALUES( 4, "Mage", "Frail physically but able to concentrate the mysterious energies into deadly forces.", "0 1 5 101 102 106 204", "1 2 3");
-INSERT INTO classes VALUES( 5, "Paladin", "Physical Combat is thier holy calling, and healing thier forte.", "0 1 6 101 102 103 104 105 106 201 202 203 204", "4");
-INSERT INTO classes VALUES( 6, "Priest", "Physical Combat is thier holy calling, and healing thier forte.", "0 1 7 102 106 204", "4 5 6");
-INSERT INTO classes VALUES( 7, "Ninja", "Stealthy killers of the orient.", "0 1 8 101 102 103 104 105 106 204", "0");
+INSERT INTO classes VALUES( 1, "Fighter", "Physical Combat is thier forte.", "0 1 2 101 102 103 104 105 106 201 202 203 204", "0", "None", "None");
+INSERT INTO classes VALUES( 2, "Ranger", "Drawn to the woodlands and thier protection, Rangers gain special powers from Nature.", "0 1 3 101 102 103 104 105 106 202 203 204", "7 8", "%s%s pulls some magical herbs from a small bag.%s%s", "%sYou pull some magical herbs from a small bag.%s%s");
+INSERT INTO classes VALUES( 3, "Cleric", "Physical Combat is thier holy calling, and healing thier forte.", "0 1 4 102 106 201 202 203 204", "4 5", "%s%s reaches for the heavens!%s%s", "%sYou reach for the heavens!%s%s");
+INSERT INTO classes VALUES( 4, "Mage", "Frail physically but able to concentrate the mysterious energies into deadly forces.", "0 1 5 101 102 106 204", "1 2 3", "%s%s makes an arcane gesture.%s%s", "%sYou make an arcane gesture.%s%s");
+INSERT INTO classes VALUES( 5, "Paladin", "Physical Combat is thier holy calling, and healing thier forte.", "0 1 6 101 102 103 104 105 106 201 202 203 204", "4", "%s%s reaches for the heavens!%s%s", "%sYou reach for the heavens!%s%s");
+INSERT INTO classes VALUES( 6, "Priest", "Physical Combat is thier holy calling, and healing thier forte.", "0 1 7 102 106 204", "4 5 6", "%s%s reaches for the heavens!%s%s", "%sYou reach for the heavens!%s%s");
+INSERT INTO classes VALUES( 7, "Ninja", "Stealthy killers of the orient.", "0 1 8 101 102 103 104 105 106 204", "0", "None", "None");
 
 INSERT INTO items VALUES( 1, 30, 1, 7, "turd-tipped crozier", "This fine crozier is of a high quality. An immensely sharpened, pertrified turd forms a deady tip.", 15, 5, 3, 10, "penetrate", 7, 0, 0, 0, 0, 0, 0, 0, 9, 106);
 INSERT INTO items VALUES( 2, 30, 1, 5, "flappy titties", "These appear to be discarded breast implants of very low quality.", 12, 5, 3, 10, "flap", 5, 0, 0, 0, 0, 0, 0, 0, 9, 102);
@@ -38,5 +38,5 @@ INSERT INTO items VALUES( 11, 10, 2, 2, "polished black ring", "This black ring 
 INSERT INTO items VALUES( 12, 30, 1, 7, "staff of emblaze", "These staff looks like a weird branch of a twisted tree.  It also topped off with a two snake heads.", 15, 5, 3, 12, "penetrate", 7, 0, 0, 0, 0, 0, 0, 0, 9, 5);
 
 
-INSERT INTO meleespells VALUES (1, 1, "mmis", "magic missle", "This spell fires a missle made of magic.", 7, 17, 8, "blasted");
-INSERT INTO meleespells VALUES (2, 1, "clit", "chain lightning", "This spell rains down lightning on the victim's head", 10, 25, 12, "slams");
+INSERT INTO meleespells VALUES (1, 1, 1, "mmis", "magic missle", "This spell fires a missle made of magic.", 7, 17, 8, "%sA magic missle explodes on %s for %d damage!%s%s");
+INSERT INTO meleespells VALUES (2, 1, 4, "clit", "chain lightning", "This spell rains down lightning on the victim's head", 10, 8, 3, "%sMagical chain lightning strikes %s for %d damage!%s%s");

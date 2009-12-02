@@ -532,7 +532,7 @@ void meCombatSpell::execEvent(scheduler *eventScheduler)
 	Room        *CurRoom = Player->Player.GetRoom();
 	int         MR = Player->Victim->Player.GetMagicResistence();
 	int         x;
-	int         Attacks = 1;
+	int         Attacks = SpellCasted->GetAttackCount();
 
 	// Is this a dead event?  If so, skip it!
 	if (deadEvent == true) {
@@ -579,35 +579,31 @@ void meCombatSpell::execEvent(scheduler *eventScheduler)
 		}
 	}
     */
-
-
-	for ( x = 0; x < Attacks; x++ )
+	DoCastingGesture( Player, Player->Player.GetCastGesture(), Player->Player.GetCastMyGesture() );
+	ToHitRoll = rand() % 100 + 1;
+	if ( ToHitRoll > MR )
 	{
-		ToHitRoll = rand() % 100 + 1;
-		Damage = 0;
-		// Did the player HIT and CRIT?
-		if ( ToHitRoll > MR ) // Ok, did he at least hit the player?
+		for ( x = 0; x < Attacks; x++ )
+		{
+			Damage = 0;
 			Damage = (rand() % (SpellCasted->GetMaxDamage() - SpellCasted->GetMinDamage()) + SpellCasted->GetMinDamage());
-
-		// If damage is greater than 0 and a critical, that means someone got punked!
-		if (Damage > 0)
-		{
-			Damage += DamageBonus;
+			//Damage += DamageBonus;
 			DisplaySpellMeleeCombat( Player, SpellCasted, Damage );
-		}
-		else
-		{
-			DisplaySpellMeleeCombat( Player, SpellCasted, Damage );
-		}
-			// Is the player dead?  If so, kill his ass and close combat
-		if(!Player->Victim->Player.UpdateHitPoints( Damage, false ))
-		{ 	
-			Die( Victim, CurRoom );
-			DisplayCombatStatus(Player, false);
-			Player->Player.AddKill();
-			return;
+		    // Is the player dead?  If so, kill his ass and close combat	
+			if(!Player->Victim->Player.UpdateHitPoints( Damage, false ))
+			{ 	
+				Die( Victim, CurRoom );
+				DisplayCombatStatus(Player, false);
+				Player->Player.AddKill();
+				return;
+			}
 		}
 	}
+	else
+	{
+		DisplaySpellMeleeCombat( Player, SpellCasted, Damage );
+	}
+
 	
 
 	// Not dead, so keep attacking (add another combat event)

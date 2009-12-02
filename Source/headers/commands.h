@@ -75,5 +75,4 @@ COMMAND(Emote);
 COMMAND(Spawn);
 COMMAND(Score);
 COMMAND(Rest);
-COMMAND(David);
 #endif //COMMANDS_H_INCLUDED

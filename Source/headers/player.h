@@ -23,6 +23,7 @@ const int MAX_DESCRIPTION_LENGTH		= 2048;
 const int MAX_HOST_NAME					=   80;
 const int MAX_STR_MULTIPLIER			=    3;
 const int MAX_STAT_VALUE				=  150;
+const int MAX_GESTURE_STRING            =   50;
 
 const int MAXIMUM_STATS                 =  100;
 
@@ -75,6 +76,8 @@ class Client
 	char			RaceStr[MAX_STRING_LENGTH];
 	char			ClassStr[MAX_STRING_LENGTH];
 	char			HostName[MAX_STRING_LENGTH];
+	char            CastGesture[MAX_GESTURE_STRING];
+	char            CastMyGesture[MAX_GESTURE_STRING];
 	unsigned int	ArmorClass, Stealth, MaxDamage, DamageBonus;
 	unsigned int	Strength, Agility, Health, Luck, Wisdom, Sex; 
 	int				HitPoints, MaxHits, Mana, MaxMana, Level, Race, THAC0, Class, Resting, Weight, MagicRes;
@@ -181,6 +184,10 @@ public:
 	void AssignSpellTypes( set<int> sTypes ) { SpellTypes = sTypes; };
 	int GetMagicResistence( void ) { return MagicRes; };
 	void SetMagicResistence( int res ) { MagicRes = res; };
+	bool SetCastGesture( char *gesture );
+	char *GetCastGesture( void ) { return CastGesture; };
+	bool SetCastMyGesture( char *gesture );
+	char *GetCastMyGesture( void ) { return CastMyGesture; };
 	~Client();
 };
 

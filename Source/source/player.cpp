@@ -237,6 +237,21 @@ bool Client::SetHostName( char *host )
 	return true;
 }
 
+
+bool Client::SetCastMyGesture( char *gesture )
+{
+	strcpy( CastMyGesture, gesture );
+	return true;
+}
+
+bool Client::SetCastGesture( char *gesture )
+{
+	strcpy( CastGesture, gesture );
+	return true;
+}
+
+
+
 int Client::GetHitPoints( void )
 {
 	return HitPoints;
@@ -337,6 +352,8 @@ bool Client::LoadPlayer(char *name) {
 			{			
 				AssignWearable( ClassPtr->WearableTypes );
 				AssignSpellTypes( ClassPtr->SpellTypes );
+				SetCastGesture( ClassPtr->ClassGesture );
+				SetCastMyGesture( ClassPtr->ClassMyGesture );
 			}
 
 	}
@@ -1031,3 +1048,4 @@ bool Client::CanCast( int sType )
 		return true;
 	return false;
 }
+

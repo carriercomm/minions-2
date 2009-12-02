@@ -29,8 +29,10 @@ CREATE TABLE classes(
        ClassName VARCHAR(32) NOT NULL,
        ClassDesc VARCHAR(322) NOT NULL,
        WearableTypes  VARCHAR(100) NOT NULL,
-       SpellTypes VARCHAR(100) NOT NULL
- );
+       SpellTypes VARCHAR(100) NOT NULL,
+       ClassGesture VARCHAR(50) NOT NULL,
+       ClassMyGesture VARCHAR(50) NOT NULL
+);
 
 CREATE TABLE items(
 	ItemNumber int PRIMARY KEY,
@@ -59,11 +61,12 @@ CREATE TABLE items(
 CREATE TABLE meleespells(
 	SpellNumber int PRIMARY KEY,
 	SpellClass int NOT NULL,
+	AttackCount int NOT NULL,
 	SpellCommand VARCHAR(4) NOT NULL,
 	SpellName VARCHAR(35) NOT NULL,
 	SpellDesc VARCHAR(201) NOT NULL,
         ManaCost int NOT NULL,
 	MaxDamage int NOT NULL,
 	MinDamage int NOT NULL,
-	AttackType VARCHAR(21) NOT NULL
+	SpellString VARCHAR(21) NOT NULL
 );

@@ -42,6 +42,6 @@ void StopCombat(Connection *Player);
 void SlipAndFall( Connection *Player );
 void LoseWeapon( Connection *Player );
 void DisplaySpellMeleeCombat( Connection *Player, MeleeSpell *Spell, int Damage );
-
+void DoCastingGesture( Connection *Player, char *CastGesture, char *CastMyGesture );
 
 #endif //_COMBAT_H_INCLUDED

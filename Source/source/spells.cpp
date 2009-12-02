@@ -48,10 +48,11 @@ bool LoadMeleeSpells( void )
 	int				    MinDamage;
 	int                 ManaCost;
 	int                 SpellClass;
+	int                 AttackCount;
 	string              SpellName;
 	string              SpellDesc;
 	string              SpellCommand;
-	string              AttackType;
+	string              SpellString;
 
 
 	SqliteReturnCode = sqlite3_open( MELEE_SPELLS_DATABASE, &DatabaseHandle);
@@ -88,13 +89,14 @@ bool LoadMeleeSpells( void )
 			/* Grab the result and prepare to create new class object  */
 			SpellNumber           = sqlite3_column_int( SqlStatement, 0 );
 			SpellClass            = sqlite3_column_int( SqlStatement, 1 );
-			SpellCommand          = (char *)sqlite3_column_text( SqlStatement, 2 );
-			SpellName             = (char *)sqlite3_column_text( SqlStatement, 3 );
-			SpellDesc             = (char *)sqlite3_column_text( SqlStatement, 4 );
-			ManaCost              = sqlite3_column_int( SqlStatement, 5 );
-			MaxDamage             = sqlite3_column_int( SqlStatement, 6 );
-			MinDamage             = sqlite3_column_int( SqlStatement, 7 );
-			AttackType            = (char *)sqlite3_column_text( SqlStatement, 8 );
+			AttackCount           = sqlite3_column_int( SqlStatement, 2 );
+			SpellCommand          = (char *)sqlite3_column_text( SqlStatement, 3 );
+			SpellName             = (char *)sqlite3_column_text( SqlStatement, 4 );
+			SpellDesc             = (char *)sqlite3_column_text( SqlStatement, 5 );
+			ManaCost              = sqlite3_column_int( SqlStatement, 6 );
+			MaxDamage             = sqlite3_column_int( SqlStatement, 7 );
+			MinDamage             = sqlite3_column_int( SqlStatement, 8 );
+			SpellString           = (char *)sqlite3_column_text( SqlStatement, 9 );
 
 			// Create the new object in the map list, then get a pointer to the new object
 			// So we can fill it with the correct spell information
@@ -103,13 +105,14 @@ bool LoadMeleeSpells( void )
 			// Update the spell object with the spell info
 			CSpell->SetSpellNumber( SpellNumber );
 			CSpell->SetSpellClass( SpellClass );
+			CSpell->SetAttackCount( AttackCount );
 			CSpell->SetSpellCommand( SpellCommand );
 			CSpell->SetSpellName( SpellName );
 			CSpell->SetSpellDescription( SpellDesc );
 			CSpell->SetManaCost( ManaCost );
 			CSpell->SetMinDamage( MinDamage );
 			CSpell->SetMaxDamage( MaxDamage );
-			CSpell->SetAttackType( AttackType );
+			CSpell->SetSpellString( SpellString );
 
 			RowCount++;		//dont forget to increment the row count.
 			break;

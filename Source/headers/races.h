@@ -16,6 +16,7 @@ using namespace std;
 
 #define MAX_RACE_NAME                21
 #define MAX_CLASS_NAME               21
+#define MAX_CLASS_GESTURE            50
 #define MAX_RACE_DESC			    321
 #define MAX_CLASS_DESC  		 	321
 
@@ -48,6 +49,8 @@ struct ClassTable
 	char		   ClassName[MAX_CLASS_NAME];
 	int			   ClassNumber;
 	char		   ClassDesc[MAX_CLASS_DESC];
+	char           ClassGesture[MAX_CLASS_GESTURE];
+	char           ClassMyGesture[MAX_CLASS_GESTURE];
 	set<int>       WearableTypes;
 	set<int>       SpellTypes;
 	ClassTable	   *Next;

@@ -194,6 +194,10 @@ bool LoadClassTables( void )
 				}
 			}
 			CTable->SpellTypes.insert( atoi ( WTypes.c_str() ) );
+			strcpy( CTable->ClassGesture,   (char*)sqlite3_column_text( SqlStatement, 5 ) );
+			strcpy( CTable->ClassMyGesture, (char*)sqlite3_column_text( SqlStatement, 6 ) );
+
+
 
 
 			RowCount++;		//dont forget to increment the row count.

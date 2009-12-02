@@ -763,6 +763,8 @@ bool Logon( Connection *Conn, char *Cmd )
 				Conn->Player.SetClass( TempCPtr->ClassNumber );
 				Conn->Player.AssignWearable( TempCPtr->WearableTypes );
 				Conn->Player.AssignSpellTypes( TempCPtr->SpellTypes );
+				Conn->Player.SetCastGesture( TempCPtr->ClassGesture );
+				Conn->Player.SetCastMyGesture( TempCPtr->ClassMyGesture );
 				
 				WriteToBuffer( Conn, "%s%sWelcome to Minions!\n\r",
 					ANSI_CLR_SCR, ANSI_BR_RED );

@@ -291,7 +291,11 @@ Simple way to display combat attacks
 
 void DisplaySpellMeleeCombat( Connection *Player, MeleeSpell *Spell, int Damage )
 {
+	string CR = "\n\r";
+	string you = "you";
+
 	Room *CurRoom = Player->Player.GetRoom();
+	
 	if (Player->Victim == '\0')
 		ServerLog( "DisplayCombat: Player had no victim! ...bailing out of function!");
 
@@ -323,7 +327,18 @@ void DisplaySpellMeleeCombat( Connection *Player, MeleeSpell *Spell, int Damage 
 		CurRoom->SelectiveBroadcast( Player, Player->Victim, "%s%s cast %s at %s for %d damage!%s\n\r",
 			ANSI_BR_RED, Player->Player.GetFirstName(), Spell->GetSpellName().c_str(), 
 			Player->Victim->Player.GetFirstName(), Damage, ANSI_WHITE );
+
 	}
 
 
+}
+
+void DoCastingGesture( Connection *Player, char *CastGesture, char *CastMyGesture )
+{
+	Room *CurRoom = Player->Player.GetRoom();
+	// Tell the attacker
+	WriteToBuffer( Player, CastMyGesture, ANSI_BLUE, "\r\n", ANSI_WHITE );
+
+	// Let everyone else in the room know that the attacker is blind as a bat!
+	CurRoom->SelectiveBroadcast( Player, Player, CastGesture, ANSI_BLUE, Player->Player.GetFirstName(), "\r\n", ANSI_WHITE );
 }

@@ -47,11 +47,12 @@ protected:
 	string			   SpellName;          // Name of spell
 	string			   SpellDescription;
 	string			   SpellCommand;       // 4 letter command "mmis" for magic missle
-	string			   AttackType;         // Probably not going to use this. (smash, slam, etc)
+	string			   SpellString;        // Probably not going to use this. (smash, slam, etc)
 	int			       SpellNumber;
 	int				   SpellType;          // define (DoT, HoT, Curse, RemoveCurse, Heal, etc)
 	int				   SpellClass;         // Mage1, Mage2, Mage3, Priest1, Priest2, etc
 	int				   ManaCost;           // All spells cost mana!
+	int                AttackCount;
 	int				   MinDamage;
 	int                MaxDamage;
 
@@ -69,9 +70,10 @@ public:
 	int            GetSpellClass( void )                    { return SpellClass; };
 	int            GetManaCost( void )                      { return ManaCost; }
 	int            GetSpellNumber( void )                   { return SpellNumber; };
+	int            GetAttackCount( void )                   { return AttackCount; };
 	int            GetMinDamage( void )                     { return MinDamage; };
 	int            GetMaxDamage( void )                     { return MaxDamage; };
-	std::string    GetAttackType( void )                    { return AttackType; };
+	string		   GetSpellString( void )                   { return SpellString; };
 
 	// Set values
 	void      SetSpellNumber( int number )                  { SpellNumber = number; };
@@ -81,9 +83,10 @@ public:
 	void      SetSpellType( int sType )                     { SpellType = sType; };
 	void      SetSpellClass( int sClass )                   { SpellClass = sClass; };
 	void      SetManaCost( int mana )                       { ManaCost = mana; };
+	void      SetAttackCount( int count )                   { AttackCount = count; };
 	void      SetMinDamage( int damage )                    { MinDamage = damage; };
 	void      SetMaxDamage( int damage )                    { MaxDamage = damage; };
-	void      SetAttackType( string aType )					{ AttackType = aType; };
+	void      SetSpellString( string sString )				{ SpellString = sString; };
 };
 
 
