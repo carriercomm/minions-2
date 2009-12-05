@@ -525,19 +525,22 @@ Execute combat event and add next combat event to stack if victim still alive
 ===============================================================*/
 void meCombatSpell::execEvent(scheduler *eventScheduler)
 {
+	// First is this a dead event?  If so, just skip it!
+	if (deadEvent == true) {
+		return;
+	}
+
 	int			Damage = 0;
 	int			ToHitRoll = 0;
 	int			ToHitValue = 0;
 	int         DamageBonus = 0;
 	Room        *CurRoom = Player->Player.GetRoom();
-	int         MR = Player->Victim->Player.GetMagicResistence();
+	int         MR = Player->Victim->Player.GetWisdom();
 	int         x;
 	int         Attacks = SpellCasted->GetAttackCount();
+	int         AdjustedAttackStr;
 
-	// Is this a dead event?  If so, skip it!
-	if (deadEvent == true) {
-		return;
-	}
+
 	// Is victim already dead?
 	if (!Player->Victim)
 		return;
@@ -580,7 +583,7 @@ void meCombatSpell::execEvent(scheduler *eventScheduler)
 	}
     */
 	DoCastingGesture( Player, Player->Player.GetCastGesture(), Player->Player.GetCastMyGesture() );
-	ToHitRoll = rand() % 100 + 1;
+	ToHitRoll = ( (rand() % 100 + 1) + (Player->Player.GetWisdom() / 5) );
 	if ( ToHitRoll > MR )
 	{
 		for ( x = 0; x < Attacks; x++ )

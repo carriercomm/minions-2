@@ -40,3 +40,6 @@ INSERT INTO items VALUES( 12, 30, 1, 7, "staff of emblaze", "These staff looks l
 
 INSERT INTO meleespells VALUES (1, 1, 1, "mmis", "magic missle", "This spell fires a missle made of magic.", 7, 17, 8, "%sA magic missle explodes on %s for %d damage!%s%s");
 INSERT INTO meleespells VALUES (2, 1, 4, "clit", "chain lightning", "This spell rains down lightning on the victim's head", 10, 8, 3, "%sMagical chain lightning strikes %s for %d damage!%s%s");
+INSERT INTO meleespells VALUES (3, 6, 1, "hfor", "holy force", "This spell slams it's victim with the force of god!", 10, 24, 10, "%sMagical chain lightning strikes %s for %d damage!%s%s");
+INSERT INTO meleespells VALUES (4, 4, 1, "gham", "god's hammer", "This spell slams it's victim with the force of god!", 5, 5, 15, "%sMagical chain lightning strikes %s for %d damage!%s%s");
+INSERT INTO meleespells VALUES (5, 7, 1, "vlas", "vine lash", "This spell whips it's victim!", 5, 5, 15, "Add this later");

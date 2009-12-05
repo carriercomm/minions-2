@@ -882,14 +882,14 @@ COMMAND(Look)
 				if( ItemList->ItemCount < 2 )
 					WriteToBuffer( Player, "%s", ItemList->Item->GetItemName() );
 				else
-					WriteToBuffer( Player, "%s%i %s", ANSI_BR_CYAN , ItemList->ItemCount, ItemList->Item->GetItemName() );
+					WriteToBuffer( Player, "%s%i %ss", ANSI_BR_CYAN , ItemList->ItemCount, ItemList->Item->GetItemName() );
 			}
 			else
 			{
 				if( ItemList->ItemCount < 2 )
 					WriteToBuffer( Player, ", %s", ItemList->Item->GetItemName() );
 				else
-					WriteToBuffer( Player, "%s, %i %s", ANSI_BR_CYAN , ItemList->ItemCount, ItemList->Item->GetItemName() );
+					WriteToBuffer( Player, "%s, %i %ss", ANSI_BR_CYAN , ItemList->ItemCount, ItemList->Item->GetItemName() );
 			}
 						
 			Count++;
@@ -2027,14 +2027,14 @@ void WalkingLook( Connection *Conn, Room *Rom, int Peeking )
 				if( ItemList->ItemCount < 2 )
 					WriteToBuffer( Conn, "%s%s", ANSI_BR_CYAN, ItemList->Item->GetItemName() );
 				else
-					WriteToBuffer( Conn, "%s%i %s", ANSI_BR_CYAN, ItemList->Item->GetItemName(), ItemList->ItemCount );
+					WriteToBuffer( Conn, "%s%i %s", ANSI_BR_CYAN, ItemList->ItemCount, ItemList->Item->GetItemName() );
 			}
 			else
 			{
 				if( ItemList->ItemCount < 2 )
-					WriteToBuffer( Conn, "%s, %s", ANSI_BR_CYAN, ItemList->Item->GetItemName() );
+					WriteToBuffer( Conn, "%s, %ss", ANSI_BR_CYAN, ItemList->Item->GetItemName() );
 				else
-					WriteToBuffer( Conn, "%s, %d %s", ANSI_BR_CYAN, ItemList->Item->GetItemName(), ItemList->ItemCount );
+					WriteToBuffer( Conn, "%s, %d %ss", ANSI_BR_CYAN, ItemList->ItemCount, ItemList->Item->GetItemName() );
 			}
 						
 			Count++;

@@ -149,7 +149,7 @@ public:
 	Item *SearchPlayerInventoryForItem( char *Name );
 	bool WieldItem( Item *ToWield );
 	Item *GetWieldedItem( void ) { return Wielded; };
-	bool Client::UpdateHitPoints( int value, bool add_subtract );
+	bool UpdateHitPoints( int value, bool add_subtract );
 	int GetTHAC0( void ) { return THAC0; };
 	int GetArmorClass( void ) { return ArmorClass; };
 	int GetModifiedAC( void ) { return ModifiedAC; };
@@ -170,7 +170,7 @@ public:
 	void AddBeenKilled( void ) { BeenKilled++; };
 	void SetAttackEvent(minionsEvent *Event) { AttackEvent = Event; }; 
 	minionsEvent *GetAttackEvent( void ) { return AttackEvent; };
-	char *GetDescription( void ); //build and return a detailed player description.
+	char *GetDescription( void ); 
 	Item *IsWearing( int wearing );
 	void WearItem( Item *ItemToWear, int ItemPlacement);
 	void AdjustPlayerStatsByItem(Item *CurItem, int add_remove );

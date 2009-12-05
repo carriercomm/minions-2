@@ -332,13 +332,17 @@ void DisplaySpellMeleeCombat( Connection *Player, MeleeSpell *Spell, int Damage 
 
 
 }
+/*======================================================================
+DoCastingGesture()
 
+Display the gesture that happens right before casting
+
+======================================================================*/
 void DoCastingGesture( Connection *Player, char *CastGesture, char *CastMyGesture )
 {
 	Room *CurRoom = Player->Player.GetRoom();
 	// Tell the attacker
 	WriteToBuffer( Player, CastMyGesture, ANSI_BLUE, "\r\n", ANSI_WHITE );
-
-	// Let everyone else in the room know that the attacker is blind as a bat!
-	CurRoom->SelectiveBroadcast( Player, Player, CastGesture, ANSI_BLUE, Player->Player.GetFirstName(), "\r\n", ANSI_WHITE );
+	// Tell everyone else in the room 
+	CurRoom->SelectiveBroadcast( Player, NULL, CastGesture, ANSI_BLUE, Player->Player.GetFirstName(), "\r\n", ANSI_WHITE );
 }

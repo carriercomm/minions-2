@@ -16,7 +16,7 @@ using namespace std;
 
 #define MAX_RACE_NAME                21
 #define MAX_CLASS_NAME               21
-#define MAX_CLASS_GESTURE            50
+#define MAX_CLASS_GESTURE            75
 #define MAX_RACE_DESC			    321
 #define MAX_CLASS_DESC  		 	321
 

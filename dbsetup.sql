@@ -30,8 +30,8 @@ CREATE TABLE classes(
        ClassDesc VARCHAR(322) NOT NULL,
        WearableTypes  VARCHAR(100) NOT NULL,
        SpellTypes VARCHAR(100) NOT NULL,
-       ClassGesture VARCHAR(50) NOT NULL,
-       ClassMyGesture VARCHAR(50) NOT NULL
+       ClassGesture VARCHAR(75) NOT NULL,
+       ClassMyGesture VARCHAR(75) NOT NULL
 );
 
 CREATE TABLE items(
