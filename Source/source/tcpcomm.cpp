@@ -23,6 +23,7 @@
 #include "races.h"
 #include "scheduler.h"
 #include "events.h"
+#include "telnet.h"
 
 using namespace std;
 
@@ -51,6 +52,14 @@ extern scheduler    eventScheduler;
 class minionsEvent;
 class scheduler;
 
+/*  few telnet commands hacked together  */
+const char TermTypeStr[] = { ( char )IAC, SB, TERM_TYPE, IS };
+const char RequestTermTypeStr[] = { ( char )IAC, SB, TERM_TYPE, SEND, ( char )IAC, SE, '\0' };
+const char DoTermType[] = { ( char )IAC, DO, TERM_TYPE, '\0' };
+const char EchoOffStr[] = { ( char )IAC, ( char )WILL, TELOPT_ECHO, '\0' };
+const char EchoOnStr[] = { ( char )IAC, ( char )WONT, TELOPT_ECHO, '\0' };
+const char GoAheadStr[] = { ( char )IAC, ( char )GA, '\0' };
+
 /***************************************************************
  * Function: StartupWinsock()								   *
  * Modified: 11/9/2000										   *
@@ -65,7 +74,7 @@ bool StartupWinsock( void )
 	SOCKADDR_IN		Server;
 	int				opt=1; //option to set linger flag
 	linger			ling;
-	
+
 	ErrorFlag = WSAStartup( VersionRequested, &WsaData );
 	
 	if( ErrorFlag != 0 )
@@ -214,8 +223,8 @@ bool AcceptConnection( void )
 	
 	DisplayFile( NewConn, TitleScreen );
 	WriteToBuffer( NewConn, "\n\r\n\r%s%s\rActive connections: %d\n\r", ANSI_BR_GREEN, ctime( &CurrentTime ), NumConnections ); 
-	WriteToBuffer( NewConn, "\n\r%sLogin or type 'new': %s",
-		           ANSI_BR_YELLOW, ANSI_BR_WHITE);
+	WriteToBuffer( NewConn, "\n\r%sLogin or type 'new':%s", ANSI_BR_YELLOW, ANSI_BR_WHITE );
+	WriteToBuffer( NewConn, "%s", EchoOnStr );
 	
 	NumConnections++;
 
@@ -582,7 +591,7 @@ bool Logon( Connection *Conn, char *Cmd )
 		}
 
 		else
-			WriteToBuffer( Conn, "\n\rPassword: " );
+			WriteToBuffer( Conn, "\n\rPassword: %s", EchoOffStr );
 		
 		Conn->Status = STATUS_GET_PASSWORD;
 		break;
@@ -631,7 +640,7 @@ bool Logon( Connection *Conn, char *Cmd )
 			WriteToBuffer( Conn, "\n\rThat name will not work, type another: ");
 			return true;
 		}
-		WriteToBuffer( Conn, "\n\rPassword: " );
+		WriteToBuffer( Conn, "\n\rPassword: %s", EchoOffStr );
 		Conn->Status = STATUS_NEW_PASSWORD;
 		break;
 
@@ -659,7 +668,7 @@ bool Logon( Connection *Conn, char *Cmd )
 			return true;
 		}
 		else
-			WriteToBuffer( Conn, "\n\rWelcome to Minions!\n\r" );
+			WriteToBuffer( Conn, "%s\n\rWelcome to Minions!\n\r", EchoOnStr );
 			WriteToBuffer( Conn, "Type 'help' for a list of commands.\n\r" );
 			Broadcast( Conn, "%s***[ %s enters the realm. ]***%s\n\r", ANSI_BR_YELLOW,
 				Conn->Player.GetFirstName(), ANSI_BR_WHITE  );
@@ -683,7 +692,7 @@ bool Logon( Connection *Conn, char *Cmd )
 		{
 			Conn->Status = STATUS_CHOOSE_RACE;
 			
-			WriteToBuffer( Conn, "\n\r%sRace Selection\n\r+------------+\n\r%s",
+			WriteToBuffer( Conn, "%s\n\r%sRace Selection\n\r+------------+\n\r%s", EchoOnStr,
 				ANSI_BR_YELLOW, ANSI_BR_GREEN );
 			for( TempPtr = MasterRaceTable; TempPtr; TempPtr = TempPtr->Next )
 			{
@@ -1001,7 +1010,7 @@ void CheckWriteSet( void )
  ***************************************************************/
 void ServerLog( char *format, ... )
 {
-	char		LogString[MAX_COMMAND];
+	char		LogString[1024];
 	va_list		argument_list;
 	
 	va_start( argument_list, format );
@@ -1099,5 +1108,3 @@ void ServerShutDown( bool term_code )
 	
 	return;
 }
-
-

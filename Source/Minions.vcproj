@@ -231,6 +231,10 @@
 				RelativePath=".\headers\tcpcomm.h"
 				>
 			</File>
+			<File
+				RelativePath=".\headers\telnet.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
