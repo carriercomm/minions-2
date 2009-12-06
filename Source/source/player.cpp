@@ -16,6 +16,7 @@
 #include <set>
 #include <fstream>
 #include <ctype.h>
+#include "spells.h"
 #include "player.h"
 #include "ansicolor.h"
 #include "room.h"
@@ -237,13 +238,24 @@ bool Client::SetHostName( char *host )
 	return true;
 }
 
+/*===========================================
+Client::SetCastMyGesture()
 
-bool Client::SetCastMyGesture( char *gesture )
+Sets the text for the cast gesture seen 
+by the caster
+===========================================*/
+
+bool Client::SetCastMyGesture( char *mygesture )
 {
-	strcpy( CastMyGesture, gesture );
+	strcpy( CastMyGesture, mygesture );
 	return true;
 }
+/*===========================================
+Client::SetCastGesture()
 
+Sets the text for the cast gesture seen 
+by everyone else in the room
+===========================================*/
 bool Client::SetCastGesture( char *gesture )
 {
 	strcpy( CastGesture, gesture );

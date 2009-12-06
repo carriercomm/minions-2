@@ -11,8 +11,16 @@
 #include <string>
 
 struct Connection;
+class minionsEvent;
 
 #define MELEE_SPELLS_DATABASE     "minions.db"
+
+
+// Which spell effect text do you want?
+// BaseTimeSpell::GetSpellText(which_text)
+const int INIT_SPELL_TEXT      =    0;
+const int SPELL_EFFECT_TEXT    =    1;
+const int END_EFFECT_TEXT      =    2;
 
 
 const int NO_SPELL             =    0;
@@ -89,10 +97,52 @@ public:
 	void      SetSpellString( string sString )				{ SpellString = sString; };
 };
 
+/*===========================================================================
+BaseTimeSpell class
+
+This is a base class for all non-melee based spells.  All non-melee spells
+must derive from this base class.
+(heal, damage over time, heal over time, curse, smite, etc)
+
+These spells are all time based meaning they can execute several times over
+a period of time. This is the case for single shot instant spells also like
+instant heal spells or shocking grasp that hit once and go away (do not repeat)
+============================================================================*/
+class BaseTimeSpell
+{
+	int                 SpellNumber;
+	int                 SpellType;
+	int                 SpellState;
+	int                 EffectCount;
+
+	string              SpellName;
+	string              SpellInitText;
+	string              SpellEffectText;
+	string              SpellEndText;
+
+public:
+	//Get  
+	int     GetSpellNumber( void )                  { return SpellNumber; };
+	int     GetSpellType( void )                    { return SpellType; };
+	int     GetSpellState( void )                   { return SpellState; };
+	int     GetEffectCount( void )                  { return EffectCount; };
+	string  GetSpellText( int which );
+
+	// Set
+	void    SetSpellState( int state )              { SpellState = state; };
+	void    SetSpellCount( int count )              { EffectCount = count; };
+
+
+	//virtual
+	//void    execSpell( void )=0;
+};
 
 
 
 bool LoadMeleeSpells( void );
 void CastMeleeSpell( Connection *Player, char *Attacked, MeleeSpell *Spell );
 
+
+
 typedef std::map<std::string, MeleeSpell *> MeleeSpellList;
+typedef std::map<std::string, BaseTimeSpell *> TimeSpellList;

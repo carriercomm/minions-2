@@ -168,7 +168,9 @@ bool LoadClassTables( void )
 			strcpy( CTable->ClassName, (char*)sqlite3_column_text( SqlStatement, 1 ) );
 			strcpy( CTable->ClassDesc, (char*)sqlite3_column_text( SqlStatement, 2 ) );
 
-			// Get string of WearableTypes split, then convert to integers and load in vector
+			//=======================================================================================
+			// GET WEARABLE TYPES and load them into std::set (string of numbers separated by spaces)
+			//=======================================================================================
 			WTypes = (char *)sqlite3_column_text( SqlStatement, 3 );
 			
 			while ( (strpos = WTypes.find_first_of(" ") ) != WTypes.npos )
@@ -180,9 +182,9 @@ bool LoadClassTables( void )
 				}
 			}
 			CTable->WearableTypes.insert( atoi ( WTypes.c_str() ) );
-			//======================================================
-			// GET SPELL TYPES and load them
-			//======================================================
+			//=======================================================================================
+			// GET SPELL TYPES and load them into std::set (string of numbers separated by spaces)
+			//=======================================================================================
 			WTypes = (char *)sqlite3_column_text( SqlStatement, 4 );
 			
 			while ( (strpos = WTypes.find_first_of(" ") ) != WTypes.npos )

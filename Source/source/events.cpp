@@ -472,7 +472,7 @@ void meRemoveFlag::execEvent(scheduler *eventScheduler)
 
 
 /*==============================================================
-meSpellEffect class -> Derived from minionsEvent class
+meCombatSpell class -> Derived from minionsEvent class
 
  Constructor:
 
@@ -590,6 +590,7 @@ void meCombatSpell::execEvent(scheduler *eventScheduler)
 		{
 			Damage = 0;
 			Damage = (rand() % (SpellCasted->GetMaxDamage() - SpellCasted->GetMinDamage()) + SpellCasted->GetMinDamage());
+
 			//Damage += DamageBonus;
 			DisplaySpellMeleeCombat( Player, SpellCasted, Damage );
 		    // Is the player dead?  If so, kill his ass and close combat	
@@ -615,4 +616,55 @@ void meCombatSpell::execEvent(scheduler *eventScheduler)
     Player->Player.SetAttackEvent(meleeEvent);
 	// Add new event to combatStack
 	eventScheduler->pushCombatStack(meleeEvent);
+};
+
+
+
+/*==============================================================
+meTimeSpellEvent class -> Derived from minionsEvent class
+
+ Constructor:
+
+ Melee combat event for physcial attacks iwth a weapons (or fist)
+===============================================================*/
+
+meTimeSpellEvent::meTimeSpellEvent( Connection *Attacker, Connection *Attacked, BaseTimeSpell *Spell, int RepeatTimes )
+{
+	eventType          = ME_TIME_SPELL;
+	eventTime          = (time(NULL));
+	deadEvent          = false;
+	Player             = Attacker;
+	Victim             = Attacked;
+	Player->Victim     = Attacked;
+	SpellCasted        = Spell;
+};
+
+/*===============================================================
+killEvent -> meTimeSpellEvent
+
+This kills events in the event queue.  It takes one argument of 
+type connection.  If the connection is NULL, just kill the event.
+If it has an actual address location, compare Player->Victim to
+the Conn pointer.  If they are the same, kill the event.  
+
+killEvent is called with a pointer (not null) if a player disconnect
+This allows us to delete any associated objects for the disconnected
+player
+================================================================*/
+void meTimeSpellEvent::killEvent(Connection *Conn)
+{
+	// Null means just kill the event. 
+	if (Conn == NULL)
+		deadEvent = true;
+	else
+	{   // If Conn == Victim, kill the event as the Victim disconnected
+		// If it doesn't, nothing to do.
+		if (Conn == Player->Victim )
+			deadEvent = true;
+	}
+};
+
+void meTimeSpellEvent::execEvent(scheduler *eventScheduler)
+{
+	int a = 1;
 };

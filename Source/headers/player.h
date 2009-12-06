@@ -8,6 +8,7 @@
  *		       David Brown	    -	dcbrown73@yahoo.com	       *
  ***************************************************************/
 #include <set>
+#include <map>
 
 using namespace std;
 
@@ -23,7 +24,7 @@ const int MAX_DESCRIPTION_LENGTH		= 2048;
 const int MAX_HOST_NAME					=   80;
 const int MAX_STR_MULTIPLIER			=    3;
 const int MAX_STAT_VALUE				=  150;
-const int MAX_GESTURE_STRING            =   50;
+const int MAX_GESTURE_STRING            =   75;
 
 const int MAXIMUM_STATS                 =  100;
 
@@ -42,6 +43,7 @@ class Room;  //forward declaration
 class Item;  //forward declaration
 class minionsEvent;
 struct Connection;
+struct SpellEffect;
 
 // Stats that can be set with SetPlayerStat()
 const int STRENGTH                    =   1;
@@ -57,6 +59,7 @@ const int MAX_MANA                    =   8;
 const int STRENGTH_DAMAGE_MODIFIER    =  10;
 const int AGILITY_AC_MODIFIER         =   5;
 
+class BaseTimeSpell;
 /*  link list of items in this players possesion */
 struct ItemsOnPlayer
 {
@@ -65,130 +68,162 @@ struct ItemsOnPlayer
 	unsigned int	ItemCount;	//how many of this item are you in posession of
 };
 
+struct SpellOnPlayer
+{
+	BaseTimeSpell     *Spell;
+	minionsEvent      *CurEvent;
+};
+
+typedef std::map<int, SpellOnPlayer *> SpellsEffectedByList;
+
 /*  Client slash Player class definition */
 class Client
 {
-	char			FirstName[MAX_FNAME_LENGTH];
-	char			LastName[MAX_LNAME_LENGTH];
-	char			IpAddress[MAX_STRING_LENGTH];
-	char			Password[MAX_STRING_LENGTH];
-	char			Description[MAX_DESCRIPTION_LENGTH];
-	char			RaceStr[MAX_STRING_LENGTH];
-	char			ClassStr[MAX_STRING_LENGTH];
-	char			HostName[MAX_STRING_LENGTH];
-	char            CastGesture[MAX_GESTURE_STRING];
-	char            CastMyGesture[MAX_GESTURE_STRING];
-	unsigned int	ArmorClass, Stealth, MaxDamage, DamageBonus;
-	unsigned int	Strength, Agility, Health, Luck, Wisdom, Sex; 
-	int				HitPoints, MaxHits, Mana, MaxMana, Level, Race, THAC0, Class, Resting, Weight, MagicRes;
-	unsigned int	Exp, Kills, BeenKilled;
-	int             ModifiedAC;
-	Room			*CurrentRoom;
-    unsigned int	CurrentRoomNumber;
-	ItemsOnPlayer	*FirstItem;
-	minionsEvent    *AttackEvent;
-	Connection      *MyConnection;  // So I can send stuff to buffer from member functions
+	char			            FirstName[MAX_FNAME_LENGTH];
+	char	             		LastName[MAX_LNAME_LENGTH];
+	char						IpAddress[MAX_STRING_LENGTH];
+	char						Password[MAX_STRING_LENGTH];
+	char						Description[MAX_DESCRIPTION_LENGTH];
+	char						RaceStr[MAX_STRING_LENGTH];
+	char						ClassStr[MAX_STRING_LENGTH];
+	char						HostName[MAX_STRING_LENGTH];
+	char				    	CastGesture[MAX_GESTURE_STRING];
+	char						CastMyGesture[MAX_GESTURE_STRING];
+	unsigned int				ArmorClass, Stealth, MaxDamage, DamageBonus;
+	unsigned int				Strength, Agility, Health, Luck, Wisdom, Sex; 
+	int							HitPoints, MaxHits, Mana, MaxMana, Level, Race;
+	int							THAC0, Class, Resting, Weight, MagicRes;
+	unsigned int				Exp, Kills, BeenKilled;
+	int					     	ModifiedAC;
+	Room						*CurrentRoom;
+    unsigned int				CurrentRoomNumber;
+	ItemsOnPlayer				*FirstItem;
+	minionsEvent			    *AttackEvent;
+	Connection				    *MyConnection;  // So I can send stuff to buffer from member functions
 	// Items worn or wielded
-	Item			*Wielded;
-	Item            *Head;
-	Item			*Neck;
-	Item			*Arms;
-	Item			*Torso;
-	Item			*Legs;
-	Item			*Feet;
-	Item			*Finger;
-	Item            *Hands;
-	set<int>        WearableTypes;
-	set<int>        SpellTypes;
+	Item						*Wielded;
+	Item						*Head;
+	Item						*Neck;
+	Item						*Arms;
+	Item						*Torso;
+	Item						*Legs;
+	Item						*Feet;
+	Item						*Finger;
+	Item						*Hands;
+	set<int>					WearableTypes;
+	set<int>					SpellTypes;
+    // What spells is the player affected by
+	SpellsEffectedByList		SpellEffects;
 
 
 
 public:
 	Client();
-	void SetConnection( Connection *Conn ) { MyConnection = Conn; };	
-	void AddKill( void ) { Kills++; };
-	int GetKills( void ) {return Kills; };
-	void SubtractKill( void ) { Kills--; BeenKilled++; };
-	char *GetFirstName( void ) { return FirstName; };
-	bool SetFirstName( char *new_name );
-	char *GetLastName( void ) { return LastName; };
-	bool SetLastName( char *new_name );
-	char *GetIpAddress( void ) { return IpAddress; };
-	bool SetIpAddress( char *new_address );
-	bool SetHostName( char *host );
-	char *GetHostName( void ) { return HostName; };
-	int GetHitPoints( void );
-	int GetMaxHitPoints( void ) { return MaxHits; };
-	bool SetHitPoints( int new_hits );
-	int GetMana( void ) { return Mana; };
-	int GetMaxMana( void ) { return MaxMana; };
-	bool SetMana( int new_mana );
-	int GetRestingStatus( void) { return Resting; };
-	bool SetRestingStatus( int rest_status );
-	int GetLevel( void ) { return Level; };
-	bool SetLevel( int new_level );
-	bool SetDesc( char *new_desc );
-	bool LoadPlayer( char *name );
-	bool SavePlayer( void );
-	bool SetPassword( char *new_password );
-	char* GetPassword( void ) { return Password; };
-	int GetRace( void ) { return Race; };
-	bool SetRace( int NewRace ) { Race = NewRace; return true; };
-	bool SetRaceStr( char *NewStr );
-	char *GetRaceStr( void ) { return RaceStr; };
-	int GetSex( void ) { return Sex; };
-	void SetSex( int NewSex ) { Sex = NewSex; }; 
-	Room *GetRoom( void ) { return CurrentRoom; };
-	bool SetRoom( Room *NewRoom );
-	unsigned int GetCurrentRoomNumber( void ) { return CurrentRoomNumber; };
-	void SetCurrentRoomNumber( unsigned int NewNum ) { CurrentRoomNumber = NewNum; };
-	bool AddItemToPlayer( Item *NewItem );
-	bool RemoveItemFromPlayer( Item *ItemToDelete );
-	ItemsOnPlayer *GetFirstItem( void ) { return FirstItem; };
-	Item *SearchPlayerForItem( char *Name );
-	Item *SearchPlayerInventoryForItem( char *Name );
-	bool WieldItem( Item *ToWield );
-	Item *GetWieldedItem( void ) { return Wielded; };
-	bool UpdateHitPoints( int value, bool add_subtract );
-	int GetTHAC0( void ) { return THAC0; };
-	int GetArmorClass( void ) { return ArmorClass; };
-	int GetModifiedAC( void ) { return ModifiedAC; };
-	void DropAllItems( void );
-	unsigned int GetStrength( void ) { return Strength; };
-	unsigned int GetExp( void ) { return Exp; };
-	void AlterExp( int ToAdd );
-	unsigned int GetHealth( void ) { return Health; };
-	unsigned int GetLuck( void ) { return Luck; };
-	unsigned int GetAgility( void ) { return Agility; };
-	unsigned int GetWisdom( void ) { return Wisdom; };
-	bool SetClassStr( char *NewStr );
-	char *GetClassStr( void ) { return ClassStr; };
-	bool SetClass( int ClassNum );
-	bool SetPlayerWeight( int add_weight_value, int add_subtract );
-	int GetPlayerWeight( void ) { return Weight; };
-	int GetBeenKilled( void ) { return BeenKilled; };
-	void AddBeenKilled( void ) { BeenKilled++; };
-	void SetAttackEvent(minionsEvent *Event) { AttackEvent = Event; }; 
-	minionsEvent *GetAttackEvent( void ) { return AttackEvent; };
-	char *GetDescription( void ); 
-	Item *IsWearing( int wearing );
-	void WearItem( Item *ItemToWear, int ItemPlacement);
-	void AdjustPlayerStatsByItem(Item *CurItem, int add_remove );
-	bool LuckRoll( void );
-	void SetPlayerStat ( int value, int which_stat );
-	void UpdateModifiedStats( void );
-	int GetDamageBonus ( void ) { return DamageBonus; };
-	bool CanWear( int WType );
-	void AssignWearable( set<int> Wearable ) { WearableTypes = Wearable; };
-	bool CanCast( int sType );
-	void AssignSpellTypes( set<int> sTypes ) { SpellTypes = sTypes; };
-	int GetMagicResistence( void ) { return MagicRes; };
-	void SetMagicResistence( int res ) { MagicRes = res; };
-	bool SetCastGesture( char *gesture );
-	char *GetCastGesture( void ) { return CastGesture; };
-	bool SetCastMyGesture( char *gesture );
-	char *GetCastMyGesture( void ) { return CastMyGesture; };
 	~Client();
+    // Player file IO
+	bool       LoadPlayer( char *name );
+	bool       SavePlayer( void );
+	// Set account items
+	bool       SetIpAddress( char *new_address );
+	bool       SetHostName( char *host );
+	void       SetConnection( Connection *Conn )                { MyConnection = Conn; };
+	bool	   SetPassword( char *new_password );
+	bool       SetFirstName( char *new_name );
+	bool       SetLastName( char *new_name );
+	bool       SetRace( int NewRace )                           { Race = NewRace; return true; };
+	bool       SetRaceStr( char *NewStr );
+	void       SetSex( int NewSex )                             { Sex = NewSex; };
+	bool	   SetClassStr( char *NewStr );
+	bool       SetClass( int ClassNum );
+
+	// Set Stats
+	bool       SetHitPoints( int new_hits );
+	bool       SetMana( int new_mana );
+	bool       SetLevel( int new_level );
+	bool       SetDesc( char *new_desc );
+	bool       SetRestingStatus( int rest_status );
+	void       SetMagicResistence( int res )                    { MagicRes = res; };
+	bool       SetPlayerWeight( int add_weight_value, int add_subtract );
+	void       SetPlayerStat ( int value, int which_stat );
+
+
+	// Get Account items
+	char      *GetHostName( void )                              { return HostName; };
+	char      *GetIpAddress( void )                             { return IpAddress; };
+	char      *GetPassword( void )								{ return Password; };
+	char      *GetFirstName( void )                             { return FirstName; };
+	char      *GetLastName( void )                              { return LastName; };
+	int        GetRace( void )                                  { return Race; };
+	char      *GetRaceStr( void )								{ return RaceStr; };
+	int        GetSex( void )									{ return Sex; };
+	char	  *GetClassStr( void )                              { return ClassStr; };
+	char      *GetDescription( void ); 
+
+	// Get Stats
+	int        GetHitPoints( void );
+	int        GetMaxHitPoints( void )                          { return MaxHits; };
+	int        GetMana( void )                                  { return Mana; };
+	int        GetMaxMana( void )                               { return MaxMana; };	
+	int        GetKills( void )                                 { return Kills; };	
+	int        GetRestingStatus( void)                          { return Resting; };
+	int        GetLevel( void )                                 { return Level; };
+	int        GetTHAC0( void )                                 { return THAC0; };
+	int        GetArmorClass( void )                            { return ArmorClass; };
+	int        GetModifiedAC( void )							{ return ModifiedAC; };
+	int        GetMagicResistence( void )                       { return MagicRes; };
+	int        GetPlayerWeight( void )							{ return Weight; };
+	int        GetBeenKilled( void )							{ return BeenKilled; };
+	int		   GetDamageBonus ( void )                          { return DamageBonus; };
+	unsigned int GetStrength( void )							{ return Strength; };
+	unsigned int GetExp( void )									{ return Exp; };
+	unsigned int GetHealth( void )                              { return Health; };
+	unsigned int GetLuck( void )								{ return Luck; };
+	unsigned int GetAgility( void )								{ return Agility; };
+	unsigned int GetWisdom( void )								{ return Wisdom; };
+
+	// Room specific
+	Room           * GetRoom( void )                            { return CurrentRoom; };
+	unsigned int     GetCurrentRoomNumber( void )               { return CurrentRoomNumber; };
+	void             SetCurrentRoomNumber( unsigned int NewNum ){ CurrentRoomNumber = NewNum; };
+	bool             SetRoom( Room *NewRoom );
+
+	// Items specific 
+	ItemsOnPlayer   *GetFirstItem( void )                       { return FirstItem; };
+	void	  		 AssignWearable( set<int> Wearable )        { WearableTypes = Wearable; };
+	Item            *GetWieldedItem( void )                     { return Wielded; };
+	bool             AddItemToPlayer( Item *NewItem );
+	bool             RemoveItemFromPlayer( Item *ItemToDelete );
+	Item            *SearchPlayerForItem( char *Name );
+	Item            *SearchPlayerInventoryForItem( char *Name );
+	bool             WieldItem( Item *ToWield );
+	void             DropAllItems( void );
+	Item            *IsWearing( int wearing );
+	void			 WearItem( Item *ItemToWear, int ItemPlacement);
+
+	bool			 CanWear( int WType );
+
+    // Utility
+	void             AddKill( void )                            { Kills++; };
+	void             AddBeenKilled( void )                      { BeenKilled++; };
+	void             SubtractKill( void )                       { Kills--; BeenKilled++; };
+	void	         UpdateModifiedStats( void );
+	bool             LuckRoll( void );
+	void             AlterExp( int ToAdd );
+	void             AdjustPlayerStatsByItem(Item *CurItem, int add_remove );
+	bool             UpdateHitPoints( int value, bool add_subtract );
+
+	// Attack event stuff
+	void             SetAttackEvent(minionsEvent *Event)        { AttackEvent = Event; }; 
+	minionsEvent    *GetAttackEvent( void )                     { return AttackEvent; };
+
+	// Spell related
+	void             AssignSpellTypes( set<int> sTypes )        { SpellTypes = sTypes; };
+	char            *GetCastGesture( void )                     { return CastGesture; };
+	char            *GetCastMyGesture( void )                   { return CastMyGesture; };\
+	bool             SetCastGesture( char *gesture );
+	bool             SetCastMyGesture( char *gesture );
+	bool             CanCast( int sType );
+
 };
 
 #endif //PLAYER_H_INCLUDED

@@ -8,7 +8,6 @@
  *		       David Brown	    -	dcbrown73@yahoo.com	       *
  ***************************************************************/
 
-
 // Define Combat time interval in seconds
 const int COMBAT_TIME_INTERVAL      =   4;
 const int HEAL_TIME_INTERVAL        =  15;
@@ -20,7 +19,7 @@ const int ME_COMBAT                 =   1;
 const int ME_HEAL                   =   2; 
 const int ME_MELEE_COMBAT           =   3;
 const int ME_REMOVE_FLAG            =   4;
-const int ME_SPELL_EFFECT           =   5;
+const int ME_TIME_SPELL             =   5;
 const int ME_COMBAT_SPELL           =   6;
 
 // Combat stuff 
@@ -52,6 +51,7 @@ class  Room;
 class  Client;
 class  Item;
 class  MeleeSpell;
+class  BaseTimeSpell;
 
 /*==============================================================
 minionsEvent class
@@ -194,6 +194,32 @@ public:
 
 	meCombatSpell(Connection *Attacker, Connection *Attacked, MeleeSpell *Spell);
 	~meCombatSpell();
+	void execEvent(scheduler *eventScheduler);
+	void killEvent(Connection *Conn);
+	Connection *getAttacker() { return Player; };
+	Connection *getVictim() { return Victim; };
+};
+
+
+
+
+/*==============================================================
+ meTimeSpell class -> Derived from minionsEvent class
+
+ Time based spell event.  This is the scheduled event with a spell
+ object attached.  This DOES NOT point to a singluler spell object.
+ It holds it's OWN object.
+===============================================================*/
+class meTimeSpellEvent : public minionsEvent
+{
+	//Connection        *Player;
+	//Connection        *Victim;
+	BaseTimeSpell     *SpellCasted;
+	int                SpellStage;
+
+public:
+    meTimeSpellEvent( Connection *Attacker, Connection *Attacked, BaseTimeSpell *Spell, int RepeatTimes );
+	~meTimeSpellEvent();
 	void execEvent(scheduler *eventScheduler);
 	void killEvent(Connection *Conn);
 	Connection *getAttacker() { return Player; };

@@ -30,8 +30,39 @@ struct Connection;
 class Client;
 class Room;
 class scheduler;
+class minionsEvent;
 
 
+/*==========================================================
+############################################################
+
+BaseTimeSpell Functions
+
+############################################################
+==========================================================*/
+string BaseTimeSpell::GetSpellText(int which)
+{
+	switch (which)
+	{ 
+      case INIT_SPELL_TEXT:
+		  return SpellInitText;
+	  case SPELL_EFFECT_TEXT:
+		  return SpellEffectText;
+	  case END_EFFECT_TEXT:
+		  return SpellEndText;
+	  default:
+		  ServerLog("Error: BaseTimeSpell::GetSpellText() return default!");
+		  return "Default Spell Name";
+	}
+}
+
+/*==========================================================
+############################################################
+
+End of BaseTimeSpell Functions
+
+############################################################
+==========================================================*/
 
 bool LoadMeleeSpells( void )
 {
@@ -186,3 +217,4 @@ void CastMeleeSpell( Connection *Player, char *Attacked, MeleeSpell *Spell )
 
 	return;
 }
+
