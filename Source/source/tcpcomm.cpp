@@ -207,10 +207,9 @@ bool AcceptConnection( void )
 	NewConn->Player.SetConnection(NewConn);
 
 	/* Log the connection */
-	ServerLog( "%sAccepting connection request from [%s] - %s\n",
-		ctime( &CurrentTime ), NewConn->Player.GetIpAddress(), NewConn->Player.GetHostName( ) );
+	ServerLog( "Accepting connection request from [%s] - %s.", NewConn->Player.GetIpAddress(), NewConn->Player.GetHostName( ) );
 
-	cout<<"Connection accepted from "<<NewConn->Player.GetIpAddress()<<" - "<<NewConn->Player.GetHostName()<<endl;
+	//cout<<"Connection accepted from "<<NewConn->Player.GetIpAddress()<<" - "<<NewConn->Player.GetHostName()<<endl;
 	
 	if( PlayerList )
 	{
@@ -275,6 +274,7 @@ bool ReadFromSocket( Connection *Conn )
 		else
 		{
 			cout<<"ReadFromSocket() fucked off"<<endl;
+			ServerLog( "ReadFromSocket messed up!" );
 			return false;
 		}
 	}
@@ -308,7 +308,7 @@ bool WriteToSocket( Connection *Conn )
 				ServerLog("had to call memmomove in WriteToSocket()\n");
 				return true;
 			}
-			cout<<"WriteToSocket failed with eror code: "<<WSAGetLastError()<<endl;
+			ServerLog( "WriteToSocket failed with eror code: %d", WSAGetLastError() );
 			return false;
 		}
     }
@@ -1008,15 +1008,29 @@ void CheckWriteSet( void )
  *                                                             *
  *  Formats and then writes a string to the server's logfile   *
  ***************************************************************/
-void ServerLog( char *format, ... )
+void ServerLog( char *Format, ... )
 {
-	char		LogString[1024];
-	va_list		argument_list;
+	time_t	    CurrentTime;
+	int         BufferLength = 0;
+	char		LogString[MAX_LOG_STR], TimeStamp[MAX_TIME_STAMP];
+	va_list		ArgumentList;
 	
-	va_start( argument_list, format );
-	vsprintf( LogString, format, argument_list );
+	time( &CurrentTime );
+	ctime_s( TimeStamp, MAX_TIME_STAMP, &CurrentTime );
+	TimeStamp[24] = '\0';
 
-	LogFile<<LogString<<endl;
+	va_start( ArgumentList, Format );
+	BufferLength = _vscprintf( Format, ArgumentList );
+
+	if( BufferLength >= ( MAX_LOG_STR - MAX_TIME_STAMP ) )
+	{
+		cout<<"The Arguments passed to ServerLog() exceeded the maximum length."<<endl;
+		return;
+	}
+
+	vsprintf_s( LogString, MAX_LOG_STR - MAX_TIME_STAMP, Format, ArgumentList );
+	LogFile<<"["<<TimeStamp<<"] "<<LogString<<endl;
+	return;
 }
 
 /***************************************************************

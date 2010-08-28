@@ -54,6 +54,7 @@ void main( void )
 	
  	char curPath[256];
 	cout<<"Current working directory is: "<<getcwd(curPath, 256)<<endl;
+	
 	/*  open a file for logging */
 	cout<<"Opening log files for writing."<<endl;
 	LogFile.open( SERVER_LOG_PATH, ios::app );
@@ -64,8 +65,11 @@ void main( void )
 		return;
 	}
 	
+	ServerLog( "Current working Directory: %s", getcwd( curPath, 256 ) );
+
 	/* Try and load the room database */
 	cout<<"Loading Room Database."<<endl;
+	ServerLog( "Loading room database..." );
 	if( !LoadRoomDatabase() )
 	{
 		ServerLog( "Error Loading rooms database." );
@@ -77,12 +81,14 @@ void main( void )
 
 	/* Try and Load the Item Database  */
 	cout<<"Loading Items Database."<<endl;
+	ServerLog( "Loading Items database..." );
 
 	if( !( LoadItemDatabase() ) )
 		ServerShutDown( true );
 
 	/* Load the Race and Class Tables  */
 	cout<<"Loading class and race tables..."<<endl;
+	ServerLog( "Loading class and race tables..." );
 	if( !LoadRaceTables() )
 	{
 		ServerLog( "Error Loading Race Tables." );
@@ -96,6 +102,7 @@ void main( void )
 	}
 	// Load MeleeSpells
 	cout<<"Loading melee spells table..."<<endl;
+	ServerLog( "Loading melee spells table..." );
 	if( !LoadMeleeSpells() )
 	{
 		ServerLog( "Error loading classes from database." );
@@ -122,13 +129,16 @@ void main( void )
 
 	/* Load up the pre-made screens and the winsock DLL  */
 	cout<<"Loading ansi screens from disk."<<endl;
+	ServerLog( "Loading ansi screens from disk." );
 	LoadAnsiTitleScreen();
 	LoadHelpScreen();
 	cout<<"Starting up Winsock."<<endl;
+	ServerLog( "Starting up Winsock." );
 	StartupWinsock();
 
 	/*  Set the BootTime if we need it for some reason */
 	cout<<"Setting boot time."<<endl;
+	ServerLog( "Setting boot time." );
 	time( &BootTime );
 	LastTime = BootTime;
 
@@ -136,11 +146,14 @@ void main( void )
 	srand((unsigned)time(NULL));
 			
 	/*  Log the Boot up time */
-	ServerLog("Minions Server started at %s", ctime( &BootTime ) );
+	ServerLog( "Minions Server started." );
 
 	/*  Here we go! Start the Main game loop */
 	cout<<"Entering main game loop."<<endl;
+	ServerLog( "Entering main game loop." );
 	cout<<"Minions Server now accepting connections on port: "<<SERVER_PORT<<endl;
+	ServerLog( "Minions Server now accepting connections on port: %i", SERVER_PORT );
+
 	while( !ServerDown )
 	{
 		/*  Get the current time */

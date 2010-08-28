@@ -30,6 +30,8 @@
 #define SQL_USER				"minionadmin"
 #define SQL_PASSWORD			"minadminman"
 #define SQL_DATABASE			"minions"
+#define MAX_LOG_STR				2048
+#define MAX_TIME_STAMP			26
 
 /* macros to manipulate the Flags using above defines */
 #define FLAG_IS_SET(Flags, Bit)		( (Flags) & (Bit) )
