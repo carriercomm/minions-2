@@ -706,6 +706,25 @@ bool Logon( Connection *Conn, char *Cmd )
 
 		break;
 
+	case STATUS_REROLL:
+		{
+			WriteToBuffer( Conn, "%s\n\r%sRace Selection\n\r+------------+\n\r%s", ANSI_CLR_SCR,
+				ANSI_BR_YELLOW, ANSI_BR_GREEN );
+			for( TempPtr = MasterRaceTable; TempPtr; TempPtr = TempPtr->Next )
+			{
+				WriteToBuffer( Conn, "[%i] - %s\n\r", TempPtr->RaceNumber,
+				TempPtr->RaceName );
+			}
+			
+			WriteToBuffer( Conn, "%sChoose a race: %s", ANSI_BR_WHITE,
+				ANSI_WHITE );
+
+			Conn->Status = STATUS_CHOOSE_RACE;
+		}
+
+		break;
+
+
 	case STATUS_CHOOSE_RACE:
 
 		Choice = atoi( Cmd );

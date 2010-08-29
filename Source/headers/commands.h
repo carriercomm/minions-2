@@ -75,4 +75,6 @@ COMMAND(Emote);
 COMMAND(Spawn);
 COMMAND(Score);
 COMMAND(Rest);
+COMMAND(Spells);
+COMMAND(Reroll);
 #endif //COMMANDS_H_INCLUDED

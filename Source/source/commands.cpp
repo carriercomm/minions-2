@@ -77,6 +77,8 @@ Command_Table CommandTable[] =
 	{"score",       "score     ",   CmdScore,       false },
 	{"rest",        "rest      ",   CmdRest,        false },
 	{"wear",        "wear      ",   CmdWear,        false },
+	{"spell",		"spell     ",	CmdSpells,		false },
+	{"reroll",		"reroll    ",	CmdReroll,		false },
 	//{"sneak",       "sneak     ",   CmdSneak,       false },
 	//{"admin",       "admin     ",   CmdAdmin,       false },
 	{NULL}
@@ -245,7 +247,7 @@ COMMAND(Credits)
 {
 	if( Player )
 	{
-		//WriteToBuffer( Player, "%s-------[ Minions Mud Server - %s ]------------\n\r\t    %s(C)1998 - 2009 SonzoSoft%s\n\rProgramming: Mark Richardson - sinbaud@hotmail.com\n\r\t\tAnd David Brown.\n\r-----------------------------------------------------\n\r", ANSI_BR_RED, SERVER_VERSION, ANSI_WHITE, ANSI_BR_RED );
+		WriteToBuffer( Player, "%s-------[ Minions Mud Server - %s ]------------\n\r\t    %s(C)1998 - 2010 SonzoSoft%s\n\rProgramming: Mark Richardson - sinbaud@hotmail.com\n\r\t\tAnd David Brown.\n\r-----------------------------------------------------\n\r", ANSI_BR_RED, SERVER_VERSION, ANSI_WHITE, ANSI_BR_RED );
 		DisplayFile( Player, HelpScreen );
 		WriteToBuffer( Player, "\n\r" );
 		WriteToBuffer( Player, "%s%s[ HP: %i] > %s", ANSI_CLR_SOL, ANSI_BR_CYAN, Player->Player.GetHitPoints(), ANSI_WHITE );
@@ -277,7 +279,7 @@ COMMAND(ShutDown)
 	}
 	
 	/*  Log the Shut Down time */
-	ServerLog("Minions Server shutdown remotely by %s at %s\n", Player->Player.GetFirstName(), ctime( &CurrentTime ) );
+	ServerLog("Minions Server shutdown remotely by %s", Player->Player.GetFirstName() );
 
 	ServerDown = true;
 	return;
@@ -2150,6 +2152,65 @@ COMMAND(Rest)
 	Player->Player.GetFirstName(), ANSI_WHITE ); 
 	// I'm stupid tell me I'm resting.
 	WriteToBuffer( Player, "%sYou stop to rest%s\n\r", ANSI_BR_BLUE, ANSI_WHITE );
+
+	return;
+}
+
+/*=============================================================================
+ Spells command - lists the spells the player is eligible to cast
+ ============================================================================*/
+
+COMMAND(Spells)
+{
+	MeleeSpellList::iterator	SpellIterator;
+	ostringstream				SpellsString;
+	string						FormattedString;
+
+		/* Going to try using a STL ostringstream here  */
+	SpellsString<<ANSI_BR_WHITE<<"\n\rSpells you can cast\n\r"<<ANSI_BR_RED;
+	
+	SpellsString.flags( ios::left );
+	SpellsString<<setfill(' ')<<setw(15)<<"Mnemonic"<<setfill(' ')<<setw(20)<<"Name";
+	
+	SpellsString<<"\n\r"<<ANSI_GREEN
+		<<"=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-="<<ANSI_BR_YELLOW;
+
+	for( SpellIterator = MeleeSpells.begin(); SpellIterator != MeleeSpells.end(); SpellIterator++ )
+	{
+		if( Player->Player.CanCast( SpellIterator->second->GetSpellClass() ))
+		{
+			SpellsString<<"\n\r";
+			SpellsString.flags( ios::left );
+			SpellsString<<setfill(' ')<<setw(15)<<SpellIterator->second->GetSpellCommand()<<setfill(' ')<<setw(20)
+				<<SpellIterator->second->GetSpellName();
+		}
+	}
+
+	SpellsString<<"\n\r"<<ANSI_BR_CYAN<<"[ HP: "<<Player->Player.GetHitPoints()<<"] >"<<ANSI_WHITE;
+
+	FormattedString = SpellsString.str(); //convert to regular string so we can pass to WriteToBuffer with c_str()
+
+	WriteToBuffer( Player, (char*)FormattedString.c_str() );	//write converted string to buffer
+	
+
+	return;
+}
+
+/*=============================================================================
+ Reroll command ( no checks, no confirmation... just goodbye.
+ ============================================================================*/
+
+COMMAND(Reroll)
+{
+	Room	*TempRoom;
+
+	TempRoom = Player->Player.GetRoom();
+
+	TempRoom->SelectiveBroadcast( Player, NULL, "%s%s dissapears in a puff of smoke!%s\n\r", ANSI_BR_RED, Player->Player.GetFirstName(), ANSI_WHITE );
+	Player->Status = STATUS_REROLL;
+	Broadcast( Player, "%s***[ %s left the realm. ]***%s\n\r", ANSI_BR_YELLOW, Player->Player.GetFirstName(), ANSI_BR_WHITE  );
+	TempRoom->RemovePlayerFromRoom( Player );
+	WriteToBuffer( Player, "%s%s ***  Press ENTER to Reroll your character ***", ANSI_CLR_SCR, ANSI_BR_WHITE );
 
 	return;
 }
