@@ -501,6 +501,9 @@ COMMAND(Attack)
 	Player->Player.SetAttackEvent(meleeEvent);
 	eventScheduler.pushCombatStack(meleeEvent);
 
+	ServerLog( "%s %s physically attacked %s %s.", Player->Player.GetFirstName(), Player->Player.GetLastName(),
+		Victim->Player.GetFirstName(), Victim->Player.GetLastName() );
+
 	return;
 }
 
@@ -2125,6 +2128,8 @@ COMMAND(Spawn)
 			Player->Player.GetFirstName(), TempItem->GetItemName(), ANSI_WHITE );
 		WriteToBuffer( Player, "%sA %s has been added to your inventory!%s\n\r",
 			ANSI_BR_RED, TempItem->GetItemName(), ANSI_WHITE );
+		ServerLog( "%s %s spawned [%d] %s into thier inventory.", Player->Player.GetFirstName(), Player->Player.GetLastName(),
+			TempItem->GetItemNumber(), TempItem->GetItemName() );
 	}
 	else
 		WriteToBuffer( Player, "%sYou cannot spawn what you cannot carry!%s\n\r",
@@ -2211,6 +2216,7 @@ COMMAND(Reroll)
 	Broadcast( Player, "%s***[ %s left the realm. ]***%s\n\r", ANSI_BR_YELLOW, Player->Player.GetFirstName(), ANSI_BR_WHITE  );
 	TempRoom->RemovePlayerFromRoom( Player );
 	WriteToBuffer( Player, "%s%s ***  Press ENTER to Reroll your character ***", ANSI_CLR_SCR, ANSI_BR_WHITE );
+	ServerLog( "%s %s rerolled thier character.", Player->Player.GetFirstName(), Player->Player.GetLastName() );
 
 	return;
 }

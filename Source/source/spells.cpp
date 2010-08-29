@@ -215,6 +215,9 @@ void CastMeleeSpell( Connection *Player, char *Attacked, MeleeSpell *Spell )
 	Player->Player.SetAttackEvent(meleeEvent);
 	eventScheduler.pushCombatStack(meleeEvent);
 
+	ServerLog( "%s %s attacked %s %s by casting %s.", Player->Player.GetFirstName(), Player->Player.GetLastName(),
+		Victim->Player.GetFirstName(), Victim->Player.GetLastName(), Spell->GetSpellName().c_str() );
+
 	return;
 }
 

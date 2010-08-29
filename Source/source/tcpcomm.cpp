@@ -480,12 +480,12 @@ void Disconnect( Connection *Conn )
 	{
 		Broadcast( Conn, "%s***[ %s left the realm. ]***%s\n\r", ANSI_BR_YELLOW,
 			       Conn->Player.GetFirstName(), ANSI_BR_WHITE );
-		ServerLog( "%s [%s] disconnects.\n", Conn->Player.GetFirstName(),
+		ServerLog( "%s [%s] disconnects.", Conn->Player.GetFirstName(),
 			       Conn->Player.GetIpAddress() );
 	}
 
 	else
-		ServerLog( "[%s] disconnected without authenticating.\n", Conn->Player.GetIpAddress() );
+		ServerLog( "[%s] disconnected without authenticating.", Conn->Player.GetIpAddress() );
 
 	/*   Clear the socket from active descriptor sets   */
 	FD_CLR( Conn->Descriptor, &ReadSet );
@@ -668,13 +668,18 @@ bool Logon( Connection *Conn, char *Cmd )
 			return true;
 		}
 		else
-			WriteToBuffer( Conn, "%s\n\rWelcome to Minions!\n\r", EchoOnStr );
-			WriteToBuffer( Conn, "Type 'help' for a list of commands.\n\r" );
+			WriteToBuffer( Conn, "\n\rWelcome to Minions!" );
+			WriteToBuffer( Conn, "\n\rType 'help' for a list of commands.\n\r" );
 			Broadcast( Conn, "%s***[ %s enters the realm. ]***%s\n\r", ANSI_BR_YELLOW,
 				Conn->Player.GetFirstName(), ANSI_BR_WHITE  );
 			Conn->Status = STATUS_AUTHENTICATED;
-			Conn->Player.SetRoom( SearchForRoom( Conn->Player.GetCurrentRoomNumber() ) );
-			TempRom = Conn->Player.GetRoom();
+			
+			TempRom = SearchForRoom( Conn->Player.GetCurrentRoomNumber() );
+			
+			if( !TempRom )
+				TempRom = SearchForRoom( 1 );
+			
+			Conn->Player.SetRoom( TempRom );
 			TempRom->AddPlayerToRoom( Conn );
 		break;
 
