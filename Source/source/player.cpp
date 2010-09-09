@@ -800,7 +800,7 @@ char* Client::GetDescription( void )
 		strcpy( StrDesc, "an extremely powerfully built" );
 
 	/*  added STL strings here for formatting  */
-	BuildString<<ANSI_GREEN<<"=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\r";
+	BuildString<<ANSI_GREEN<<"\n\r=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\r";
 	BuildString<<ANSI_CLR_SOL<<ANSI_BR_GREEN<<'['<<FirstName<<' '<<LastName<<"] - "<<ANSI_BR_WHITE
 		<<RaceStr<<' '<<ClassStr<<"\n\r";
 

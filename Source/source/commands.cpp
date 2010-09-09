@@ -545,20 +545,44 @@ COMMAND(BreakCombat)
  **********************************************************/
 COMMAND(Status)
 {
-	WriteToBuffer( Player, "%sName:%s %s %s    %sLevel:%s %d     %sExp: %s%d\n\r%sHit Points:%s %d of %d     %sMana:%s %d of %d\n\r",
-		ANSI_BR_GREEN, ANSI_WHITE, Player->Player.GetFirstName(), Player->Player.GetLastName(),
-		ANSI_BR_GREEN, ANSI_WHITE, Player->Player.GetLevel(), ANSI_BR_GREEN, ANSI_WHITE, Player->Player.GetExp(),
-		ANSI_BR_GREEN, ANSI_WHITE, Player->Player.GetHitPoints(), Player->Player.GetMaxHitPoints(),
-		ANSI_BR_GREEN, ANSI_WHITE, Player->Player.GetMana(), Player->Player.GetMaxMana() );
+	ostringstream		StatusString;
+	string				FormattedString;
 
-	WriteToBuffer( Player, "%sArmor Class: %s%d          %sTHAC0: %s%d\n\r",
-		ANSI_BR_GREEN, ANSI_WHITE, Player->Player.GetModifiedAC(), ANSI_BR_GREEN,
-		ANSI_WHITE, Player->Player.GetTHAC0() );
+	StatusString<<ANSI_GREEN<<"\n\r=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\r";
+	StatusString<<ANSI_BR_WHITE<<Player->Player.GetFirstName()<<' '<<Player->Player.GetLastName()<<'\t'<<ANSI_BR_YELLOW
+		<<Player->Player.GetRaceStr()<<' '<<Player->Player.GetClassStr()<<"\n\r";
+
+	StatusString<<ANSI_GREEN<<"=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\r";
+
+	//StatusString.fill('*');
+	StatusString<<ANSI_BR_GREEN<<setw(12)<<"Hit Points:"<<ANSI_WHITE<<setw(5)<<Player->Player.GetHitPoints()<<'/'<<Player->Player.GetMaxHitPoints();
+	StatusString<<ANSI_BR_GREEN<<setw(12)<<"Mana:"<<ANSI_WHITE<<setw(5)<<Player->Player.GetMana()<<'/'<<Player->Player.GetMaxMana();
+	StatusString<<"\n\r";
+	StatusString<<ANSI_BR_GREEN<<setw(12)<<"Strength:"<<ANSI_WHITE<<setw(5)<<Player->Player.GetStrength();
+	StatusString<<setw(10)<<' ';
+	StatusString<<ANSI_BR_GREEN<<setw(12)<<"Armor Class:"<<ANSI_WHITE<<setw(5)<<Player->Player.GetModifiedAC();
+	StatusString<<"\n\r";
+	StatusString<<ANSI_BR_GREEN<<setw(12)<<"Agility:"<<ANSI_WHITE<<setw(5)<<Player->Player.GetAgility();
+	StatusString<<setw(10)<<' ';
+	StatusString<<ANSI_BR_GREEN<<setw(12)<<"Encumbrance:"<<ANSI_WHITE<<setw(5)<<Player->Player.GetPlayerWeight();
+	StatusString<<"\n\r";
+	StatusString<<ANSI_BR_GREEN<<setw(12)<<"Wisdom:"<<ANSI_WHITE<<setw(5)<<Player->Player.GetWisdom();
+	StatusString<<setw(10)<<' ';
+	StatusString<<ANSI_BR_GREEN<<setw(12)<<"THAC0:"<<ANSI_WHITE<<setw(5)<<Player->Player.GetTHAC0();
+	StatusString<<"\n\r";
+	StatusString<<ANSI_BR_GREEN<<setw(12)<<"Health:"<<ANSI_WHITE<<setw(5)<<Player->Player.GetHealth();
+	StatusString<<setw(10)<<' ';
+	StatusString<<ANSI_BR_GREEN<<setw(12)<<"Experience:"<<ANSI_WHITE<<setw(5)<<Player->Player.GetExp();
+	StatusString<<"\n\r";
+	StatusString<<ANSI_BR_GREEN<<setw(12)<<"Luck:"<<ANSI_WHITE<<setw(5)<<Player->Player.GetLuck();
+	StatusString<<setw(10)<<' ';
+	StatusString<<ANSI_BR_GREEN<<setw(12)<<"Level:"<<ANSI_WHITE<<setw(5)<<Player->Player.GetLevel();
+	StatusString<<ANSI_GREEN<<"\n\r=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\r"<<ends;
 	
-	WriteToBuffer( Player, "%sStrength: %s%d          %sHealth: %s%d\n\r%sAgility:  %s%d          %sLuck:   %s%d\n\r%sWisdom:   %s%d          %sWeight:   %s%d\n\r",
-		ANSI_BR_GREEN, ANSI_WHITE, Player->Player.GetStrength(), ANSI_BR_GREEN, ANSI_WHITE, Player->Player.GetHealth(), ANSI_BR_GREEN,
-		ANSI_WHITE, Player->Player.GetAgility(), ANSI_BR_GREEN, ANSI_WHITE, Player->Player.GetLuck(), ANSI_BR_GREEN, ANSI_WHITE,
-		Player->Player.GetWisdom(), ANSI_BR_GREEN, ANSI_WHITE, Player->Player.GetPlayerWeight() );
+	FormattedString = StatusString.str(); //convert to regular string so we can pass to WriteToBuffer with c_str()
+
+	WriteToBuffer( Player, (char*)FormattedString.c_str() );	//write converted string to buffer
+
 	return;
 }
 
@@ -593,7 +617,7 @@ COMMAND(Telepath)
 	/*  if you have telepaths off you cannot telepath!  */
 	if( !FLAG_IS_SET( Player->Flags, FLAG_TELEPATHS ) )
 	{
-		WriteToBuffer( Player, "%sYour telepaths are disabled. Re-enable them if you would like to telepath someone!%s\n\r",
+		WriteToBuffer( Player, "%sYour telepaths are disabled, therefore you cannot telepath.%s\n\r",
 			ANSI_BR_CYAN, ANSI_WHITE );
 		return;
 	}
@@ -2170,6 +2194,8 @@ COMMAND(Spells)
 	MeleeSpellList::iterator	SpellIterator;
 	ostringstream				SpellsString;
 	string						FormattedString;
+	int							NumSpells;
+
 
 		/* Going to try using a STL ostringstream here  */
 	SpellsString<<ANSI_BR_WHITE<<"\n\rSpells you can cast\n\r"<<ANSI_BR_RED;
@@ -2214,9 +2240,10 @@ COMMAND(Reroll)
 	TempRoom->SelectiveBroadcast( Player, NULL, "%s%s dissapears in a puff of smoke!%s\n\r", ANSI_BR_RED, Player->Player.GetFirstName(), ANSI_WHITE );
 	Player->Status = STATUS_REROLL;
 	Broadcast( Player, "%s***[ %s left the realm. ]***%s\n\r", ANSI_BR_YELLOW, Player->Player.GetFirstName(), ANSI_BR_WHITE  );
+	Player->Player.DropAllItems();
 	TempRoom->RemovePlayerFromRoom( Player );
 	WriteToBuffer( Player, "%s%s ***  Press ENTER to Reroll your character ***", ANSI_CLR_SCR, ANSI_BR_WHITE );
-	ServerLog( "%s %s rerolled thier character.", Player->Player.GetFirstName(), Player->Player.GetLastName() );
+	ServerLog( "%s %s re-rolled thier character.", Player->Player.GetFirstName(), Player->Player.GetLastName() );
 
 	return;
 }
