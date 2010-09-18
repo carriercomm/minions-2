@@ -982,7 +982,7 @@ COMMAND(MoveNorth)
 		return;
 	}
     // To heavy to move?
-	if ( Player->Player.ToHeavy() ) 
+	if ( Player->Player.TooHeavy() ) 
 	{
 		WriteToBuffer( Player, "%sYou are to heavy to move!\n\r%s", ANSI_BR_BLUE, ANSI_WHITE);
 		return;
@@ -1029,7 +1029,7 @@ COMMAND(MoveSouth)
 		return;
 	}
     // To heavy to move?
-	if ( Player->Player.ToHeavy() ) 
+	if ( Player->Player.TooHeavy() ) 
 	{
 		WriteToBuffer( Player, "%sYou are to heavy to move!\n\r%s", ANSI_BR_BLUE, ANSI_WHITE);
 		return;
@@ -1078,7 +1078,7 @@ COMMAND(MoveUp)
 	}
 
     // To heavy to move?
-	if ( Player->Player.ToHeavy() ) 
+	if ( Player->Player.TooHeavy() ) 
 	{
 		WriteToBuffer( Player, "%sYou are to heavy to move!\n\r%s", ANSI_BR_BLUE, ANSI_WHITE);
 		return;
@@ -1126,7 +1126,7 @@ COMMAND(MoveDown)
 	}
 
     // To heavy to move?
-	if ( Player->Player.ToHeavy() ) 
+	if ( Player->Player.TooHeavy() ) 
 	{
 		WriteToBuffer( Player, "%sYou are to heavy to move!\n\r%s", ANSI_BR_BLUE, ANSI_WHITE);
 		return;
@@ -1174,7 +1174,7 @@ COMMAND(MoveEast)
 	}
 
     // To heavy to move?
-	if ( Player->Player.ToHeavy() ) 
+	if ( Player->Player.TooHeavy() ) 
 	{
 		WriteToBuffer( Player, "%sYou are to heavy to move!\n\r%s", ANSI_BR_BLUE, ANSI_WHITE);
 		return;
@@ -1221,7 +1221,7 @@ COMMAND(MoveWest)
 	}
 
     // To heavy to move?
-	if ( Player->Player.ToHeavy() ) 
+	if ( Player->Player.TooHeavy() ) 
 	{
 		WriteToBuffer( Player, "%sYou are to heavy to move!\n\r%s", ANSI_BR_BLUE, ANSI_WHITE);
 		return;
@@ -1268,7 +1268,7 @@ COMMAND(MoveNE)
 	}
 
     // To heavy to move?
-	if ( Player->Player.ToHeavy() ) 
+	if ( Player->Player.TooHeavy() ) 
 	{
 		WriteToBuffer( Player, "%sYou are to heavy to move!\n\r%s", ANSI_BR_BLUE, ANSI_WHITE);
 		return;
@@ -1314,7 +1314,7 @@ COMMAND(MoveSE)
 	}
 
     // To heavy to move?
-	if ( Player->Player.ToHeavy() ) 
+	if ( Player->Player.TooHeavy() ) 
 	{
 		WriteToBuffer( Player, "%sYou are to heavy to move!\n\r%s", ANSI_BR_BLUE, ANSI_WHITE);
 		return;
@@ -1360,7 +1360,7 @@ COMMAND(MoveSW)
 	}
 
     // To heavy to move?
-	if ( Player->Player.ToHeavy() ) 
+	if ( Player->Player.TooHeavy() ) 
 	{
 		WriteToBuffer( Player, "%sYou are to heavy to move!\n\r%s", ANSI_BR_BLUE, ANSI_WHITE);
 		return;
@@ -1406,7 +1406,7 @@ COMMAND(MoveNW)
 	}
 
     // To heavy to move?
-	if ( Player->Player.ToHeavy() ) 
+	if ( Player->Player.TooHeavy() ) 
 	{
 		WriteToBuffer( Player, "%sYou are to heavy to move!\n\r%s", ANSI_BR_BLUE, ANSI_WHITE);
 		return;

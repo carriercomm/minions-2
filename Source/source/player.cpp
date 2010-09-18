@@ -759,11 +759,11 @@ bool Client::SetPlayerWeight( int value, int add_subtract )
 }
 
 /************************************************************************
-    Client -> ToHeavy(void)
+    Client -> TooHeavy(void)
 	Is the player to heavy to preform an action? (move, fight, etc)
 ************************************************************************/
 
-bool Client::ToHeavy( void ) 
+bool Client::TooHeavy( void ) 
 {
 	if( GetPlayerWeight() > (GetStrength() *  MAX_STR_MULTIPLIER) )
 	{
