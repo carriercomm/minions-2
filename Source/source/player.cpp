@@ -759,6 +759,20 @@ bool Client::SetPlayerWeight( int value, int add_subtract )
 }
 
 /************************************************************************
+    Client -> ToHeavy(void)
+	Is the player to heavy to preform an action? (move, fight, etc)
+************************************************************************/
+
+bool Client::ToHeavy( void ) 
+{
+	if( GetPlayerWeight() > (GetStrength() *  MAX_STR_MULTIPLIER) )
+	{
+		return true;
+	}
+	return false;
+}
+
+/************************************************************************
 	Client -> GetDescription(void)
 	Build up the description string, then return a pointer to it.
 *************************************************************************/

@@ -211,6 +211,7 @@ public:
 	void             AlterExp( int ToAdd );
 	void             AdjustPlayerStatsByItem(Item *CurItem, int add_remove );
 	bool             UpdateHitPoints( int value, bool add_subtract );
+	bool             ToHeavy( void );
 
 	// Attack event stuff
 	void             SetAttackEvent(minionsEvent *Event)        { AttackEvent = Event; }; 
