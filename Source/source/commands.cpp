@@ -247,7 +247,7 @@ COMMAND(Credits)
 {
 	if( Player )
 	{
-		WriteToBuffer( Player, "%s-------[ Minions Mud Server - %s ]------------\n\r\t    %s(C)1998 - 2010 SonzoSoft%s\n\rProgramming: Mark Richardson - sinbaud@hotmail.com\n\r\t\tAnd David Brown.\n\r-----------------------------------------------------\n\r", ANSI_BR_RED, SERVER_VERSION, ANSI_WHITE, ANSI_BR_RED );
+		WriteToBuffer( Player, "\n\r%s-------[ Minions Mud Server - %s ]------------\n\r\t    %s(C)1998 - 2013 SonzoSoft%s\n\rProgramming: Mark Richardson - markrich73@gmail.com\n\r\t And David Brown - davidcbrown@gmail.com.\n\r------------------------------------------------------\n\r", ANSI_BR_RED, SERVER_VERSION, ANSI_WHITE, ANSI_BR_RED );
 		DisplayFile( Player, HelpScreen );
 		WriteToBuffer( Player, "\n\r" );
 		WriteToBuffer( Player, "%s%s[ HP: %i] > %s", ANSI_CLR_SOL, ANSI_BR_CYAN, Player->Player.GetHitPoints(), ANSI_WHITE );
@@ -555,7 +555,8 @@ COMMAND(Status)
 	StatusString<<ANSI_GREEN<<"=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n\r";
 
 	//StatusString.fill('*');
-	StatusString<<ANSI_BR_GREEN<<setw(12)<<"Hit Points:"<<ANSI_WHITE<<setw(5)<<Player->Player.GetHitPoints()<<'/'<<Player->Player.GetMaxHitPoints();
+	StatusString<<ANSI_BR_GREEN<<setw(12)<<"HP:"<<ANSI_WHITE<<setw(5)<<Player->Player.GetHitPoints()<<'/'<<Player->Player.GetMaxHitPoints();
+	StatusString<<setw(7)<<' ';
 	StatusString<<ANSI_BR_GREEN<<setw(12)<<"Mana:"<<ANSI_WHITE<<setw(5)<<Player->Player.GetMana()<<'/'<<Player->Player.GetMaxMana();
 	StatusString<<"\n\r";
 	StatusString<<ANSI_BR_GREEN<<setw(12)<<"Strength:"<<ANSI_WHITE<<setw(5)<<Player->Player.GetStrength();

@@ -48,7 +48,7 @@ void main( void )
 	cout<<"\t     *-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*\n";
 	cout<<"\t     |          Minions Mud Server "<<SERVER_VERSION<<"            |\n";
 	cout<<"\t     |                                                   |\n";
-	cout<<"\t     |            (C)2010 SonzoSoft Software             |\n";
+	cout<<"\t     |            (C)2013 SonzoSoft Software             |\n";
 	cout<<"\t     *-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*\n"<<endl;
 	
 	
