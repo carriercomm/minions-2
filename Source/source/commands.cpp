@@ -247,7 +247,7 @@ COMMAND(Credits)
 {
 	if( Player )
 	{
-		WriteToBuffer( Player, "\n\r%s-------[ Minions Mud Server - %s ]------------\n\r\t    %s(C)1998 - 2013 SonzoSoft%s\n\rProgramming: Mark Richardson - markrich73@gmail.com\n\r\t And David Brown - davidcbrown@gmail.com.\n\r------------------------------------------------------\n\r", ANSI_BR_RED, SERVER_VERSION, ANSI_WHITE, ANSI_BR_RED );
+		WriteToBuffer( Player, "\n\r%s-------[ Minions Mud Server - %s ]------------\n\r\t    %s(C)1998 - 2013 SonzoSoft%s\n\rProgramming: Mark Richardson And David Brown\n\rMinions was started in the late nineties and never finished.\n\r\tIt is written in C/C++\n]r------------------------------------------------------\n\r", ANSI_BR_RED, SERVER_VERSION, ANSI_YELLOW, ANSI_BR_RED );
 		DisplayFile( Player, HelpScreen );
 		WriteToBuffer( Player, "\n\r" );
 		WriteToBuffer( Player, "%s%s[ HP: %i] > %s", ANSI_CLR_SOL, ANSI_BR_CYAN, Player->Player.GetHitPoints(), ANSI_WHITE );
